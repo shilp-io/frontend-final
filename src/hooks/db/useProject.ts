@@ -50,6 +50,9 @@ export function useProject(projectId: UUID, options: UseProjectOptions = {}) {
             if (!project) {
                 throw new Error('Project not found');
             }
+            if (!user?.id) {
+                throw new Error('User not authenticated');
+            }
 
             const response = await fetch('/api/db/projects', {
                 method: 'PUT',
@@ -59,8 +62,13 @@ export function useProject(projectId: UUID, options: UseProjectOptions = {}) {
                 body: JSON.stringify({
                     id: projectId,
                     ...data,
+                    updated_by: user.id,
                     updated_at: new Date().toISOString(),
-                    version: project.version + 1
+                    version: project.version + 1,
+                    metadata: {
+                        ...(typeof project.metadata === 'object' ? project.metadata || {} : {}),
+                        last_modified_from: 'web_app'
+                    }
                 }),
             });
 
@@ -80,6 +88,10 @@ export function useProject(projectId: UUID, options: UseProjectOptions = {}) {
     // Delete project mutation
     const deleteProjectMutation = useMutation({
         mutationFn: async () => {
+            if (!user?.id) {
+                throw new Error('User not authenticated');
+            }
+
             const response = await fetch(`/api/db/projects?id=${projectId}`, {
                 method: 'DELETE',
             });

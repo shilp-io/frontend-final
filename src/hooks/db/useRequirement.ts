@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRequirementStore } from '@/lib/store/requirementStore';
+import { useUserStore } from '@/lib/store/userStore';
 import type { UUID, Requirement } from '@/types';
 import { mapDatabaseEntity } from '@/lib/utils/typeUtils';
 
@@ -14,6 +15,7 @@ type RequirementQueryKey = ['requirement', UUID | undefined];
 
 export function useRequirement(requirementId: UUID, options: UseRequirementOptions = {}) {
     const queryClient = useQueryClient();
+    const { user } = useUserStore();
     const { 
         selectedRequirements,
         selectRequirement,
@@ -48,6 +50,9 @@ export function useRequirement(requirementId: UUID, options: UseRequirementOptio
             if (!requirement) {
                 throw new Error('Requirement not found');
             }
+            if (!user?.id) {
+                throw new Error('User not authenticated');
+            }
 
             const response = await fetch('/api/db/requirements', {
                 method: 'PUT',
@@ -57,6 +62,7 @@ export function useRequirement(requirementId: UUID, options: UseRequirementOptio
                 body: JSON.stringify({
                     id: requirementId,
                     ...data,
+                    updated_by: user.id,
                     updated_at: new Date().toISOString(),
                     version: requirement.version + 1
                 }),
@@ -78,6 +84,10 @@ export function useRequirement(requirementId: UUID, options: UseRequirementOptio
     // Delete requirement mutation
     const deleteRequirementMutation = useMutation({
         mutationFn: async () => {
+            if (!user?.id) {
+                throw new Error('User not authenticated');
+            }
+
             const response = await fetch(`/api/db/requirements?id=${requirementId}`, {
                 method: 'DELETE',
             });

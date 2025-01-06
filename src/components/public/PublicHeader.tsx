@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { User, LayoutDashboard, LogOut, Settings, UserCircle, Atom, UserPlus } from 'lucide-react'
 import { useAuth } from '@/hooks'
-import { ThemeToggle } from '@/components/public/ThemeToggle'
+import { ThemeToggle } from '@/components/public/toggles/ThemeToggle'
 
 const navItems = [
   { name: 'Home', href: '/' },

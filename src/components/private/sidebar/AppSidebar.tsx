@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
+import History from "./History";
+import { useState } from "react";
+import { CreatePanel } from "@/components/private";
 
 import {
   DropdownMenu,
@@ -53,6 +56,7 @@ const items: MenuItem[] = [
 export function AppSidebar() {
   const router = useRouter();
   const { signOut, user: userData } = useAuth();
+  const [isCreatePanelOpen, setIsCreatePanelOpen] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -75,11 +79,11 @@ export function AppSidebar() {
                 <Link 
                   key={item.title} 
                   href={item.url}
-                  className="block mb-2" // Added margin-bottom for spacing
+                  className="block mb-2"
                 >
-                  <SidebarMenuItem className="flex items-center gap-3 py-2.5"> {/* Increased gap and padding */}
-                    <item.icon className="h-5 w-5" /> {/* Increased icon size */}
-                    <span className="text-[15px]">{item.title}</span> {/* Increased text size */}
+                  <SidebarMenuItem className="flex items-center gap-3 py-2">
+                    <item.icon className="h-5 w-5" />
+                    <span className="text-[15px]">{item.title}</span>
                   </SidebarMenuItem>
                 </Link>
               ))}
@@ -87,14 +91,24 @@ export function AppSidebar() {
                 <SidebarMenuButton asChild>
                   <Button
                     variant="outline"
-                    className="w-full"
-                    onClick={() => router.push("/dashboard/new")}
+                    className="w-full relative z-20"
+                    onClick={() => setIsCreatePanelOpen(true)}
                   >
-                    <Plus className="mr-2 h-4 w-4" />
-                    <span>New Requirement</span>
+                    <Plus className="h-4 w-4" />
+                    <span>Create New</span>
                   </Button>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              <CreatePanel
+                isOpen={isCreatePanelOpen}
+                onClose={() => setIsCreatePanelOpen(false)}
+                showTabs="show"
+              />
+              
+              <div className="mt-4 font-mono">
+                <History />
+              </div>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

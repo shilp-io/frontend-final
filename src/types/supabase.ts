@@ -30,6 +30,13 @@ export type Database = {
             referencedRelation: "collections"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "collection_owners_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       collections: {
@@ -77,10 +84,24 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "collections_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "collections_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collections_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -149,6 +170,20 @@ export type Database = {
             columns: ["collection_id"]
             isOneToOne: false
             referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "external_docs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "external_docs_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -267,6 +302,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "project_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       projects: {
@@ -318,7 +360,22 @@ export type Database = {
           updated_by?: string | null
           version?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       requirement_collections: {
         Row: {
@@ -459,6 +516,9 @@ export type Database = {
           priority: Database["public"]["Enums"]["requirement_priority"]
           project_id: string | null
           reviewer: string | null
+          rewritten_ears: string | null
+          rewritten_incose: string | null
+          selected_format: string | null
           status: Database["public"]["Enums"]["requirement_status"]
           tags: string[] | null
           title: string
@@ -481,6 +541,9 @@ export type Database = {
           priority?: Database["public"]["Enums"]["requirement_priority"]
           project_id?: string | null
           reviewer?: string | null
+          rewritten_ears?: string | null
+          rewritten_incose?: string | null
+          selected_format?: string | null
           status?: Database["public"]["Enums"]["requirement_status"]
           tags?: string[] | null
           title: string
@@ -503,6 +566,9 @@ export type Database = {
           priority?: Database["public"]["Enums"]["requirement_priority"]
           project_id?: string | null
           reviewer?: string | null
+          rewritten_ears?: string | null
+          rewritten_incose?: string | null
+          selected_format?: string | null
           status?: Database["public"]["Enums"]["requirement_status"]
           tags?: string[] | null
           title?: string
@@ -511,6 +577,20 @@ export type Database = {
           version?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "requirements_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requirements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "requirements_parent_id_fkey"
             columns: ["parent_id"]
@@ -523,6 +603,20 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requirements_reviewer_fkey"
+            columns: ["reviewer"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requirements_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -618,7 +712,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      get_user_profile_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       collection_access_level: "private" | "project" | "organization" | "public"

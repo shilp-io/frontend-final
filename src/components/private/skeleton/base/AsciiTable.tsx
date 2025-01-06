@@ -10,6 +10,7 @@ interface AsciiTableProps<T> {
   data: T[];
   columns: Column<T>[];
   onRowClick?: (item: T) => void;
+  handleGoToPage?: (item: T) => void;
   isLoading?: boolean;
   error?: Error;
   emptyMessage?: string;
@@ -25,6 +26,7 @@ export function AsciiTable<T>({
   data,
   columns,
   onRowClick,
+  handleGoToPage,
   isLoading,
   error,
   emptyMessage = 'No data found.',
@@ -71,8 +73,14 @@ export function AsciiTable<T>({
       {data.map((item, index) => (
         <div
           key={index}
-          className={onRowClick ? ASCII_STYLES.row : undefined}
-          onClick={() => onRowClick?.(item)}
+          className={onRowClick || handleGoToPage ? ASCII_STYLES.row : undefined}
+          onClick={() => {
+            if (onRowClick) {
+              onRowClick(item);
+            } else if (handleGoToPage) {
+              handleGoToPage(item);
+            }
+          }}
         >
           {createRow(columns.map(col => col.accessor(item)))}
           {'\n'}

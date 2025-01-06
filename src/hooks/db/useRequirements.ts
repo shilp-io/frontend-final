@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRequirementStore } from '@/lib/store/requirementStore';
+import { useUserStore } from '@/lib/store/userStore';
 import type { UUID, Requirement } from '@/types';
 import { mapDatabaseEntities, mapDatabaseEntity } from '@/lib/utils/typeUtils';
 
@@ -10,10 +11,11 @@ interface UseRequirementsOptions {
 }
 
 // Type for our query key
-type RequirementsQueryKey = ['requirements', UUID | undefined];
+type RequirementsQueryKey = ['requirements', UUID | undefined, UUID | undefined];
 
-export function useRequirements(projectId: UUID, options: UseRequirementsOptions = {}) {
+export function useRequirements(projectId?: UUID, userId?: UUID, options: UseRequirementsOptions = {}) {
   const queryClient = useQueryClient();
+  const { user } = useUserStore();
   const {
     filters,
     selectedRequirements,
@@ -29,45 +31,36 @@ export function useRequirements(projectId: UUID, options: UseRequirementsOptions
     isLoading,
     error
   } = useQuery({
-    queryKey: ['requirements', projectId] as RequirementsQueryKey,
+    queryKey: ['requirements', projectId, userId] as RequirementsQueryKey,
     queryFn: async () => {
-      if (!projectId) return [];
+      let url = '/api/db/requirements';
+      const params = new URLSearchParams();
       
-      const response = await fetch(`/api/db/requirements?projectId=${projectId}`);
+      if (projectId) {
+        params.append('projectId', projectId);
+      }
+      if (userId) {
+        params.append('created_by', userId);
+      }
+      
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+      
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch requirements');
       }
       const data = await response.json();
-      const mappedData = mapDatabaseEntities<'requirements'>(data);
-
-      // If no requirements exist, create a default one
-      if (mappedData.length === 0) {
-        const defaultRequirement = await createRequirementMutation.mutateAsync({
-          title: 'New Requirement',
-          description: 'Welcome to Atoms',
-          status: 'approved',
-          priority: 'low',
-          assigned_to: null,
-          project_id: projectId,
-          parent_id: null,
-          acceptance_criteria: null,
-          reviewer: null,
-          tags: null,
-          original_req: null,
-          current_req: null,
-          history_req: null
-        });
-        return defaultRequirement ? [defaultRequirement] : [];
-      }
-      return mappedData;
+      return mapDatabaseEntities<'requirements'>(data);
     },
-    enabled: !!projectId,
+    enabled: !!user,
     ...options
   });
 
-  // Create requirement mutation
-  const createRequirementMutation = useMutation({
-    mutationFn: async (data: Omit<Requirement, 'id' | 'created_at' | 'updated_at' | 'version' | 'created_by' | 'updated_by' | 'metadata'>) => {
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: async (data: Partial<Omit<Requirement, 'id' | 'created_at'>>) => {
       const response = await fetch('/api/db/requirements', {
         method: 'POST',
         headers: {
@@ -75,86 +68,58 @@ export function useRequirements(projectId: UUID, options: UseRequirementsOptions
         },
         body: JSON.stringify({
           ...data,
-          project_id: projectId,
+          created_by: user?.id,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          version: 1,
-          current_req: null,
-          history_req: null
+          version: 1
         }),
       });
-
       if (!response.ok) {
         throw new Error('Failed to create requirement');
       }
-
       const result = await response.json();
       return mapDatabaseEntity<'requirements'>(result);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['requirements', projectId] as const });
+    onSuccess: (newRequirement) => {
+      queryClient.setQueryData(['requirements', projectId, userId], (old: Requirement[] = []) => {
+        return [...old, newRequirement];
+      });
     },
   });
 
-  // Helper functions with proper error handling
-  const createRequirement = useCallback(async (data: Parameters<typeof createRequirementMutation.mutateAsync>[0]) => {
-    try {
-      return await createRequirementMutation.mutateAsync(data);
-    } catch (error) {
-      throw error;
-    }
-  }, [createRequirementMutation]);
-
-  // Set up EventSource for real-time updates
-  useEffect(() => {
-    const eventSource = new EventSource(`/api/db/requirements?projectId=${projectId}&subscribe=true`);
-
-    eventSource.onmessage = (event) => {
-      const payload = JSON.parse(event.data);
-      const newData = payload.new;
-      const oldData = payload.old;
-
-      if (newData?.project_id === projectId) {
-        queryClient.invalidateQueries({ queryKey: ['requirements', projectId] });
-        if (payload.eventType === 'DELETE' && oldData) {
-          queryClient.removeQueries({ queryKey: ['requirement', oldData.id] });
-        }
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (requirementId: UUID) => {
+      const response = await fetch(`/api/db/requirements/${requirementId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete requirement');
       }
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, [projectId, queryClient]);
-
-  // Filter requirements based on the store's filters
-  const filteredRequirements = requirements.filter(requirement => {
-    if (filters.status.length > 0 && !filters.status.includes(requirement.status)) {
-      return false;
-    }
-    if (filters.priority.length > 0 && !filters.priority.includes(requirement.priority)) {
-      return false;
-    }
-    if (filters.assigned_to && requirement.assigned_to !== filters.assigned_to) {
-      return false;
-    }
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      return (
-        requirement.title.toLowerCase().includes(searchLower) ||
-        requirement.description?.toLowerCase().includes(searchLower)
-      );
-    }
-    return true;
+      return requirementId;
+    },
+    onSuccess: (deletedId) => {
+      queryClient.setQueryData(['requirements', projectId, userId], (old: Requirement[] = []) => {
+        return old.filter(req => req.id !== deletedId);
+      });
+      deselectRequirement(deletedId);
+    },
   });
 
+  const createRequirement = useCallback(async (data: Parameters<typeof createMutation.mutateAsync>[0]) => {
+    return await createMutation.mutateAsync(data);
+  }, [createMutation]);
+
+  const deleteRequirement = useCallback(async (requirementId: UUID) => {
+    await deleteMutation.mutateAsync(requirementId);
+  }, [deleteMutation]);
+
   return {
-    requirements: filteredRequirements,
+    requirements,
     isLoading,
-    error: error as Error | null,
+    error,
     createRequirement,
-    filters,
-    setFilters,
+    deleteRequirement,
     selectedRequirements,
     selectRequirement,
     deselectRequirement,

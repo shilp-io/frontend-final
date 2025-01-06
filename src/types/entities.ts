@@ -10,6 +10,7 @@ import type {
   MemberRole,
   DocumentType
 } from './index'
+import type { Json } from './supabase'
 
 export interface Project extends BaseEntity {
   name: string
@@ -19,6 +20,7 @@ export interface Project extends BaseEntity {
   target_end_date: ISODateTime | null
   actual_end_date: ISODateTime | null
   tags: string[] | null
+  metadata: Json | null
 }
 
 export interface ProjectMember {
@@ -42,6 +44,10 @@ export interface Requirement extends BaseEntity {
   original_req: string | null
   current_req: JSON | null
   history_req: JSON[] | null
+  rewritten_ears: string | null
+  rewritten_incose: string | null
+  selected_format: string | null
+  metadata: Json | null
 }
 
 export interface RequirementTraceLink {

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import type { UUID, Project as ProjectEntity } from '@/types';
+import { useRecentStore } from './recentStore';
 
 type Project = ProjectEntity;
 
@@ -21,7 +22,7 @@ interface ProjectState {
   // Actions
   setFilters: (filters: Partial<ProjectFilters>) => void;
   clearFilters: () => void;
-  selectProject: (id: UUID) => void;
+  selectProject: (id: UUID, name?: string) => void;
   deselectProject: (id: UUID) => void;
   clearSelection: () => void;
 }
@@ -41,9 +42,16 @@ export const useProjectStore = create<ProjectState>()(
 
         clearFilters: () => set({ filters: { status: [] } }),
 
-        selectProject: (id) => set((state) => ({
-          selectedProjects: [...state.selectedProjects, id]
-        })),
+        selectProject: (id, name) => {
+          // Add to recent items if name is provided
+          if (name) {
+            useRecentStore.getState().addRecentItem(id, name, 'project');
+          }
+          // Update selection
+          set((state) => ({
+            selectedProjects: [...state.selectedProjects, id]
+          }));
+        },
 
         deselectProject: (id) => set((state) => ({
           selectedProjects: state.selectedProjects.filter((projId) => projId !== id)

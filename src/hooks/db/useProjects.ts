@@ -45,13 +45,17 @@ export function useProjects(options: UseProjectsOptions = {}) {
             // If no projects exist, create a default one
             if (mappedData.length === 0) {
                 const defaultProject = await createProjectMutation.mutateAsync({
-                    name: 'New Project',
-                    description: 'Welcome to Atoms',
+                    name: 'Getting Started',
+                    description: 'Welcome to your first project! This is where you can organize and track your work.\n\nTips:\n- Add requirements to track features and tasks\n- Invite team members to collaborate\n- Use tags to categorize work\n- Set start and target dates\n- Monitor project status',
                     status: 'active',
-                    start_date: null,
+                    start_date: new Date().toISOString(),
                     target_end_date: null,
                     actual_end_date: null,
-                    tags: null
+                    tags: ['getting-started'],
+                    metadata: {
+                        source: 'template',
+                        template_version: '1.0'
+                    }
                 });
                 return defaultProject ? [defaultProject] : [];
             }
@@ -64,7 +68,7 @@ export function useProjects(options: UseProjectsOptions = {}) {
 
     // Create project mutation
     const createProjectMutation = useMutation({
-        mutationFn: async (data: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'version' | 'created_by' | 'updated_by' | 'metadata'>) => {
+        mutationFn: async (data: Omit<Project, 'id' | 'created_at' | 'updated_at' | 'version' | 'created_by' | 'updated_by'>) => {
             if (!user?.id) throw new Error('User not authenticated');
             
             const response = await fetch('/api/db/projects', {
@@ -78,7 +82,11 @@ export function useProjects(options: UseProjectsOptions = {}) {
                     updated_by: user.id,
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
-                    version: 1
+                    version: 1,
+                    metadata: {
+                        ...(typeof data.metadata === 'object' ? data.metadata || {} : {}),
+                        created_from: 'web_app'
+                    }
                 }),
             });
 
@@ -97,6 +105,8 @@ export function useProjects(options: UseProjectsOptions = {}) {
     // Update project mutation
     const updateProjectMutation = useMutation({
         mutationFn: async ({ id, data }: { id: UUID, data: Partial<Omit<Project, 'id' | 'created_at' | 'version'>> }) => {
+            if (!user?.id) throw new Error('User not authenticated');
+            
             const currentProject = projects.find(p => p.id === id);
             if (!currentProject) {
                 throw new Error('Project not found');
@@ -110,6 +120,7 @@ export function useProjects(options: UseProjectsOptions = {}) {
                 body: JSON.stringify({
                     id,
                     ...data,
+                    updated_by: user.id,
                     updated_at: new Date().toISOString(),
                     version: currentProject.version + 1
                 }),
@@ -130,6 +141,27 @@ export function useProjects(options: UseProjectsOptions = {}) {
     // Delete project mutation
     const deleteProjectMutation = useMutation({
         mutationFn: async (id: UUID) => {
+            if (!user?.id) throw new Error('User not authenticated');
+            
+            // First get all requirements for this project
+            const getReqResponse = await fetch(`/api/db/requirements?projectId=${id}`);
+            if (!getReqResponse.ok) {
+                throw new Error('Failed to fetch project requirements');
+            }
+            const requirements = await getReqResponse.json();
+            const mappedRequirements = mapDatabaseEntities<'requirements'>(requirements);
+
+            // Delete each requirement
+            for (const req of mappedRequirements) {
+                const reqResponse = await fetch(`/api/db/requirements/${req.id}`, {
+                    method: 'DELETE',
+                });
+                if (!reqResponse.ok) {
+                    throw new Error('Failed to delete requirement');
+                }
+            }
+
+            // Then delete the project
             const response = await fetch(`/api/db/projects?id=${id}`, {
                 method: 'DELETE',
             });
@@ -139,8 +171,10 @@ export function useProjects(options: UseProjectsOptions = {}) {
             }
             return id;
         },
-        onSuccess: () => {
+        onSuccess: (deletedId) => {
+            // Invalidate both projects and requirements queries
             queryClient.invalidateQueries({ queryKey: ['projects'] as const });
+            queryClient.invalidateQueries({ queryKey: ['requirements', deletedId] as const });
         },
     });
 
