@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
 
     const searchParams = req.nextUrl.searchParams;
     const id = searchParams.get('id');
+    const user_id = searchParams.get('user_id');
 
     const client = supabaseAdminService.getClient();
 
@@ -29,9 +30,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(project);
     }
 
-    const { data: projects, error } = await client
+    let query = client
       .from('projects')
       .select('*');
+
+    if (user_id) {
+      query = query.eq('created_by', user_id);
+    }
+
+    const { data: projects, error } = await query;
       
     if (error) throw error;
     return NextResponse.json(projects);
@@ -128,12 +135,24 @@ export async function DELETE(req: NextRequest) {
     }
 
     const client = supabaseAdminService.getClient();
-    const { error } = await client
+
+    // First, delete all requirements associated with this project
+    const { error: requirementsError } = await client
+      .from('requirements')
+      .delete()
+      .eq('project_id', id);
+
+    if (requirementsError) {
+      throw requirementsError;
+    }
+
+    // Then delete the project itself
+    const { error: projectError } = await client
       .from('projects')
       .delete()
       .eq('id', id);
-
-    if (error) throw error;
+      
+    if (projectError) throw projectError;
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error('Error in DELETE /api/db/projects:', error);

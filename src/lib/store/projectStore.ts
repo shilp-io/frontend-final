@@ -25,17 +25,22 @@ interface ProjectState {
   selectProject: (id: UUID, name?: string) => void;
   deselectProject: (id: UUID) => void;
   clearSelection: () => void;
+  reset: () => void;
 }
+
+// Initial state
+const initialState = {
+  filters: {
+    status: [],
+  },
+  selectedProjects: [],
+};
 
 export const useProjectStore = create<ProjectState>()(
   devtools(
     persist(
       (set) => ({
-        filters: {
-          status: [],
-        },
-        selectedProjects: [],
-
+        ...initialState,
         setFilters: (filters) => set((state) => ({
           filters: { ...state.filters, ...filters }
         })),
@@ -57,7 +62,8 @@ export const useProjectStore = create<ProjectState>()(
           selectedProjects: state.selectedProjects.filter((projId) => projId !== id)
         })),
 
-        clearSelection: () => set({ selectedProjects: [] })
+        clearSelection: () => set({ selectedProjects: [] }),
+        reset: () => set(initialState)
       }),
       {
         name: 'projects-store',

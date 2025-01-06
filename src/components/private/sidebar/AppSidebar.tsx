@@ -54,19 +54,8 @@ const items: MenuItem[] = [
 ];
 
 export function AppSidebar() {
-  const router = useRouter();
   const { signOut, user: userData } = useAuth();
   const [isCreatePanelOpen, setIsCreatePanelOpen] = useState(false);
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      router.push("/login"); // Using Next.js router for navigation
-    } catch (error) {
-      console.error("Failed to sign out:", error);
-      // You might want to show an error notification here
-    }
-  };
 
   return (
     <Sidebar>
@@ -132,7 +121,7 @@ export function AppSidebar() {
                 <DropdownMenuItem asChild>
                   <Link href="/billing">Billing</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={handleSignOut}>
+                <DropdownMenuItem onSelect={signOut}>
                   <span>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

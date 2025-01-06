@@ -40,7 +40,7 @@ export function useRequirements(projectId?: UUID, userId?: UUID, options: UseReq
         params.append('projectId', projectId);
       }
       if (userId) {
-        params.append('created_by', userId);
+        params.append('user_id', userId);
       }
       
       if (params.toString()) {
@@ -61,6 +61,40 @@ export function useRequirements(projectId?: UUID, userId?: UUID, options: UseReq
   // Create mutation
   const createMutation = useMutation({
     mutationFn: async (data: Partial<Omit<Requirement, 'id' | 'created_at'>>) => {
+      if (!user?.id) throw new Error('User not authenticated');
+
+      let projectId = data.project_id;
+
+      // If no project_id is provided, create a default project
+      if (!projectId) {
+        const projectResponse = await fetch('/api/db/projects', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: data.title || 'New Project',
+            description: 'Project created from requirement',
+            status: 'active',
+            created_by: user.id,
+            updated_by: user.id,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            version: 1,
+            metadata: {
+              created_from: 'requirement'
+            }
+          }),
+        });
+
+        if (!projectResponse.ok) {
+          throw new Error('Failed to create default project');
+        }
+
+        const project = await projectResponse.json();
+        projectId = project.id;
+      }
+
       const response = await fetch('/api/db/requirements', {
         method: 'POST',
         headers: {
@@ -68,6 +102,7 @@ export function useRequirements(projectId?: UUID, userId?: UUID, options: UseReq
         },
         body: JSON.stringify({
           ...data,
+          project_id: projectId,
           created_by: user?.id,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -84,6 +119,7 @@ export function useRequirements(projectId?: UUID, userId?: UUID, options: UseReq
       queryClient.setQueryData(['requirements', projectId, userId], (old: Requirement[] = []) => {
         return [...old, newRequirement];
       });
+      queryClient.invalidateQueries({ queryKey: ['projects'] as const });
     },
   });
 

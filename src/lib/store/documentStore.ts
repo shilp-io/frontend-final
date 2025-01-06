@@ -26,19 +26,24 @@ interface DocumentState {
   selectDocument: (id: UUID) => void;
   deselectDocument: (id: UUID) => void;
   clearSelection: () => void;
+  reset: () => void;
 }
+
+// Initial state
+const initialState = {
+  filters: {
+    type: [],
+    status: [],
+  },
+  selectedDocuments: [],
+  activeCollectionId: null,
+};
 
 export const useDocumentStore = create<DocumentState>()(
   devtools(
     persist(
       (set) => ({
-        filters: {
-          type: [],
-          status: [],
-        },
-        selectedDocuments: [],
-        activeCollectionId: null,
-
+        ...initialState,
         setActiveCollection: (collectionId) => set({ activeCollectionId: collectionId }),
 
         setFilters: (filters) => set((state) => ({
@@ -55,7 +60,8 @@ export const useDocumentStore = create<DocumentState>()(
           selectedDocuments: state.selectedDocuments.filter((docId) => docId !== id)
         })),
 
-        clearSelection: () => set({ selectedDocuments: [] })
+        clearSelection: () => set({ selectedDocuments: [] }),
+        reset: () => set(initialState)
       }),
       {
         name: 'documents-store',

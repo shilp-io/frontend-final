@@ -22,15 +22,20 @@ interface RecentState {
   addRecentItem: (id: UUID, name: string, type: RecentItem['type']) => void;
   clearRecentItems: () => void;
   getRecentItemsByType: (type: RecentItem['type'], limit?: number) => RecentItemView[];
+  reset: () => void;
 }
+
+// Initial state
+const initialState = {
+  recentItems: [],
+  maxItems: 50, // Store up to 50 items total
+};
 
 export const useRecentStore = create<RecentState>()(
   devtools(
     persist(
       (set, get) => ({
-        recentItems: [],
-        maxItems: 50, // Store up to 50 items total
-
+        ...initialState,
         addRecentItem: (id, name, type) => set((state) => {
           const now = new Date().toISOString();
           const existingIndex = state.recentItems.findIndex(
@@ -63,6 +68,8 @@ export const useRecentStore = create<RecentState>()(
             .slice(0, limit);
           return items.map(item => ({ id: item.id, name: item.name }));
         },
+
+        reset: () => set(initialState)
       }),
       {
         name: 'recent-items-store',

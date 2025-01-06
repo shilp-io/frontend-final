@@ -4,6 +4,13 @@ import { authService } from '@/lib/services/auth';
 import { useAppStore } from '@/lib/store/appStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUserStore } from '@/lib/store/userStore';
+import { useProjectStore } from '@/lib/store/projectStore';
+import { useRequirementStore } from '@/lib/store/requirementStore';
+import { useCollectionStore } from '@/lib/store/collectionStore';
+import { useDocumentStore } from '@/lib/store/documentStore';
+import { useRecentStore } from '@/lib/store/recentStore';
+import { useToast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
 import type { ServiceContextUser } from '@/types/auth';
 
 interface OAuthProfileData {
@@ -18,12 +25,23 @@ const USER_QUERY_KEY = ['currentUser'] as const;
 const USER_PROFILE_QUERY_KEY = ['userProfile'] as const;
 
 export function useAuth() {
+    const router = useRouter();
+    const { toast } = useToast();
     const { user, setUser } = useUserStore();
     const setLoading = useAppStore(state => state.setLoading);
     const setError = useAppStore(state => state.setError);
     const loading = useAppStore(state => state.isLoading);
     const error = useAppStore(state => state.error);
     const queryClient = useQueryClient();
+
+    // Get store reset functions
+    const resetAppStore = useAppStore(state => state.reset);
+    const resetUserStore = useUserStore(state => state.reset);
+    const resetProjectStore = useProjectStore(state => state.reset);
+    const resetRequirementStore = useRequirementStore(state => state.reset);
+    const resetCollectionStore = useCollectionStore(state => state.reset);
+    const resetDocumentStore = useDocumentStore(state => state.reset);
+    const resetRecentStore = useRecentStore(state => state.reset);
 
     // Add initialization state
     const [isInitialized, setIsInitialized] = useState(false);
@@ -169,11 +187,33 @@ export function useAuth() {
         },
         onSuccess: () => {
             // Clear all auth-related queries
-            queryClient.setQueryData(USER_QUERY_KEY, null);
-            queryClient.setQueryData(USER_PROFILE_QUERY_KEY, null);
+            queryClient.clear();
+
+            // Clear all Zustand stores
+            resetAppStore();
+            resetUserStore();
+            resetProjectStore();
+            resetRequirementStore();
+            resetCollectionStore();
+            resetDocumentStore();
+            resetRecentStore();
+
+            // Show success toast
+            toast({
+                title: "Signed out successfully",
+                description: "You have been logged out of your account",
+            });
+
+            // Redirect to login page
+            router.push("/login");
         },
         onError: (error) => {
             setError(error instanceof Error ? error.message : 'Sign out failed');
+            toast({
+                title: "Sign out failed",
+                description: "There was a problem signing you out. Please try again.",
+                variant: "destructive",
+            });
         }
     });
 

@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
     const id = searchParams.get('id');
     const projectId = searchParams.get('projectId');
     const subscribe = searchParams.get('subscribe') === 'true';
+    const user_id = searchParams.get('user_id');
 
     const client = supabaseAdminService.getClient();
 
@@ -76,19 +77,19 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(data);
     }
 
-    if (projectId) {
-      const { data, error } = await client
-        .from('requirements')
-        .select('*')
-        .eq('project_id', projectId);
-        
-      if (error) throw error;
-      return NextResponse.json(data);
-    }
-
-    const { data, error } = await client
+    let query = client
       .from('requirements')
       .select('*');
+
+    if (projectId) {
+      query = query.eq('project_id', projectId);
+    }
+
+    if (user_id) {
+      query = query.eq('created_by', user_id);
+    }
+
+    const { data, error } = await query;
       
     if (error) throw error;
     return NextResponse.json(data);

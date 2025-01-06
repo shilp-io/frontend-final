@@ -31,17 +31,22 @@ interface CollectionState {
   selectCollection: (id: UUID) => void;
   deselectCollection: (id: UUID) => void;
   clearSelection: () => void;
+  reset: () => void;
 }
+
+// Initial state
+const initialState = {
+  filters: {
+    access_level: [],
+  },
+  selectedCollections: [],
+};
 
 export const useCollectionStore = create<CollectionState>()(
   devtools(
     persist(
       (set) => ({
-        filters: {
-          access_level: [],
-        },
-        selectedCollections: [],
-
+        ...initialState,
         setFilters: (filters) => set((state) => ({
           filters: { ...state.filters, ...filters }
         })),
@@ -56,7 +61,8 @@ export const useCollectionStore = create<CollectionState>()(
           selectedCollections: state.selectedCollections.filter((collId) => collId !== id)
         })),
 
-        clearSelection: () => set({ selectedCollections: [] })
+        clearSelection: () => set({ selectedCollections: [] }),
+        reset: () => set(initialState)
       }),
       {
         name: 'collections-store',

@@ -23,19 +23,24 @@ interface RequirementState {
   selectRequirement: (id: UUID) => void;
   deselectRequirement: (id: UUID) => void;
   clearSelection: () => void;
+  reset: () => void;
 }
+
+// Initial state
+const initialState = {
+  activeProjectId: null,
+  filters: {
+    status: [],
+    priority: [],
+  },
+  selectedRequirements: [],
+};
 
 export const useRequirementStore = create<RequirementState>()(
   devtools(
     persist(
       (set) => ({
-        activeProjectId: null,
-        filters: {
-          status: [],
-          priority: [],
-        },
-        selectedRequirements: [],
-
+        ...initialState,
         setActiveProject: (projectId) => set({ activeProjectId: projectId }),
 
         setFilters: (filters) => set((state) => ({
@@ -52,7 +57,8 @@ export const useRequirementStore = create<RequirementState>()(
           selectedRequirements: state.selectedRequirements.filter((reqId) => reqId !== id)
         })),
 
-        clearSelection: () => set({ selectedRequirements: [] })
+        clearSelection: () => set({ selectedRequirements: [] }),
+        reset: () => set(initialState)
       }),
       {
         name: 'requirements-store',

@@ -1,7 +1,9 @@
 import { Project, Requirement } from '@/types/entities';
 import { formatDate } from '@/lib/utils/dateUtils';
-import { TableManager } from '@/components/private';
+import { CreatePanel, TableManager } from '@/components/private';
 import type { Column } from '@/components/private';
+import { useRequirements } from '@/hooks/db/useRequirements';
+import { useState } from 'react';
 
 interface ProjectViewProps {
   project: Project | null;
@@ -22,6 +24,10 @@ export function ProjectView({
   handleGoToPage,
   onRequirementDelete,
 }: ProjectViewProps) {
+  const [showNewRequirement, setShowNewRequirement] = useState(false);
+  const { createRequirement } = useRequirements(project?.id);
+  const [isCreatePanelOpen, setIsCreatePanelOpen] = useState(false);
+
   if (!project) {
     return <div className="p-4 text-gray-500">Project not found.</div>;
   }
@@ -71,6 +77,16 @@ export function ProjectView({
     </div>
   );
 
+  const renderCreatePanel = () => (
+    <CreatePanel
+      isOpen={isCreatePanelOpen}
+      onClose={() => setIsCreatePanelOpen(false)}
+      initialTab="requirement"
+      showTabs="requirement"
+      projectId={project.id}
+    />
+  );
+
   return (
     <div className="flex flex-col h-full w-full">
       <div className="flex-none w-full px-6 py-4">
@@ -90,15 +106,18 @@ export function ProjectView({
           description="Manage project requirements"
           data={requirements}
           columns={columns}
-          onItemSelect={onRequirementClick || (() => {})}
-          handleGoToPage={handleGoToPage || (() => {})}
+          onItemSelect={onRequirementClick || (() => { })}
+          handleGoToPage={handleGoToPage || (() => { })}
           onItemDelete={onRequirementDelete}
           isLoading={isLoading || false}
           renderGridItem={renderGridItem}
           renderDetails={renderDetails}
           emptyMessage="No requirements found."
+          onNewItem={() => setIsCreatePanelOpen(true)}
+          newItemLabel="New Requirement"
         />
       </div>
+      {renderCreatePanel()}
     </div>
   );
 }

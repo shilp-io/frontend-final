@@ -18,38 +18,38 @@ interface UserState {
   selectUser: (id: UUID) => void;
   deselectUser: (id: UUID) => void;
   clearSelection: () => void;
+  reset: () => void;
 }
+
+// Initial state
+const initialState = {
+  user: null,
+  isLoading: false,
+  error: null,
+  isAuthenticated: false,
+  selectedUsers: [],
+};
 
 export const useUserStore = create<UserState>()(
   devtools(
     persist(
       (set) => ({
-        user: null,
-        isLoading: false,
-        error: null,
-        isAuthenticated: false,
-        selectedUsers: [],
-
+        ...initialState,
         setUser: (user) => set({
           user,
           isAuthenticated: !!user
         }),
-
         setLoading: (isLoading) => set({ isLoading }),
-
         setError: (error) => set({ error }),
-
         clearError: () => set({ error: null }),
-
         selectUser: (id) => set((state) => ({
           selectedUsers: [...state.selectedUsers, id]
         })),
-
         deselectUser: (id) => set((state) => ({
           selectedUsers: state.selectedUsers.filter((userId) => userId !== id)
         })),
-
-        clearSelection: () => set({ selectedUsers: [] })
+        clearSelection: () => set({ selectedUsers: [] }),
+        reset: () => set(initialState)
       }),
       {
         name: 'user-store',

@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useProjectStore } from '@/lib/store/projectStore';
 import { useUserStore } from '@/lib/store/userStore';
-import type { UUID, Project } from '@/types';
+import type { UUID, Project, Requirement } from '@/types';
 import { mapDatabaseEntities, mapDatabaseEntity } from '@/lib/utils/typeUtils';
 
 interface UseProjectsOptions {
@@ -95,10 +95,69 @@ export function useProjects(options: UseProjectsOptions = {}) {
             }
 
             const result = await response.json();
-            return mapDatabaseEntity<'projects'>(result);
+            const project = mapDatabaseEntity<'projects'>(result);
+
+            if (!project?.id) {
+                throw new Error('Failed to get project ID after creation');
+            }
+
+            // Create default requirement for the new project
+            const reqData: Omit<Requirement, 'id' | 'created_at' | 'updated_at' | 'version' | 'created_by' | 'updated_by'> = {
+                title: 'Getting Started',
+                description: 'This is your first requirement. You can:\n- Edit its details\n- Add more requirements\n- Track progress\n- Set priority and status',
+                status: 'draft',
+                priority: 'medium',
+                project_id: project.id,
+                parent_id: null,
+                acceptance_criteria: [],
+                assigned_to: null,
+                reviewer: null,
+                tags: ['getting-started'],
+                original_req: null,
+                current_req: null,
+                history_req: null,
+                rewritten_ears: null,
+                rewritten_incose: null,
+                selected_format: null,
+                metadata: {
+                    source: 'template',
+                    template_version: '1.0',
+                    created_from: 'project_template'
+                }
+            }
+
+            const defaultReq = await fetch('/api/db/requirements', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  ...reqData,
+                  project_id: project.id,
+                  created_by: user?.id,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                  version: 1
+                }),
+              });
+
+            if (!defaultReq.ok) {
+                const errorText = await defaultReq.text();
+                console.error('Failed to create default requirement:', errorText);
+            } else {
+                const reqResult = await defaultReq.json();
+                const mappedReq = mapDatabaseEntity<'requirements'>(reqResult);
+                // Update requirements cache
+                queryClient.setQueryData(['requirements', project.id], (old: any[] = []) => {
+                    return [...old, mappedReq];
+                });
+            }
+
+            return project;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['projects'] as const });
+            queryClient.invalidateQueries({ queryKey: ['requirements'] as const });
         },
     });
 
@@ -142,26 +201,7 @@ export function useProjects(options: UseProjectsOptions = {}) {
     const deleteProjectMutation = useMutation({
         mutationFn: async (id: UUID) => {
             if (!user?.id) throw new Error('User not authenticated');
-            
-            // First get all requirements for this project
-            const getReqResponse = await fetch(`/api/db/requirements?projectId=${id}`);
-            if (!getReqResponse.ok) {
-                throw new Error('Failed to fetch project requirements');
-            }
-            const requirements = await getReqResponse.json();
-            const mappedRequirements = mapDatabaseEntities<'requirements'>(requirements);
 
-            // Delete each requirement
-            for (const req of mappedRequirements) {
-                const reqResponse = await fetch(`/api/db/requirements/${req.id}`, {
-                    method: 'DELETE',
-                });
-                if (!reqResponse.ok) {
-                    throw new Error('Failed to delete requirement');
-                }
-            }
-
-            // Then delete the project
             const response = await fetch(`/api/db/projects?id=${id}`, {
                 method: 'DELETE',
             });
@@ -172,7 +212,6 @@ export function useProjects(options: UseProjectsOptions = {}) {
             return id;
         },
         onSuccess: (deletedId) => {
-            // Invalidate both projects and requirements queries
             queryClient.invalidateQueries({ queryKey: ['projects'] as const });
             queryClient.invalidateQueries({ queryKey: ['requirements', deletedId] as const });
         },
