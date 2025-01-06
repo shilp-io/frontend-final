@@ -1,7 +1,25 @@
-const GUMLOOP_API_KEY = process.env.NEXT_PUBLIC_GUMLOOP_API_KEY || '';
+const GUMLOOP_API_KEY = process.env.NEXT_PUBLIC_GUMLOOP_API_KEY;
 const GUMLOOP_API_URL = process.env.NEXT_PUBLIC_GUMLOOP_API_URL || 'https://api.gumloop.com/api/v1';
-const USER_ID = process.env.NEXT_PUBLIC_GUMLOOP_USER_ID || '';
-const SAVED_ITEM_ID = process.env.NEXT_PUBLIC_GUMLOOP_SAVED_ITEM_ID || '';
+const USER_ID = process.env.NEXT_PUBLIC_GUMLOOP_USER_ID;
+const SAVED_ITEM_ID = process.env.NEXT_PUBLIC_GUMLOOP_SAVED_ITEM_ID;
+
+// Validate required environment variables
+if (!GUMLOOP_API_KEY) {
+    throw new Error('Missing required environment variable: NEXT_PUBLIC_GUMLOOP_API_KEY');
+}
+
+if (!USER_ID) {
+    throw new Error('Missing required environment variable: NEXT_PUBLIC_GUMLOOP_USER_ID');
+}
+
+if (!SAVED_ITEM_ID) {
+    throw new Error('Missing required environment variable: NEXT_PUBLIC_GUMLOOP_SAVED_ITEM_ID');
+}
+
+// After validation, we can safely assert these as strings
+const validatedApiKey = GUMLOOP_API_KEY as string;
+const validatedUserId = USER_ID as string;
+const validatedSavedItemId = SAVED_ITEM_ID as string;
 
 interface PipelineInput {
     input_name: string;
@@ -69,7 +87,7 @@ export class GumloopService {
             );
 
             const payload = {
-                user_id: USER_ID,
+                user_id: validatedUserId,
                 files: files.map((file, index) => ({
                     file_name: file.name,
                     file_content: encodedFiles[index],
@@ -80,7 +98,7 @@ export class GumloopService {
             const response = await fetch(`${GUMLOOP_API_URL}/upload_files`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${GUMLOOP_API_KEY}`,
+                    'Authorization': `Bearer ${validatedApiKey}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(payload),
@@ -158,12 +176,12 @@ export class GumloopService {
             const response = await fetch(`${GUMLOOP_API_URL}/start_pipeline`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${GUMLOOP_API_KEY}`,
+                    'Authorization': `Bearer ${validatedApiKey}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    user_id: USER_ID,
-                    saved_item_id: SAVED_ITEM_ID,
+                    user_id: validatedUserId,
+                    saved_item_id: validatedSavedItemId,
                     pipeline_inputs: pipelineInputs
                 })
             });
@@ -188,17 +206,17 @@ export class GumloopService {
         }
     }
 
-    async getPipelineRun(runId: string, userId: string = USER_ID): Promise<PipelineRunResponse> {
-        console.log('Getting pipeline run status:', { runId, userId });
+    async getPipelineRun(runId: string): Promise<PipelineRunResponse> {
+        console.log('Getting pipeline run status:', { runId, userId: validatedUserId });
 
         try {
             console.log('Making API request to get pipeline run');
             const response = await fetch(
-                `${GUMLOOP_API_URL}/get_pl_run?run_id=${runId}&user_id=${userId}`,
+                `${GUMLOOP_API_URL}/get_pl_run?run_id=${runId}&user_id=${validatedUserId}`,
                 {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${GUMLOOP_API_KEY}`,
+                        'Authorization': `Bearer ${validatedApiKey}`,
                         'Content-Type': 'application/json',
                     },
                 }
@@ -227,12 +245,3 @@ export class GumloopService {
 
 // Export a singleton instance
 export const gumloopService = GumloopService.getInstance();
-
-// For backward compatibility with hooks
-export const useGumloop = () => {
-    return {
-        startPipeline: gumloopService.startPipeline.bind(gumloopService),
-        uploadFiles: gumloopService.uploadFiles.bind(gumloopService),
-        getPipelineRun: gumloopService.getPipelineRun.bind(gumloopService)
-    };
-}; 

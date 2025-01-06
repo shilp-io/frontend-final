@@ -142,6 +142,35 @@ export function useRequirements(projectId?: UUID, userId?: UUID, options: UseReq
     },
   });
 
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: async (requirement: Requirement) => {
+      const response = await fetch(`/api/db/requirements/${requirement.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...requirement,
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update requirement');
+      }
+      const result = await response.json();
+      return mapDatabaseEntity<'requirements'>(result);
+    },
+    onSuccess: (updatedRequirement) => {
+      queryClient.setQueryData(['requirements', projectId, userId], (old: Requirement[] = []) => {
+        return old.map(req => 
+          req.id === updatedRequirement?.id ? updatedRequirement : req
+        );
+      });
+    },
+  });
+
   const createRequirement = useCallback(async (data: Parameters<typeof createMutation.mutateAsync>[0]) => {
     return await createMutation.mutateAsync(data);
   }, [createMutation]);
@@ -150,12 +179,17 @@ export function useRequirements(projectId?: UUID, userId?: UUID, options: UseReq
     await deleteMutation.mutateAsync(requirementId);
   }, [deleteMutation]);
 
+  const updateRequirement = useCallback(async (requirement: Requirement) => {
+    return await updateMutation.mutateAsync(requirement);
+  }, [updateMutation]);
+
   return {
     requirements,
     isLoading,
     error,
     createRequirement,
     deleteRequirement,
+    updateRequirement,
     selectedRequirements,
     selectRequirement,
     deselectRequirement,

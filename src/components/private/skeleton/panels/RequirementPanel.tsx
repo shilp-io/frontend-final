@@ -1,282 +1,167 @@
-import { Tags, UserCircle2, RefreshCw, Sparkles, History, Code } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState, useRef } from "react";
 import type { Requirement } from "@/types";
-import type { Json } from "@/types/supabase";
-import { useGumloop } from "@/hooks/useGumloop";
-import { useState } from "react";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { RequirementHeader } from "../base/RequirementHeader";
+import { RequirementStatus } from "../base/RequirementStatus";
+import { RequirementAnalysisForm } from "../base/RequirementAnalysisForm";
+import { RequirementContent } from "../base/RequirementContent";
+import { RequirementAssignment } from "../base/RequirementAssignment";
+import { RequirementMetadata } from "../base/RequirementMetadata";
+import { SidePanel } from "@/components/private";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface RequirementPanelProps {
   requirement: Requirement;
   onUpdate?: (updatedRequirement: Requirement) => void;
 }
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'completed':
-      return 'border-green-500 text-green-500';
-    case 'in_progress':
-      return 'border-blue-500 text-blue-500';
-    case 'testing':
-      return 'border-purple-500 text-purple-500';
-    case 'pending_review':
-      return 'border-yellow-500 text-yellow-500';
-    case 'rejected':
-      return 'border-red-500 text-red-500';
-    case 'approved':
-      return 'border-emerald-500 text-emerald-500';
-    default:
-      return 'border-muted text-muted-foreground';
-  }
-};
-
-const getPriorityColor = (priority: string) => {
-  switch (priority) {
-    case 'critical':
-      return 'bg-red-500/10 text-red-500 hover:bg-red-500/20';
-    case 'high':
-      return 'bg-orange-500/10 text-orange-500 hover:bg-orange-500/20';
-    case 'medium':
-      return 'bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20';
-    case 'low':
-      return 'bg-green-500/10 text-green-500 hover:bg-green-500/20';
-    default:
-      return 'bg-muted text-muted-foreground';
-  }
-};
-
 export default function RequirementPanel({ requirement, onUpdate }: RequirementPanelProps) {
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showCurrentReq, setShowCurrentReq] = useState(false);
   const [showHistoryReq, setShowHistoryReq] = useState(false);
-  const { startPipeline, getPipelineRun } = useGumloop();
+  const [tempReqText, setTempReqText] = useState(requirement.original_req || "");
+  const [tempFormat, setTempFormat] = useState(requirement.selected_format || "");
+  const [editRequirement, setEditRequirement] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
 
-  const handleAnalyze = async () => {
-    if (!requirement.original_req || !requirement.selected_format) return;
-
-    setIsAnalyzing(true);
-    try {
-      const response = await startPipeline({
-        requirement: requirement.original_req,
-        objective: `Analyze and improve requirement clarity using ${requirement.selected_format.toUpperCase()} format`
-      });
-
-      if (!response?.run_id) {
-        throw new Error('No run ID received from pipeline');
-      }
-
-      const pipelineRun = getPipelineRun(response.run_id);
-      const result = await pipelineRun;
-
-      if (result.data?.state === 'DONE' && result.data?.outputs?.output && onUpdate) {
-        const newCurrentReq = JSON.parse(JSON.stringify(result.data.outputs));
-        const newHistoryReq = requirement.history_req ? [...requirement.history_req] : [];
-        newHistoryReq.push(newCurrentReq);
-
-        onUpdate({
-          ...requirement,
-          current_req: newCurrentReq,
-          history_req: newHistoryReq,
-          rewritten_ears: requirement.selected_format === 'ears' ? result.data.outputs.output : requirement.rewritten_ears,
-          rewritten_incose: requirement.selected_format === 'incose' ? result.data.outputs.output : requirement.rewritten_incose
-        });
-      }
-    } catch (error) {
-      console.error("Analysis failed:", error);
-    } finally {
-      setIsAnalyzing(false);
+  useEffect(() => {
+    if (!requirement.original_req) {
+      setEditRequirement(true);
     }
+  }, [requirement]);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    
+    const observer = new ResizeObserver(updateWidth);
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateWidth);
+      observer.disconnect();
+    };
+  }, []);
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTempReqText(e.target.value);
+  };
+
+  const handleFormatChange = (value: string) => {
+    setTempFormat(value);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">{requirement.title}</h2>
-        {requirement.original_req && (
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowCurrentReq(true)}
-              className="gap-2"
-            >
-              <Code className="h-4 w-4" />
-              View Current
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowHistoryReq(true)}
-              className="gap-2"
-            >
-              <History className="h-4 w-4" />
-              View History
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleAnalyze}
-              disabled={isAnalyzing || !requirement.selected_format}
-              className="gap-2"
-            >
-              {isAnalyzing ? (
-                <RefreshCw className="h-4 w-4 animate-spin" />
-              ) : (
-                <Sparkles className="h-4 w-4" />
-              )}
-              {isAnalyzing ? "Analyzing..." : "Analyze & Improve"}
-            </Button>
-          </div>
-        )}
-      </div>
-      <div className="flex gap-2">
-        <Badge
-          variant="outline"
-          className={getStatusColor(requirement.status)}
-        >
-          {requirement.status}
-        </Badge>
-        <Badge className={getPriorityColor(requirement.priority)}>
-          {requirement.priority}
-        </Badge>
-      </div>
+    <div className="space-y-6 relative" ref={containerRef}>
+      <RequirementHeader
+        requirement={requirement}
+        onViewCurrent={() => setShowCurrentReq(true)}
+        onViewHistory={() => setShowHistoryReq(true)}
+      />
+
+      <RequirementStatus
+        status={requirement.status}
+        priority={requirement.priority}
+      />
 
       <p className="text-muted-foreground">{requirement.description}</p>
-      
-      {!requirement.original_req ? (
-        <div className="space-y-4 bg-muted/50 p-4 rounded-lg">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            Write a new requirement
-          </h3>
-          <div className="space-y-4">
-            <Select
-              value={requirement.selected_format ?? ''}
-              onValueChange={(value) => onUpdate?.({ ...requirement, selected_format: value })}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select format" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ears">EARS Format</SelectItem>
-                <SelectItem value="incose">INCOSE Format</SelectItem>
-              </SelectContent>
-            </Select>
-            <Textarea
-              placeholder="Write a new requirement"
-              value={requirement.original_req ?? ''}
-              onChange={(e) => onUpdate?.({ ...requirement, original_req: e.target.value })}
-              className="min-h-[100px] w-full"
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleAnalyze}
-              disabled={isAnalyzing || !requirement.selected_format || !requirement.original_req}
-              className="gap-2 w-full"
-            >
-              {isAnalyzing ? (
-                <RefreshCw className="h-4 w-4 animate-spin" />
-              ) : (
-                <Sparkles className="h-4 w-4" />
-              )}
-              {isAnalyzing ? "Analyzing..." : "Analyze & Improve"}
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <div className="bg-muted/50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold flex items-center gap-2 mb-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-              Original Requirement
-            </h3>
-            <p className="text-muted-foreground">{requirement.original_req}</p>
-          </div>
-          {(requirement.rewritten_ears || requirement.rewritten_incose) && (
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold flex items-center gap-2 mb-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                AI-Improved Requirement
-              </h3>
-              <div className="space-y-4">
-                <Select
-                  value={requirement.selected_format || undefined}
-                  onValueChange={(value) => onUpdate?.({ ...requirement, selected_format: value })}
+      {editRequirement && (
+        <RequirementAnalysisForm
+          requirement={requirement}
+          tempReqText={tempReqText}
+          tempFormat={tempFormat}
+          onFormatChange={handleFormatChange}
+          onTextChange={handleTextChange}
+          onUpdate={onUpdate || (() => {})}
+        />
+      )}
+
+      {requirement.original_req && (requirement.rewritten_ears || requirement.rewritten_incose) && (
+        <RequirementContent
+          requirement={requirement}
+          onFormatChange={handleFormatChange}
+          onTextChange={handleTextChange}
+          onUpdate={onUpdate || (() => {})}
+        />
+      )}
+
+      <RequirementAssignment
+        assignedTo={requirement.assigned_to || undefined}
+        reviewer={requirement.reviewer || undefined}
+      />
+
+      <RequirementMetadata
+        acceptanceCriteria={requirement.acceptance_criteria || undefined}
+        tags={requirement.tags || undefined}
+      />
+
+      <AnimatePresence>
+        {showCurrentReq && (
+          <motion.div
+            initial={{ x: containerWidth, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: containerWidth, opacity: 0 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed top-0 h-full w-[40vw] bg-background font-mono z-50"
+            style={{
+              boxShadow: `
+                1px 0 0 0 rgb(0 0 0 / 0.05),
+                2px 0 0 0 rgb(0 0 0 / 0.05),
+                3px 0 0 0 rgb(0 0 0 / 0.05),
+                0 1px 2px -1px rgb(0 0 0 / 0.1),
+                0 2px 4px -2px rgb(0 0 0 / 0.1),
+                0 4px 8px -4px rgb(0 0 0 / 0.1)
+              `,
+              borderLeft: '1px solid rgb(0 0 0 / 0.1)',
+              borderTop: '1px solid rgb(0 0 0 / 0.1)',
+              borderBottom: '1px solid rgb(0 0 0 / 0.1)',
+              left: `${containerWidth}px`
+            }}
+          >
+            <div className="p-6 h-full overflow-y-auto">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold font-mono">Current Requirement Analysis</h2>
+                <button
+                  onClick={() => setShowCurrentReq(false)}
+                  className="p-2 hover:bg-accent rounded-md"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select format" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ears">EARS Format</SelectItem>
-                    <SelectItem value="incose">INCOSE Format</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-muted-foreground">
-                  {requirement.selected_format === 'ears'
-                    ? requirement.rewritten_ears
-                    : requirement.rewritten_incose}
-                </p>
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 15 15"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                  >
+                    <path
+                      d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
+                      fill="currentColor"
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                    ></path>
+                  </svg>
+                </button>
               </div>
+              <pre className="bg-muted p-4 rounded-lg overflow-x-auto font-mono text-sm">
+                {JSON.stringify(requirement.current_req, null, 2)}
+              </pre>
             </div>
-          )}
-        </div>
-      )}
-
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold flex items-center">
-          <UserCircle2 className="mr-2 h-5 w-5" /> Assignment
-        </h3>
-        <p className="text-muted-foreground">Assigned to: {requirement.assigned_to || 'Unassigned'}</p>
-        <p className="text-muted-foreground">Reviewer: {requirement.reviewer || 'Not assigned'}</p>
-      </div>
-      {requirement.acceptance_criteria && requirement.acceptance_criteria.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold">Acceptance Criteria</h3>
-          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-            {requirement.acceptance_criteria.map((criteria, index) => (
-              <li key={index}>{criteria}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {requirement.tags && requirement.tags.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold flex items-center">
-            <Tags className="mr-2 h-5 w-5" /> Tags
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {requirement.tags.map((tag: string, index: number) => (
-              <Badge key={index} variant="secondary">{tag}</Badge>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <Dialog open={showCurrentReq} onOpenChange={setShowCurrentReq}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Current Requirement Analysis</DialogTitle>
-          </DialogHeader>
-          <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-            {JSON.stringify(requirement.current_req, null, 2)}
-          </pre>
-        </DialogContent>
-      </Dialog>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Dialog open={showHistoryReq} onOpenChange={setShowHistoryReq}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">

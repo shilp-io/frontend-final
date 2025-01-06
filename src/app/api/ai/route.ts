@@ -2,6 +2,38 @@ import { NextRequest, NextResponse } from 'next/server';
 import { gumloopService } from '@/lib/services/gumloop';
 import { rateLimit } from '@/lib/middleware/rateLimit';
 
+interface UploadRequest {
+    action: 'upload';
+    files: File[];
+}
+
+interface StartPipelineRequest {
+    action: 'startPipeline';
+    requirement: string;
+    files?: string[] | string;
+    systemName?: string;
+    objective?: string;
+}
+
+interface GetPipelineStatusRequest {
+    action: 'getPipelineStatus';
+    runId: string;
+}
+
+type RequestBody = UploadRequest | StartPipelineRequest | GetPipelineStatusRequest;
+
+function isUploadRequest(body: any): body is UploadRequest {
+    return body.action === 'upload' && Array.isArray(body.files);
+}
+
+function isStartPipelineRequest(body: any): body is StartPipelineRequest {
+    return body.action === 'startPipeline' && typeof body.requirement === 'string';
+}
+
+function isGetPipelineStatusRequest(body: any): body is GetPipelineStatusRequest {
+    return body.action === 'getPipelineStatus' && typeof body.runId === 'string';
+}
+
 // Apply rate limiting middleware
 const rateLimitMiddleware = rateLimit({
     maxRequests: 20, // 20 requests per minute
@@ -19,49 +51,48 @@ export async function POST(request: NextRequest) {
 
         // Parse and validate request body
         const body = await request.json();
-        const { action, files, requirement, systemName, objective, runId } = body;
 
-        if (!action) {
+        if (!body.action) {
             return NextResponse.json(
                 { error: 'Action is required' },
                 { status: 400 }
             );
         }
 
-        switch (action) {
+        switch (body.action) {
             case 'upload':
-                if (!files || !Array.isArray(files)) {
+                if (!isUploadRequest(body)) {
                     return NextResponse.json(
-                        { error: 'Files array is required for upload' },
+                        { error: 'Invalid upload request format' },
                         { status: 400 }
                     );
                 }
-                const uploadedFiles = await gumloopService.uploadFiles(files);
+                const uploadedFiles = await gumloopService.uploadFiles(body.files);
                 return NextResponse.json({ success: true, files: uploadedFiles });
 
             case 'startPipeline':
-                if (!requirement) {
+                if (!isStartPipelineRequest(body)) {
                     return NextResponse.json(
-                        { error: 'Requirement is required for pipeline start' },
+                        { error: 'Invalid pipeline request format' },
                         { status: 400 }
                     );
                 }
                 const pipelineResponse = await gumloopService.startPipeline(
-                    requirement,
-                    files,
-                    systemName,
-                    objective
+                    body.requirement,
+                    body.files,
+                    body.systemName,
+                    body.objective
                 );
                 return NextResponse.json(pipelineResponse);
 
             case 'getPipelineStatus':
-                if (!runId) {
+                if (!isGetPipelineStatusRequest(body)) {
                     return NextResponse.json(
-                        { error: 'Run ID is required for status check' },
+                        { error: 'Invalid status request format' },
                         { status: 400 }
                     );
                 }
-                const status = await gumloopService.getPipelineRun(runId);
+                const status = await gumloopService.getPipelineRun(body.runId);
                 return NextResponse.json(status);
 
             default:
@@ -71,6 +102,7 @@ export async function POST(request: NextRequest) {
                 );
         }
     } catch (error) {
+        console.error('API error:', error);
         return NextResponse.json(
             { error: error instanceof Error ? error.message : 'An error occurred' },
             { status: 500 }
@@ -78,7 +110,7 @@ export async function POST(request: NextRequest) {
     }
 }
 
-// Optionally support GET method for pipeline status checks
+// GET method for pipeline status checks
 export async function GET(request: NextRequest) {
     try {
         // Apply rate limiting
@@ -99,6 +131,7 @@ export async function GET(request: NextRequest) {
         const status = await gumloopService.getPipelineRun(runId);
         return NextResponse.json(status);
     } catch (error) {
+        console.error('API error:', error);
         return NextResponse.json(
             { error: error instanceof Error ? error.message : 'An error occurred' },
             { status: 500 }

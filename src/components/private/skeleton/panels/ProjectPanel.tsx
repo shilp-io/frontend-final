@@ -33,7 +33,7 @@ const formatDate = (date: string | null) => {
 
 export default function ProjectPanel({ project }: ProjectPanelProps) {
   const router = useRouter();
-  const { requirements = [], isLoading, deleteRequirement } = useRequirements(project.id);
+  const { requirements = [], isLoading, deleteRequirement, updateRequirement } = useRequirements(project.id);
   const { selectRequirement } = useRequirementStore();
 
   const requirementColumns: Column<Requirement>[] = [
@@ -64,6 +64,14 @@ export default function ProjectPanel({ project }: ProjectPanelProps) {
 
   const handleRequirementDelete = async (requirement: Requirement) => {
     await deleteRequirement(requirement.id);
+  };
+
+  const handleRequirementUpdate = async (updatedRequirement: Requirement) => {
+    try {
+      await updateRequirement(updatedRequirement);
+    } catch (error) {
+      console.error('Error updating requirement:', error);
+    }
   };
 
   return (
@@ -125,7 +133,12 @@ export default function ProjectPanel({ project }: ProjectPanelProps) {
               <Badge variant="outline" className="mt-2">{item.status}</Badge>
             </div>
           )}
-          renderDetails={(item) => <RequirementPanel requirement={item} />}
+          renderDetails={(item) => (
+            <RequirementPanel 
+              requirement={item} 
+              onUpdate={handleRequirementUpdate}
+            />
+          )}
           searchPlaceholder="Search requirements..."
           emptyMessage="No requirements found for this project."
         />

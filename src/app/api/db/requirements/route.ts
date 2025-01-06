@@ -14,7 +14,6 @@ export async function GET(req: NextRequest) {
     }
 
     const searchParams = req.nextUrl.searchParams;
-    const id = searchParams.get('id');
     const projectId = searchParams.get('projectId');
     const subscribe = searchParams.get('subscribe') === 'true';
     const user_id = searchParams.get('user_id');
@@ -63,18 +62,6 @@ export async function GET(req: NextRequest) {
           'Connection': 'keep-alive'
         }
       });
-    }
-
-    // Handle regular GET requests
-    if (id) {
-      const { data, error } = await client
-        .from('requirements')
-        .select('*')
-        .eq('id', id)
-        .single();
-        
-      if (error) throw error;
-      return NextResponse.json(data);
     }
 
     let query = client
@@ -130,78 +117,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(requirement, { status: 201 });
   } catch (error) {
     console.error('Error in POST /api/db/requirements:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'An unexpected error occurred' },
-      { status: 500 }
-    );
-  }
-}
-
-// PUT /api/db/requirements
-export async function PUT(req: NextRequest) {
-  try {
-    const rateLimitResponse = await rateLimit()(req, NextResponse.next());
-    if (rateLimitResponse.status === 429) {
-      return rateLimitResponse;
-    }
-
-    const data = await req.json();
-    const { id, ...updates } = data;
-    
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Requirement ID is required' },
-        { status: 400 }
-      );
-    }
-
-    const client = supabaseAdminService.getClient();
-    const { data: requirement, error } = await client
-      .from('requirements')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-      
-    if (error) throw error;
-    return NextResponse.json(requirement);
-  } catch (error) {
-    console.error('Error in PUT /api/db/requirements:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'An unexpected error occurred' },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/db/requirements
-export async function DELETE(req: NextRequest) {
-  try {
-    const rateLimitResponse = await rateLimit()(req, NextResponse.next());
-    if (rateLimitResponse.status === 429) {
-      return rateLimitResponse;
-    }
-
-    const searchParams = req.nextUrl.searchParams;
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Requirement ID is required' },
-        { status: 400 }
-      );
-    }
-
-    const client = supabaseAdminService.getClient();
-    const { error } = await client
-      .from('requirements')
-      .delete()
-      .eq('id', id);
-      
-    if (error) throw error;
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
-    console.error('Error in DELETE /api/db/requirements:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'An unexpected error occurred' },
       { status: 500 }
