@@ -3,8 +3,7 @@
 import * as React from 'react'
 import { CaretSortIcon } from "@radix-ui/react-icons"
 import { motion, LayoutGroup } from "framer-motion"
-import { Search, Filter } from "lucide-react"
-import { useRouter } from 'next/navigation'
+import { Filter } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -78,7 +77,6 @@ export function MonospaceTable<T extends SupportedDataTypes>({
   showFilter = true,
   filterComponent
 }: MonospaceTableProps<T>) {
-  const router = useRouter()
   const [sortKey, setSortKey] = React.useState<number>(0)
   const [sortOrder, setSortOrder] = React.useState<'asc' | 'desc'>('asc')
   const [selectedItem, setSelectedItem] = React.useState<T | null>(null)

@@ -14,7 +14,7 @@ export default function ProjectPage() {
   const addRecentItem = useRecentStore(state => state.addRecentItem);
   
   const { project, isLoading: projectLoading } = useProject(projectId);
-  const { requirements, isLoading: requirementsLoading, error } = useRequirements(projectId);
+  const { requirements, isLoading: requirementsLoading } = useRequirements(projectId);
 
   const handleRequirementClick = (requirement: Requirement) => {
     addRecentItem(requirement.id, requirement.title, 'requirement');
@@ -30,7 +30,6 @@ export default function ProjectPage() {
         project={project || null}
         requirements={requirements || []}
         isLoading={projectLoading || requirementsLoading}
-        error={error}
         onRequirementClick={handleRequirementClick}
         handleGoToPage={handleGoToPage}
       />

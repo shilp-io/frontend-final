@@ -1,4 +1,4 @@
-import { Code, History, RefreshCw, Sparkles } from "lucide-react";
+import { Code, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Requirement } from "@/types";
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRequirementStore } from '@/lib/store/requirementStore';
 import { useUserStore } from '@/lib/store/userStore';
@@ -17,9 +17,7 @@ export function useRequirements(projectId?: UUID, userId?: UUID, options: UseReq
   const queryClient = useQueryClient();
   const { user } = useUserStore();
   const {
-    filters,
     selectedRequirements,
-    setFilters,
     selectRequirement,
     deselectRequirement,
     clearSelection

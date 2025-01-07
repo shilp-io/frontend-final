@@ -4,6 +4,7 @@ import { rateLimit } from '@/lib/middleware/rateLimit';
 import type { Tables } from '@/types/supabase';
 
 type UserProfile = Tables<'user_profiles'>;
+type UserProfileInput = Pick<UserProfile, 'firebase_uid' | 'display_name' | 'email' | 'avatar_url' | 'email_notifications' | 'theme' | 'notification_preferences'>;
 
 // GET /api/db/user-profiles
 export async function GET(req: NextRequest) {
@@ -79,10 +80,10 @@ export async function POST(req: NextRequest) {
       return rateLimitResponse;
     }
 
-    const data = await req.json();
+    const body = await req.json() as UserProfileInput;
     
     // Validate required fields
-    if (!data.firebase_uid) {
+    if (!body.firebase_uid) {
       return NextResponse.json(
         { error: 'Firebase UID is required' },
         { status: 400 }
@@ -90,8 +91,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Set default values
-    if (data.email_notifications === undefined) {
-      data.email_notifications = true;
+    if (body.email_notifications === undefined) {
+      body.email_notifications = true;
     }
 
     const supabase = supabaseAdminService.getClient();
@@ -101,11 +102,11 @@ export async function POST(req: NextRequest) {
       .from('user_profiles')
       .insert({
         id: crypto.randomUUID(),
-        firebase_uid: data.firebase_uid,
-        display_name: data.display_name || data.email?.split('@')[0] || null,
-        email: data.email || null,
-        avatar_url: data.avatar_url || null,
-        email_notifications: data.email_notifications ?? true,
+        firebase_uid: body.firebase_uid,
+        display_name: body.display_name || body.email?.split('@')[0] || null,
+        email: body.email || null,
+        avatar_url: body.avatar_url || null,
+        email_notifications: body.email_notifications ?? true,
         theme: 'system',
         notification_preferences: 'important',
         created_at: new Date().toISOString(),

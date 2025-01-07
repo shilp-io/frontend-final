@@ -23,7 +23,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useProjects, useRequirements } from '@/hooks'
-import { RequirementStatus, RequirementPriority } from '@/types'
 import { useToast } from "@/components/ui/use-toast"
 
 const requirementFormSchema = z.object({

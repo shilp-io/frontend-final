@@ -2,7 +2,6 @@
 
 import { Home, Plus, Settings, User, LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import History from "./History";
@@ -42,8 +41,8 @@ const items: MenuItem[] = [
     icon: Home,
   },
   {
-    title: "Profile",
-    url: "/profile",
+    title: "Teams",
+    url: "/teams",
     icon: User,
   },
   {

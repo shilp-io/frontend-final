@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { FileText } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { motion, LayoutGroup } from "framer-motion";
 import { SidePanel } from "@/components/private";
 import { transitionConfig } from "@/lib/animations";
@@ -37,7 +36,6 @@ export function MonospaceGrid<T extends SupportedDataTypes>({
   onItemDelete,
   viewMode = 'full'
 }: MonospaceGridProps<T>) {
-  const router = useRouter();
   const [selectedItem, setSelectedItem] = React.useState<T | null>(null);
 
   const handleItemClick = (item: T) => {

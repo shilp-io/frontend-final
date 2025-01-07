@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Clock, FileText, Book, FolderOpen, Boxes, ChevronRight, ChevronDown } from 'lucide-react';
+import { FileText, Book, FolderOpen, Boxes, ChevronRight, ChevronDown } from 'lucide-react';
 import { useProjectStore } from '@/lib/store/projectStore';
 import { useRequirementStore } from '@/lib/store/requirementStore';
 import { useCollectionStore } from '@/lib/store/collectionStore';

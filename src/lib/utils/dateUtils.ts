@@ -6,7 +6,7 @@ export function formatDate(date: string | null | undefined): string | null {
       day: '2-digit',
       year: '2-digit'
     });
-  } catch (e) {
+  } catch {
     return null;
   }
 } 

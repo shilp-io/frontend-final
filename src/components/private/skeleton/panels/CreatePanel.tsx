@@ -67,7 +67,7 @@ export function CreatePanel({
                     <p className="text-muted-foreground">Select the type of item you want to create</p>
                 </div>
 
-                <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as any)}>
+                <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as 'project' | 'requirement' | 'collection' | 'document')}>
                     <TabsList className="grid grid-cols-4 w-full">
                         <TabsTrigger value="project">Project</TabsTrigger>
                         <TabsTrigger value="requirement">

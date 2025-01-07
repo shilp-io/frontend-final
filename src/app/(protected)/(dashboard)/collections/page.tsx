@@ -8,7 +8,8 @@ import { useCollectionStore } from "@/lib/store/collectionStore";
 import { useRecentStore } from "@/lib/store/recentStore";
 import { useCollections } from "@/hooks/db/useCollections";
 import type { Collection } from "@/types";
-import type { Column } from "@/components/private/views/TableView";
+import type { Column } from "@/components/private";
+import { CreatePanel } from "@/components/private";
 
 const formatDate = (date: string | null) => {
 	if (!date) return "N/A";
@@ -34,8 +35,8 @@ export default function CollectionsPage() {
 	const { selectCollection } = useCollectionStore();
 	const { addRecentItem } = useRecentStore();
 	const { collections } = useCollections();
-	const [showNewCollection, setShowNewCollection] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
+	const [isCreatePanelOpen, setIsCreatePanelOpen] = useState(false);
 
 	// Simulate loading state for now
 	React.useEffect(() => {
@@ -48,6 +49,10 @@ export default function CollectionsPage() {
 	const handleCollectionSelect = async (collection: Collection) => {
 		selectCollection(collection.id);
 		addRecentItem(collection.id, collection.name, 'collection');
+	};
+
+	const handleNewCollection = () => {
+		setIsCreatePanelOpen(true);
 	};
 
 	const columns: Column<Collection>[] = [
@@ -159,12 +164,19 @@ export default function CollectionsPage() {
 					isLoading={isLoading}
 					columns={columns}
 					onItemSelect={handleCollectionSelect}
-					onNewItem={() => setShowNewCollection(true)}
+					onNewItem={handleNewCollection}
 					renderGridItem={renderGridItem}
 					renderDetails={renderDetails}
 					newItemLabel="New Collection"
 					searchPlaceholder="Search collections..."
 					emptyMessage="No collections found. Create a new collection to get started."
+					handleGoToPage={(collection: Collection) => `/collections/${collection.id}`}
+				/>
+				<CreatePanel
+					isOpen={isCreatePanelOpen}
+					onClose={() => setIsCreatePanelOpen(false)}
+					initialTab="collection"
+					showTabs="collection"
 				/>
 			</div>
 		</div>

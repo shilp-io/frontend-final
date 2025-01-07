@@ -68,25 +68,25 @@ export abstract class BaseService {
     }
 
     // Enhanced logging with log levels
-    protected log(message: string, data?: any): void {
+    protected log(message: string, data?: unknown): void {
         if (this.shouldLog('info')) {
             console.log(`[${this.serviceName}] ${message}`, data || '');
         }
     }
 
-    protected debug(message: string, data?: any): void {
+    protected debug(message: string, data?: unknown): void {
         if (this.shouldLog('debug')) {
             console.debug(`[${this.serviceName}] ${message}`, data || '');
         }
     }
 
-    protected warn(message: string, data?: any): void {
+    protected warn(message: string, data?: unknown): void {
         if (this.shouldLog('warn')) {
             console.warn(`[${this.serviceName}] ${message}`, data || '');
         }
     }
 
-    protected error(message: string, data?: any): void {
+    protected error(message: string, data?: unknown): void {
         if (this.shouldLog('error')) {
             console.error(`[${this.serviceName}] ${message}`, data || '');
         }

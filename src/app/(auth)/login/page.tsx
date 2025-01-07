@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
@@ -11,13 +11,19 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Github, Mail } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { useUserStore } from '@/lib/store/userStore';
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { signIn, signInWithGoogle, signInWithGithub } = useAuth();
-  const user = useUserStore(state => state.user);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -25,11 +31,15 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await signIn( email, password );
+      await signIn(email, password);
       const redirect = searchParams.get('redirect') || '/dashboard';
       router.push(redirect);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     }
   };
 
@@ -38,8 +48,12 @@ export default function LoginPage() {
       await signInWithGoogle();
       const redirect = searchParams.get('redirect') || '/dashboard';
       router.push(redirect);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     }
   };
 
@@ -48,8 +62,12 @@ export default function LoginPage() {
       await signInWithGithub();
       const redirect = searchParams.get('redirect') || '/dashboard';
       router.push(redirect);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     }
   };
 

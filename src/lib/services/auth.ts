@@ -6,7 +6,6 @@ import {
     signOut as firebaseSignOut,
     UserCredential,
     sendEmailVerification,
-    type Auth,
     type User,
     GoogleAuthProvider,
     GithubAuthProvider,
@@ -89,7 +88,7 @@ export class AuthService extends BaseService {
             await this.firebaseAuth.currentUser?.getIdTokenResult(true);
 
             // Set cookie after successful registration
-            this.setCookie(firebaseAuth.user.uid);
+            this.setCookie();
 
             return {
                 success: true,
@@ -111,7 +110,7 @@ export class AuthService extends BaseService {
             );
 
             // Set cookie after successful sign-in
-            this.setCookie(firebaseAuth.user.uid);
+            this.setCookie();
 
             return {
                 success: true,
@@ -184,7 +183,7 @@ export class AuthService extends BaseService {
             const provider = new GoogleAuthProvider();
             const firebaseAuth = await signInWithPopup(this.firebaseAuth, provider);
 
-            this.setCookie(firebaseAuth.user.uid);
+            this.setCookie();
             return {
                 success: true,
                 user: firebaseAuth.user
@@ -200,7 +199,7 @@ export class AuthService extends BaseService {
             const provider = new GithubAuthProvider();
             const firebaseAuth = await signInWithPopup(this.firebaseAuth, provider);
 
-            this.setCookie(firebaseAuth.user.uid);
+            this.setCookie();
             return {
                 success: true,
                 user: firebaseAuth.user
@@ -260,7 +259,7 @@ export class AuthService extends BaseService {
         }));
     }
 
-    private async setCookie(uid: string): Promise<void> {
+    private async setCookie(): Promise<void> {
         const expirationDays = 30;
         
         // Get the actual Firebase ID token

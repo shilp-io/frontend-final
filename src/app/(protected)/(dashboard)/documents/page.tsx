@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { FileText, Tags } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { TableManager } from "@/components/private";
+import { CreatePanel, TableManager } from "@/components/private";
 import { useDocumentStore } from "@/lib/store/documentStore";
 import { useRecentStore } from "@/lib/store/recentStore";
 import type { ExternalDoc } from "@/types";
@@ -36,7 +36,7 @@ export default function DocumentsPage() {
 	const { selectDocument } = useDocumentStore();
 	const { addRecentItem } = useRecentStore();
 	const [documents, setDocuments] = useState<ExternalDoc[]>([]);
-	const [showNewDocument, setShowNewDocument] = useState(false);
+	const [isCreatePanelOpen, setIsCreatePanelOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
 
 	// Load documents
@@ -170,12 +170,19 @@ export default function DocumentsPage() {
 					isLoading={isLoading}
 					columns={columns}
 					onItemSelect={handleDocumentSelect}
-					onNewItem={() => setShowNewDocument(true)}
+					handleGoToPage={(document: ExternalDoc) => `/documents/${document.id}`}
+					onNewItem={() => setIsCreatePanelOpen(true)}
 					renderGridItem={renderGridItem}
 					renderDetails={renderDetails}
 					newItemLabel="New Document"
 					searchPlaceholder="Search documents..."
 					emptyMessage="No documents found. Create a new document to get started."
+				/>
+				<CreatePanel
+					isOpen={isCreatePanelOpen}
+					onClose={() => setIsCreatePanelOpen(false)}
+					initialTab="document"
+					showTabs="document"
 				/>
 			</div>
 		</div>

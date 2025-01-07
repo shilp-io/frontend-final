@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import type { UUID } from '@/types';
 
-interface Collection {
+export interface Collection {
   id: UUID;
   name: string;
   description: string | null;

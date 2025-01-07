@@ -1,4 +1,4 @@
-import { CalendarIcon, Tags } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { Project } from "@/types";
 

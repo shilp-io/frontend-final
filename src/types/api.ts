@@ -13,5 +13,5 @@ export interface PaginatedResponse<T> {
   per_page: number
 }
 
-export interface UserAPIResponse extends ApiResponse<User> {}
-export interface UsersListResponse extends PaginatedResponse<User> {} 
+export type UserAPIResponse = ApiResponse<User>
+export type UsersListResponse = PaginatedResponse<User> 

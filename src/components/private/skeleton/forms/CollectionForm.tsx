@@ -22,20 +22,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useToast } from "@/components/ui/use-toast"
+import { useCollections } from '@/hooks/db/useCollections'
+import { useCollectionStore } from '@/lib/store/collectionStore'
+import { AccessLevel } from '@/types/enums'
 
 const collectionFormSchema = z.object({
   name: z.string().min(1, 'Collection name is required'),
   description: z.string().optional(),
-  type: z.enum(['regulatory', 'technical', 'business', 'other']),
-  status: z.enum(['active', 'archived']),
+  access_level: z.enum(['private', 'project', 'organization', 'public'] as const),
   tags: z.array(z.string()).optional(),
 })
 
 type CollectionFormValues = z.infer<typeof collectionFormSchema>
 
 const defaultValues: Partial<CollectionFormValues> = {
-  type: 'technical',
-  status: 'active',
+  name: '',
+  description: '',
+  access_level: AccessLevel.PRIVATE,
   tags: [],
 }
 
@@ -44,6 +48,11 @@ interface CollectionFormProps {
 }
 
 export default function CollectionForm({ onSuccess }: CollectionFormProps) {
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const { toast } = useToast()
+  const { createCollection } = useCollections()
+  const { selectCollection } = useCollectionStore()
+  
   const form = useForm<CollectionFormValues>({
     resolver: zodResolver(collectionFormSchema),
     defaultValues,
@@ -51,11 +60,36 @@ export default function CollectionForm({ onSuccess }: CollectionFormProps) {
 
   async function onSubmit(data: CollectionFormValues) {
     try {
-      // TODO: Implement collection creation API call
-      console.log('Collection data:', data)
+      setIsSubmitting(true)
+      const collection = await createCollection({
+        name: data.name,
+        description: data.description || null,
+        access_level: data.access_level,
+        tags: data.tags || null,
+        metadata: {
+          source: 'web_app',
+          template_version: '1.0'
+        }
+      })
+      toast({
+        variant: "default",
+        title: "Success",
+        description: "Collection created successfully",
+      })
+      // Select the newly created collection to open it in the side panel
+      if (collection) {
+        selectCollection(collection.id)
+      }
       onSuccess()
     } catch (error) {
       console.error('Failed to create collection:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : 'Failed to create collection',
+      })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -94,56 +128,34 @@ export default function CollectionForm({ onSuccess }: CollectionFormProps) {
           )}
         />
 
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select collection type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="regulatory">Regulatory</SelectItem>
-                    <SelectItem value="technical">Technical</SelectItem>
-                    <SelectItem value="business">Business</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Status</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="archived">Archived</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="access_level"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Access Level</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select access level" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value={AccessLevel.PRIVATE}>Private</SelectItem>
+                  <SelectItem value={AccessLevel.PROJECT}>Project</SelectItem>
+                  <SelectItem value={AccessLevel.ORGANIZATION}>Organization</SelectItem>
+                  <SelectItem value={AccessLevel.PUBLIC}>Public</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="flex justify-end">
-          <Button type="submit">Create Collection</Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Creating...' : 'Create Collection'}
+          </Button>
         </div>
       </form>
     </Form>

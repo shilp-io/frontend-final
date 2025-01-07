@@ -4,6 +4,7 @@ import { rateLimit } from '@/lib/middleware/rateLimit';
 import type { Tables } from '@/types/supabase';
 
 type Collection = Tables<'collections'>;
+type CollectionInput = Pick<Collection, 'name' | 'description' | 'parent_id' | 'access_level' | 'metadata'>;
 
 // GET /api/db/collections
 export async function GET(req: NextRequest) {
@@ -63,9 +64,9 @@ export async function POST(req: NextRequest) {
       return rateLimitResponse;
     }
 
-    const data = await req.json();
+    const body = await req.json() as CollectionInput;
     
-    if (!data.name) {
+    if (!body.name) {
       return NextResponse.json(
         { error: 'Collection name is required' },
         { status: 400 }
@@ -75,7 +76,7 @@ export async function POST(req: NextRequest) {
     const client = supabaseAdminService.getClient();
     const { data: collection, error } = await client
       .from('collections')
-      .insert(data)
+      .insert(body)
       .select()
       .single();
       

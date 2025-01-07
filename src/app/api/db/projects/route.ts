@@ -4,6 +4,7 @@ import { rateLimit } from '@/lib/middleware/rateLimit';
 import type { Tables } from '@/types/supabase';
 
 type Project = Tables<'projects'>;
+type ProjectInput = Pick<Project, 'name' | 'description' | 'status' | 'metadata' | 'created_by'>;
 
 // GET /api/db/projects
 export async function GET(req: NextRequest) {
@@ -59,12 +60,12 @@ export async function POST(req: NextRequest) {
       return rateLimitResponse;
     }
 
-    const data = await req.json();
+    const body = await req.json() as ProjectInput;
     const client = supabaseAdminService.getClient();
     
     const { data: project, error } = await client
       .from('projects')
-      .insert(data)
+      .insert(body)
       .select()
       .single();
 

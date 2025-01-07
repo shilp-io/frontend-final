@@ -4,22 +4,23 @@ import { rateLimit } from '@/lib/middleware/rateLimit';
 
 // GET /api/db/requirements/[id]
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const rateLimitResponse = await rateLimit()(req, NextResponse.next());
+    const rateLimitResponse = await rateLimit()(request, NextResponse.next());
     if (rateLimitResponse.status === 429) {
       return rateLimitResponse;
     }
 
+    const { id } = await params;
     const client = supabaseAdminService.getClient();
     const { data, error } = await client
       .from('requirements')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
-      
+
     if (error) throw error;
     return NextResponse.json(data);
   } catch (error) {
@@ -33,24 +34,25 @@ export async function GET(
 
 // PUT /api/db/requirements/[id]
 export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const rateLimitResponse = await rateLimit()(req, NextResponse.next());
+    const rateLimitResponse = await rateLimit()(request, NextResponse.next());
     if (rateLimitResponse.status === 429) {
       return rateLimitResponse;
     }
 
-    const updates = await req.json();
+    const { id } = await params;
+    const updates = await request.json();
     const client = supabaseAdminService.getClient();
     const { data: requirement, error } = await client
       .from('requirements')
       .update(updates)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
-      
+
     if (error) throw error;
     return NextResponse.json(requirement);
   } catch (error) {
@@ -64,21 +66,22 @@ export async function PUT(
 
 // DELETE /api/db/requirements/[id]
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const rateLimitResponse = await rateLimit()(req, NextResponse.next());
+    const rateLimitResponse = await rateLimit()(request, NextResponse.next());
     if (rateLimitResponse.status === 429) {
       return rateLimitResponse;
     }
 
+    const { id } = await params;
     const client = supabaseAdminService.getClient();
     const { error } = await client
       .from('requirements')
       .delete()
-      .eq('id', params.id);
-      
+      .eq('id', id);
+
     if (error) throw error;
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -88,4 +91,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-} 
+}

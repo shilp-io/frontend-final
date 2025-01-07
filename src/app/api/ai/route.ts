@@ -20,18 +20,21 @@ interface GetPipelineStatusRequest {
     runId: string;
 }
 
-type RequestBody = UploadRequest | StartPipelineRequest | GetPipelineStatusRequest;
-
-function isUploadRequest(body: any): body is UploadRequest {
-    return body.action === 'upload' && Array.isArray(body.files);
+function isUploadRequest(body: unknown): body is UploadRequest {
+    return typeof body === 'object' && body !== null && 'action' in body && 
+           (body as UploadRequest).action === 'upload' && Array.isArray((body as UploadRequest).files);
 }
 
-function isStartPipelineRequest(body: any): body is StartPipelineRequest {
-    return body.action === 'startPipeline' && typeof body.requirement === 'string';
+function isStartPipelineRequest(body: unknown): body is StartPipelineRequest {
+    return typeof body === 'object' && body !== null && 'action' in body && 
+           (body as StartPipelineRequest).action === 'startPipeline' && 
+           typeof (body as StartPipelineRequest).requirement === 'string';
 }
 
-function isGetPipelineStatusRequest(body: any): body is GetPipelineStatusRequest {
-    return body.action === 'getPipelineStatus' && typeof body.runId === 'string';
+function isGetPipelineStatusRequest(body: unknown): body is GetPipelineStatusRequest {
+    return typeof body === 'object' && body !== null && 'action' in body && 
+           (body as GetPipelineStatusRequest).action === 'getPipelineStatus' && 
+           typeof (body as GetPipelineStatusRequest).runId === 'string';
 }
 
 // Apply rate limiting middleware

@@ -4,6 +4,7 @@ import { rateLimit } from '@/lib/middleware/rateLimit';
 import type { Tables } from '@/types/supabase';
 
 type Requirement = Tables<'requirements'>;
+type RequirementInput = Pick<Requirement, 'project_id' | 'title' | 'description' | 'status' | 'priority' | 'metadata' | 'created_by'>;
 
 // GET /api/db/requirements
 export async function GET(req: NextRequest) {
@@ -97,9 +98,9 @@ export async function POST(req: NextRequest) {
       return rateLimitResponse;
     }
 
-    const data = await req.json();
+    const body = await req.json() as RequirementInput;
     
-    if (!data.project_id) {
+    if (!body.project_id) {
       return NextResponse.json(
         { error: 'Project ID is required' },
         { status: 400 }
@@ -109,7 +110,7 @@ export async function POST(req: NextRequest) {
     const client = supabaseAdminService.getClient();
     const { data: requirement, error } = await client
       .from('requirements')
-      .insert(data)
+      .insert(body)
       .select()
       .single();
       

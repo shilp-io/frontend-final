@@ -142,6 +142,7 @@ export function useAuth() {
                     const profile = await fetchUserProfile(user.uid);
                     queryClient.setQueryData(USER_PROFILE_QUERY_KEY, profile);
                 } catch (err) {
+                    console.error('Profile not found:', err);
                     // If profile doesn't exist, create one
                     const newProfile = await createUserProfile({
                         firebase_uid: user.uid,

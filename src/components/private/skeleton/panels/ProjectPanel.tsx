@@ -1,4 +1,4 @@
-import { CalendarIcon, Tags, Users, GitBranch } from "lucide-react";
+import { CalendarIcon, Tags } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { Project, Requirement } from "@/types";
 import { TableManager, RequirementPanel } from "@/components/private";

@@ -2,14 +2,12 @@ import { Project, Requirement } from '@/types/entities';
 import { formatDate } from '@/lib/utils/dateUtils';
 import { CreatePanel, TableManager } from '@/components/private';
 import type { Column } from '@/components/private';
-import { useRequirements } from '@/hooks/db/useRequirements';
 import { useState } from 'react';
 
 interface ProjectViewProps {
   project: Project | null;
   requirements: Requirement[];
   isLoading?: boolean;
-  error?: string | Error | null;
   onRequirementClick?: (requirement: Requirement) => void;
   handleGoToPage?: (requirement: Requirement) => void;
   onRequirementDelete?: (requirement: Requirement) => void;
@@ -19,13 +17,10 @@ export function ProjectView({
   project,
   requirements,
   isLoading,
-  error,
   onRequirementClick,
   handleGoToPage,
   onRequirementDelete,
 }: ProjectViewProps) {
-  const [showNewRequirement, setShowNewRequirement] = useState(false);
-  const { createRequirement } = useRequirements(project?.id);
   const [isCreatePanelOpen, setIsCreatePanelOpen] = useState(false);
 
   if (!project) {

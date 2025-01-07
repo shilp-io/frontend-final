@@ -41,7 +41,11 @@ export interface User {
 
 export interface AuthResponse {
   user: User | null
-  session: any // Replace with specific session type if available
+  session: {
+    access_token: string;
+    expires_at: number;
+    refresh_token: string;
+  } | null
   error: string | null
 }
 

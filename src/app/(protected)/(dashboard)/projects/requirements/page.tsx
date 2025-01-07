@@ -5,12 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { useRequirementStore } from "@/lib/store/requirementStore";
 import { useRecentStore } from "@/lib/store/recentStore";
 import { useRequirements } from "@/hooks/db/useRequirements";
-import { useProjectStore } from "@/lib/store/projectStore";
 import { useUserStore } from "@/lib/store/userStore";
 import type { Requirement } from "@/types";
 import type { Column } from "@/components/private";
 import { useRouter } from "next/navigation";
-import { RequirementItem, RequirementPanel, TableManager } from "@/components/private";
+import { CreatePanel, RequirementItem, RequirementPanel, TableManager } from "@/components/private";
 
 const getStatusColor = (status: string) => {
 	switch (status) {
@@ -49,10 +48,9 @@ const getPriorityColor = (priority: string) => {
 export default function RequirementsPage() {
 	const { selectRequirement } = useRequirementStore();
 	const { addRecentItem } = useRecentStore();
-	const { selectedProjects } = useProjectStore();
 	const { user } = useUserStore();
 	const { requirements, isLoading } = useRequirements(undefined, user?.id);
-	const [showNewRequirement, setShowNewRequirement] = useState(false);
+	const [isCreatePanelOpen, setIsCreatePanelOpen] = useState(false);
 	const router = useRouter();
 
 	const handleRequirementSelect = async (requirement: Requirement) => {
@@ -115,12 +113,18 @@ export default function RequirementsPage() {
 					columns={columns}
 					onItemSelect={handleRequirementSelect}
 					handleGoToPage={handleGoToPage}
-					onNewItem={() => setShowNewRequirement(true)}
+					onNewItem={() => setIsCreatePanelOpen(true)}
 					renderGridItem={(requirement) => <RequirementItem requirement={requirement} />}
 					renderDetails={(requirement) => <RequirementPanel requirement={requirement} />}
 					newItemLabel="New Requirement"
 					searchPlaceholder="Search requirements..."
 					emptyMessage="No requirements found. Create a new requirement to get started."
+				/>
+				<CreatePanel
+					isOpen={isCreatePanelOpen}
+					onClose={() => setIsCreatePanelOpen(false)}
+					initialTab="requirement"
+					showTabs="requirement"
 				/>
 			</div>
 		</div>

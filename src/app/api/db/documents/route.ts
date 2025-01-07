@@ -4,6 +4,7 @@ import { rateLimit } from '@/lib/middleware/rateLimit';
 import type { Tables } from '@/types/supabase';
 
 type Document = Tables<'external_docs'>;
+type DocumentInput = Pick<Document, 'title' | 'url' | 'type' | 'collection_id' | 'status' | 'metadata' | 'last_verified_date'>;
 
 // GET /api/db/documents
 export async function GET(req: NextRequest) {
@@ -59,22 +60,22 @@ export async function POST(req: NextRequest) {
       return rateLimitResponse;
     }
 
-    const data = await req.json();
+    const body = await req.json() as DocumentInput;
     
-    if (!data.title || !data.url || !data.type) {
+    if (!body.title || !body.url || !body.type) {
       return NextResponse.json(
         { error: 'Title, URL, and type are required' },
         { status: 400 }
       );
     }
 
-    if (!data.status) data.status = 'active';
-    if (!data.last_verified_date) data.last_verified_date = new Date().toISOString();
+    if (!body.status) body.status = 'active';
+    if (!body.last_verified_date) body.last_verified_date = new Date().toISOString();
 
     const client = supabaseAdminService.getClient();
     const { data: document, error } = await client
       .from('external_docs')
-      .insert(data)
+      .insert(body)
       .select()
       .single();
 

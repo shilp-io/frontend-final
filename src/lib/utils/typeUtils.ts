@@ -1,5 +1,5 @@
 import type { Database } from '@/types';
-import type { Collection, Project, Requirement } from '@/types';
+import type { Collection, Project, Requirement, ExternalDoc } from '@/types';
 
 export type DatabaseEntity<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
 
@@ -12,6 +12,7 @@ type EntityMap = {
   collections: Collection;
   projects: Project;
   requirements: Requirement;
+  external_docs: ExternalDoc;
 };
 
 export function mapDatabaseEntity<T extends keyof EntityMap>(

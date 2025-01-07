@@ -148,7 +148,7 @@ export function useProjects(options: UseProjectsOptions = {}) {
                 const reqResult = await defaultReq.json();
                 const mappedReq = mapDatabaseEntity<'requirements'>(reqResult);
                 // Update requirements cache
-                queryClient.setQueryData(['requirements', project.id], (old: any[] = []) => {
+                queryClient.setQueryData(['requirements', project.id], (old: Requirement[] = []) => {
                     return [...old, mappedReq];
                 });
             }

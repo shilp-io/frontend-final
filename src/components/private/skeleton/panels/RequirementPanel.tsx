@@ -12,7 +12,6 @@ import { RequirementAnalysisForm } from "../base/RequirementAnalysisForm";
 import { RequirementContent } from "../base/RequirementContent";
 import { RequirementAssignment } from "../base/RequirementAssignment";
 import { RequirementMetadata } from "../base/RequirementMetadata";
-import { SidePanel } from "@/components/private";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface RequirementPanelProps {

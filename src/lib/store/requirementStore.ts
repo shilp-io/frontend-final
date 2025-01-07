@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import type { UUID, Requirement as RequirementEntity } from '@/types';
-
-type Requirement = RequirementEntity;
+import type { UUID } from '@/types';
 
 interface RequirementFilters {
   status: string[];

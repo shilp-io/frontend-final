@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Upload } from 'lucide-react'
+import { useToast } from "@/components/ui/use-toast"
 
 const documentFormSchema = z.object({
   title: z.string().min(1, 'Document title is required'),
@@ -36,8 +37,11 @@ const documentFormSchema = z.object({
 type DocumentFormValues = z.infer<typeof documentFormSchema>
 
 const defaultValues: Partial<DocumentFormValues> = {
+  title: '',
+  description: '',
   type: 'pdf',
   status: 'draft',
+  version: '',
   tags: [],
 }
 
@@ -47,6 +51,8 @@ interface DocumentFormProps {
 }
 
 export default function DocumentForm({ collectionId, onSuccess }: DocumentFormProps) {
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const { toast } = useToast()
   const form = useForm<DocumentFormValues>({
     resolver: zodResolver(documentFormSchema),
     defaultValues,
@@ -56,21 +62,42 @@ export default function DocumentForm({ collectionId, onSuccess }: DocumentFormPr
 
   async function onSubmit(data: DocumentFormValues) {
     if (!collectionId) {
-      console.error('Collection ID is required')
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Collection ID is required",
+      })
       return
     }
 
     if (!file) {
-      console.error('File is required')
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "File is required",
+      })
       return
     }
 
     try {
+      setIsSubmitting(true)
       // TODO: Implement document creation API call with file upload
       console.log('Document data:', { ...data, collectionId, file })
+      toast({
+        variant: "default",
+        title: "Success",
+        description: "Document created successfully",
+      })
       onSuccess()
     } catch (error) {
       console.error('Failed to create document:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error instanceof Error ? error.message : 'Failed to create document',
+      })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -81,7 +108,7 @@ export default function DocumentForm({ collectionId, onSuccess }: DocumentFormPr
       // Auto-detect document type from file extension
       const extension = selectedFile.name.split('.').pop()?.toLowerCase()
       if (extension && ['pdf', 'doc', 'docx', 'txt'].includes(extension)) {
-        form.setValue('type', extension as any)
+        form.setValue('type', extension as z.infer<typeof documentFormSchema>['type'])
       } else {
         form.setValue('type', 'other')
       }
@@ -155,7 +182,7 @@ export default function DocumentForm({ collectionId, onSuccess }: DocumentFormPr
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select document type" />
@@ -180,7 +207,7 @@ export default function DocumentForm({ collectionId, onSuccess }: DocumentFormPr
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Status</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
@@ -214,7 +241,9 @@ export default function DocumentForm({ collectionId, onSuccess }: DocumentFormPr
         />
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={!file}>Create Document</Button>
+          <Button type="submit" disabled={!file || isSubmitting}>
+            {isSubmitting ? 'Creating...' : 'Create Document'}
+          </Button>
         </div>
       </form>
     </Form>

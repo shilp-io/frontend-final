@@ -1,9 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import type { UUID, Project as ProjectEntity } from '@/types';
+import type { UUID } from '@/types';
 import { useRecentStore } from './recentStore';
-
-type Project = ProjectEntity;
 
 interface ProjectFilters {
   status: string[];
