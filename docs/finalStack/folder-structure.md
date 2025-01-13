@@ -13,8 +13,7 @@
 │   │   │   └── layout.tsx
 │   │   ├── api/                          # API Routes
 │   │   │   ├── projects/
-│   │   │   ├── requirements/
-│   │   │   └── trpc/                     # tRPC integration (optional)
+│   │   │   └── requirements/
 │   │   ├── error.tsx
 │   │   ├── layout.tsx
 │   │   └── page.tsx
