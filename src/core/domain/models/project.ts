@@ -14,3 +14,5 @@ export interface Project extends BaseEntity {
     organization_id: UUID | null; // Links to the organization
     project_owner_id: UUID; // Links to user_profile.id
 }
+
+export type ProjectData = Partial<Omit<Project, keyof BaseEntity>>;

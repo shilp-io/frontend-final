@@ -21,7 +21,7 @@ export abstract class BaseService {
             logLevel: 'info',
             retryAttempts: 3,
             retryDelay: 1000,
-            ...config
+            ...config,
         };
     }
 
@@ -36,22 +36,31 @@ export abstract class BaseService {
     // Enhanced error handling with retry support
     protected async withErrorHandling<T>(
         operation: () => Promise<T>,
-        options: { 
+        options: {
             retry?: boolean;
             customRetryAttempts?: number;
             customRetryDelay?: number;
-        } = {}
+        } = {},
     ): Promise<T> {
-        const retryAttempts = options.customRetryAttempts ?? this.config.retryAttempts;
+        const retryAttempts =
+            options.customRetryAttempts ?? this.config.retryAttempts;
         const retryDelay = options.customRetryDelay ?? this.config.retryDelay;
         let lastError: Error | null = null;
 
-        for (let attempt = 1; attempt <= (options.retry ? retryAttempts : 1); attempt++) {
+        for (
+            let attempt = 1;
+            attempt <= (options.retry ? retryAttempts : 1);
+            attempt++
+        ) {
             try {
                 return await operation();
             } catch (error) {
-                lastError = error instanceof Error ? error : new Error(String(error));
-                this.error(`Attempt ${attempt}/${retryAttempts} failed:`, lastError);
+                lastError =
+                    error instanceof Error ? error : new Error(String(error));
+                this.error(
+                    `Attempt ${attempt}/${retryAttempts} failed:`,
+                    lastError,
+                );
 
                 if (attempt < retryAttempts && options.retry) {
                     await this.delay(retryDelay * attempt);
@@ -94,7 +103,9 @@ export abstract class BaseService {
 
     // Utility methods
     protected enhanceError(error: Error): Error {
-        const enhancedError = new Error(`[${this.serviceName}] ${error.message}`);
+        const enhancedError = new Error(
+            `[${this.serviceName}] ${error.message}`,
+        );
         enhancedError.stack = error.stack;
         return enhancedError;
     }
@@ -104,12 +115,12 @@ export abstract class BaseService {
             debug: 0,
             info: 1,
             warn: 2,
-            error: 3
+            error: 3,
         };
         return levels[level] >= levels[this.config.logLevel];
     }
 
     private delay(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 }

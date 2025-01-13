@@ -13,27 +13,32 @@ interface UseRequirementOptions {
 // Type for our query key
 type RequirementQueryKey = ['requirement', UUID | undefined];
 
-export function useRequirement(requirementId: UUID, options: UseRequirementOptions = {}) {
+export function useRequirement(
+    requirementId: UUID,
+    options: UseRequirementOptions = {},
+) {
     const queryClient = useQueryClient();
     const { user } = useUserStore();
-    const { 
+    const {
         selectedRequirements,
         selectRequirement,
         deselectRequirement,
-        clearSelection
+        clearSelection,
     } = useRequirementStore();
 
     // Query for fetching a single requirement
     const {
         data: requirement,
         isLoading,
-        error
+        error,
     } = useQuery({
         queryKey: ['requirement', requirementId] as RequirementQueryKey,
         queryFn: async () => {
             if (!requirementId) return null;
-            
-            const response = await fetch(`/api/db/requirements?id=${requirementId}`);
+
+            const response = await fetch(
+                `/api/db/requirements?id=${requirementId}`,
+            );
             if (!response.ok) {
                 throw new Error('Failed to fetch requirement');
             }
@@ -41,12 +46,14 @@ export function useRequirement(requirementId: UUID, options: UseRequirementOptio
             return mapDatabaseEntity<'requirements'>(data);
         },
         enabled: !!requirementId,
-        ...options
+        ...options,
     });
 
     // Update requirement mutation
     const updateRequirementMutation = useMutation({
-        mutationFn: async (data: Partial<Omit<Requirement, 'id' | 'created_at' | 'version'>>) => {
+        mutationFn: async (
+            data: Partial<Omit<Requirement, 'id' | 'created_at' | 'version'>>,
+        ) => {
             if (!requirement) {
                 throw new Error('Requirement not found');
             }
@@ -64,7 +71,7 @@ export function useRequirement(requirementId: UUID, options: UseRequirementOptio
                     ...data,
                     updated_by: user.id,
                     updated_at: new Date().toISOString(),
-                    version: requirement.version + 1
+                    version: requirement.version + 1,
                 }),
             });
 
@@ -76,8 +83,12 @@ export function useRequirement(requirementId: UUID, options: UseRequirementOptio
             return mapDatabaseEntity<'requirements'>(result);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['requirement', requirementId] as const });
-            queryClient.invalidateQueries({ queryKey: ['requirements'] as const });
+            queryClient.invalidateQueries({
+                queryKey: ['requirement', requirementId] as const,
+            });
+            queryClient.invalidateQueries({
+                queryKey: ['requirements'] as const,
+            });
         },
     });
 
@@ -88,9 +99,12 @@ export function useRequirement(requirementId: UUID, options: UseRequirementOptio
                 throw new Error('User not authenticated');
             }
 
-            const response = await fetch(`/api/db/requirements?id=${requirementId}`, {
-                method: 'DELETE',
-            });
+            const response = await fetch(
+                `/api/db/requirements?id=${requirementId}`,
+                {
+                    method: 'DELETE',
+                },
+            );
 
             if (!response.ok) {
                 throw new Error('Failed to delete requirement');
@@ -99,18 +113,25 @@ export function useRequirement(requirementId: UUID, options: UseRequirementOptio
         },
         onSuccess: () => {
             clearSelection();
-            queryClient.invalidateQueries({ queryKey: ['requirements'] as const });
+            queryClient.invalidateQueries({
+                queryKey: ['requirements'] as const,
+            });
         },
     });
 
     // Helper functions with proper error handling
-    const updateRequirement = useCallback(async (data: Parameters<typeof updateRequirementMutation.mutateAsync>[0]) => {
-        try {
-            return await updateRequirementMutation.mutateAsync(data);
-        } catch (error) {
-            throw error;
-        }
-    }, [updateRequirementMutation]);
+    const updateRequirement = useCallback(
+        async (
+            data: Parameters<typeof updateRequirementMutation.mutateAsync>[0],
+        ) => {
+            try {
+                return await updateRequirementMutation.mutateAsync(data);
+            } catch (error) {
+                throw error;
+            }
+        },
+        [updateRequirementMutation],
+    );
 
     const deleteRequirement = useCallback(async () => {
         try {

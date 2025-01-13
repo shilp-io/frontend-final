@@ -1,8 +1,8 @@
 // src/core/domain/value-objects/priority.ts
-import { RequirementPriority } from "../models/enums";
+import { RequirementPriority } from '../models/enums';
 
 export class RequirementPriorityValue {
-    constructor(public readonly value: RequirementPriority) { }
+    constructor(public readonly value: RequirementPriority) {}
 
     equals(other: RequirementPriorityValue): boolean {
         return this.value === other.value;
@@ -15,6 +15,9 @@ export class RequirementPriorityValue {
             RequirementPriority.HIGH,
             RequirementPriority.CRITICAL,
         ];
-        return priorityOrder.indexOf(this.value) > priorityOrder.indexOf(other.value);
+        return (
+            priorityOrder.indexOf(this.value) >
+            priorityOrder.indexOf(other.value)
+        );
     }
 }

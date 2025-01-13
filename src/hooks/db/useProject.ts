@@ -16,23 +16,19 @@ type ProjectQueryKey = ['project', UUID | undefined];
 export function useProject(projectId: UUID, options: UseProjectOptions = {}) {
     const queryClient = useQueryClient();
     const { user } = useUserStore();
-    const { 
-        selectedProjects,
-        selectProject,
-        deselectProject,
-        clearSelection
-    } = useProjectStore();
+    const { selectedProjects, selectProject, deselectProject, clearSelection } =
+        useProjectStore();
 
     // Query for fetching a single project
     const {
         data: project,
         isLoading,
-        error
+        error,
     } = useQuery({
         queryKey: ['project', projectId] as ProjectQueryKey,
         queryFn: async () => {
             if (!projectId) return null;
-            
+
             const response = await fetch(`/api/db/projects?id=${projectId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch project');
@@ -41,12 +37,14 @@ export function useProject(projectId: UUID, options: UseProjectOptions = {}) {
             return mapDatabaseEntity<'projects'>(data);
         },
         enabled: !!projectId,
-        ...options
+        ...options,
     });
 
     // Update project mutation
     const updateProjectMutation = useMutation({
-        mutationFn: async (data: Partial<Omit<Project, 'id' | 'created_at' | 'version'>>) => {
+        mutationFn: async (
+            data: Partial<Omit<Project, 'id' | 'created_at' | 'version'>>,
+        ) => {
             if (!project) {
                 throw new Error('Project not found');
             }
@@ -66,9 +64,11 @@ export function useProject(projectId: UUID, options: UseProjectOptions = {}) {
                     updated_at: new Date().toISOString(),
                     version: project.version + 1,
                     metadata: {
-                        ...(typeof project.metadata === 'object' ? project.metadata || {} : {}),
-                        last_modified_from: 'web_app'
-                    }
+                        ...(typeof project.metadata === 'object'
+                            ? project.metadata || {}
+                            : {}),
+                        last_modified_from: 'web_app',
+                    },
                 }),
             });
 
@@ -80,7 +80,9 @@ export function useProject(projectId: UUID, options: UseProjectOptions = {}) {
             return mapDatabaseEntity<'projects'>(result);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['project', projectId] as const });
+            queryClient.invalidateQueries({
+                queryKey: ['project', projectId] as const,
+            });
             queryClient.invalidateQueries({ queryKey: ['projects'] as const });
         },
     });
@@ -108,13 +110,18 @@ export function useProject(projectId: UUID, options: UseProjectOptions = {}) {
     });
 
     // Helper functions with proper error handling
-    const updateProject = useCallback(async (data: Parameters<typeof updateProjectMutation.mutateAsync>[0]) => {
-        try {
-            return await updateProjectMutation.mutateAsync(data);
-        } catch (error) {
-            throw error;
-        }
-    }, [updateProjectMutation]);
+    const updateProject = useCallback(
+        async (
+            data: Parameters<typeof updateProjectMutation.mutateAsync>[0],
+        ) => {
+            try {
+                return await updateProjectMutation.mutateAsync(data);
+            } catch (error) {
+                throw error;
+            }
+        },
+        [updateProjectMutation],
+    );
 
     const deleteProject = useCallback(async () => {
         try {

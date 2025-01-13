@@ -1,14 +1,13 @@
 // src/core/domain/models/junction.ts
-import { BaseEntity, UUID } from "./common";
+import { BaseEntity, UUID } from './common';
 import {
     AssignmentRole,
     MemberRole,
     NotificationPreference,
     RequirementPriority,
     TraceLinkType,
-    UserTheme
-}
-    from "./enums";
+    UserTheme,
+} from './enums';
 
 export interface RequirementDocument extends BaseEntity {
     requirement_id: UUID;
@@ -55,12 +54,12 @@ export interface EntityAssignment extends BaseEntity {
 }
 
 export interface Relationship extends BaseEntity {
-    source_id: UUID
-    target_id: UUID
-    relationship_type: TraceLinkType
-    description: string | null
-    source_type: 'requirement' | 'component'
-    target_type: 'requirement' | 'component'
+    source_id: UUID;
+    target_id: UUID;
+    relationship_type: TraceLinkType;
+    description: string | null;
+    source_type: 'requirement' | 'component';
+    target_type: 'requirement' | 'component';
 }
 
 export interface UserPreferences extends BaseEntity {

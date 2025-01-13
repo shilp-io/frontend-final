@@ -13,27 +13,32 @@ interface UseCollectionOptions {
 // Type for our query key
 type CollectionQueryKey = ['collection', UUID | undefined];
 
-export function useCollection(collectionId: UUID, options: UseCollectionOptions = {}) {
+export function useCollection(
+    collectionId: UUID,
+    options: UseCollectionOptions = {},
+) {
     const queryClient = useQueryClient();
     const { user } = useUserStore();
-    const { 
+    const {
         selectedCollections,
         selectCollection,
         deselectCollection,
-        clearSelection
+        clearSelection,
     } = useCollectionStore();
 
     // Query for fetching a single collection
     const {
         data: collection,
         isLoading,
-        error
+        error,
     } = useQuery({
         queryKey: ['collection', collectionId] as CollectionQueryKey,
         queryFn: async () => {
             if (!collectionId) return null;
-            
-            const response = await fetch(`/api/db/collections?id=${collectionId}`);
+
+            const response = await fetch(
+                `/api/db/collections?id=${collectionId}`,
+            );
             if (!response.ok) {
                 throw new Error('Failed to fetch collection');
             }
@@ -41,12 +46,14 @@ export function useCollection(collectionId: UUID, options: UseCollectionOptions 
             return mapDatabaseEntity<'collections'>(data);
         },
         enabled: !!collectionId,
-        ...options
+        ...options,
     });
 
     // Update collection mutation
     const updateCollectionMutation = useMutation({
-        mutationFn: async (data: Partial<Omit<Collection, 'id' | 'created_at' | 'version'>>) => {
+        mutationFn: async (
+            data: Partial<Omit<Collection, 'id' | 'created_at' | 'version'>>,
+        ) => {
             if (!collection) {
                 throw new Error('Collection not found');
             }
@@ -64,7 +71,7 @@ export function useCollection(collectionId: UUID, options: UseCollectionOptions 
                     ...data,
                     updated_by: user.id,
                     updated_at: new Date().toISOString(),
-                    version: collection.version + 1
+                    version: collection.version + 1,
                 }),
             });
 
@@ -76,8 +83,12 @@ export function useCollection(collectionId: UUID, options: UseCollectionOptions 
             return mapDatabaseEntity<'collections'>(result);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['collection', collectionId] as const });
-            queryClient.invalidateQueries({ queryKey: ['collections'] as const });
+            queryClient.invalidateQueries({
+                queryKey: ['collection', collectionId] as const,
+            });
+            queryClient.invalidateQueries({
+                queryKey: ['collections'] as const,
+            });
         },
     });
 
@@ -88,9 +99,12 @@ export function useCollection(collectionId: UUID, options: UseCollectionOptions 
                 throw new Error('User not authenticated');
             }
 
-            const response = await fetch(`/api/db/collections?id=${collectionId}`, {
-                method: 'DELETE',
-            });
+            const response = await fetch(
+                `/api/db/collections?id=${collectionId}`,
+                {
+                    method: 'DELETE',
+                },
+            );
 
             if (!response.ok) {
                 throw new Error('Failed to delete collection');
@@ -99,18 +113,25 @@ export function useCollection(collectionId: UUID, options: UseCollectionOptions 
         },
         onSuccess: () => {
             clearSelection();
-            queryClient.invalidateQueries({ queryKey: ['collections'] as const });
+            queryClient.invalidateQueries({
+                queryKey: ['collections'] as const,
+            });
         },
     });
 
     // Helper functions with proper error handling
-    const updateCollection = useCallback(async (data: Parameters<typeof updateCollectionMutation.mutateAsync>[0]) => {
-        try {
-            return await updateCollectionMutation.mutateAsync(data);
-        } catch (error) {
-            throw error;
-        }
-    }, [updateCollectionMutation]);
+    const updateCollection = useCallback(
+        async (
+            data: Parameters<typeof updateCollectionMutation.mutateAsync>[0],
+        ) => {
+            try {
+                return await updateCollectionMutation.mutateAsync(data);
+            } catch (error) {
+                throw error;
+            }
+        },
+        [updateCollectionMutation],
+    );
 
     const deleteCollection = useCallback(async () => {
         try {

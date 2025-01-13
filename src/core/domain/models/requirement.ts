@@ -17,22 +17,22 @@ export interface Requirement extends BaseEntity {
     priority: RequirementPriority;
     status: RequirementStatus;
     level: RequirementLevel;
-    
+
     // Content
-    original_content: string;  // Original requirement text
-    enhanced_content: Json | null;  // AI-enhanced version
+    original_content: string; // Original requirement text
+    enhanced_content: Json | null; // AI-enhanced version
     selected_format: RequirementFormat | null;
-    
+
     // metadata
     tags: string[] | null;
 }
 
 // Requirement version history
 export interface RequirementVersion extends BaseEntity {
-    requirement_id: UUID
-    content: Json
-    change_reason: string | null
-    changed_by: UUID
+    requirement_id: UUID;
+    content: Json;
+    change_reason: string | null;
+    changed_by: UUID;
 }
 
 // Db query helper type for requirement with properties
@@ -45,3 +45,5 @@ export type RequirementWithProperties = Requirement & {
         last_validated: string;
     }[];
 };
+
+export type RequirementData = Partial<Omit<Requirement, keyof BaseEntity>>;

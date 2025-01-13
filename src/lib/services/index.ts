@@ -16,7 +16,7 @@ export { FirebaseService } from './firebase';
 
 // Export a convenience object with all services
 export const services = {
-  auth: authService,
-  gumloop: gumloopService,
-  firebase: firebaseService,
+    auth: authService,
+    gumloop: gumloopService,
+    firebase: firebaseService,
 } as const;

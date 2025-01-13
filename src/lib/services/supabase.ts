@@ -1,4 +1,7 @@
-import { createClientComponentClient, type SupabaseClient } from '@supabase/auth-helpers-nextjs';
+import {
+    createClientComponentClient,
+    type SupabaseClient,
+} from '@supabase/auth-helpers-nextjs';
 import type { Database } from '@/types/supabase';
 
 export class SupabaseService {
@@ -22,4 +25,4 @@ export class SupabaseService {
 }
 
 // Export singleton instance
-export const supabaseService = SupabaseService.getInstance(); 
+export const supabaseService = SupabaseService.getInstance();

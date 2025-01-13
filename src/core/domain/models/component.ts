@@ -10,3 +10,5 @@ export interface Component extends BaseEntity {
     tags: string[] | null;
     default_property_values: Json | null; // Default values for new requirements
 }
+
+export type ComponentData = Partial<Omit<Component, keyof BaseEntity>>;

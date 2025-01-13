@@ -1,19 +1,26 @@
 const GUMLOOP_API_KEY = process.env.NEXT_PUBLIC_GUMLOOP_API_KEY;
-const GUMLOOP_API_URL = process.env.NEXT_PUBLIC_GUMLOOP_API_URL || 'https://api.gumloop.com/api/v1';
+const GUMLOOP_API_URL =
+    process.env.NEXT_PUBLIC_GUMLOOP_API_URL || 'https://api.gumloop.com/api/v1';
 const USER_ID = process.env.NEXT_PUBLIC_GUMLOOP_USER_ID;
 const SAVED_ITEM_ID = process.env.NEXT_PUBLIC_GUMLOOP_SAVED_ITEM_ID;
 
 // Validate required environment variables
 if (!GUMLOOP_API_KEY) {
-    throw new Error('Missing required environment variable: NEXT_PUBLIC_GUMLOOP_API_KEY');
+    throw new Error(
+        'Missing required environment variable: NEXT_PUBLIC_GUMLOOP_API_KEY',
+    );
 }
 
 if (!USER_ID) {
-    throw new Error('Missing required environment variable: NEXT_PUBLIC_GUMLOOP_USER_ID');
+    throw new Error(
+        'Missing required environment variable: NEXT_PUBLIC_GUMLOOP_USER_ID',
+    );
 }
 
 if (!SAVED_ITEM_ID) {
-    throw new Error('Missing required environment variable: NEXT_PUBLIC_GUMLOOP_SAVED_ITEM_ID');
+    throw new Error(
+        'Missing required environment variable: NEXT_PUBLIC_GUMLOOP_SAVED_ITEM_ID',
+    );
 }
 
 // After validation, we can safely assert these as strings
@@ -51,7 +58,10 @@ export class GumloopService {
     }
 
     async uploadFiles(files: File[]): Promise<string[]> {
-        console.log('Starting file upload process:', files.map(f => ({ name: f.name, size: f.size, type: f.type })));
+        console.log(
+            'Starting file upload process:',
+            files.map((f) => ({ name: f.name, size: f.size, type: f.type })),
+        );
 
         if (files.length === 0) {
             throw new Error('Please upload at least one PDF file');
@@ -60,8 +70,15 @@ export class GumloopService {
         // Validate all files are PDFs
         for (const file of files) {
             if (!file.type.includes('pdf')) {
-                console.error('Invalid file type detected:', file.type, 'for file:', file.name);
-                throw new Error(`Only PDF files are accepted. Invalid file: ${file.name}`);
+                console.error(
+                    'Invalid file type detected:',
+                    file.type,
+                    'for file:',
+                    file.name,
+                );
+                throw new Error(
+                    `Only PDF files are accepted. Invalid file: ${file.name}`,
+                );
             }
         }
 
@@ -73,17 +90,25 @@ export class GumloopService {
                     return new Promise<string>((resolve, reject) => {
                         const reader = new FileReader();
                         reader.onload = () => {
-                            const base64 = (reader.result as string).split(',')[1];
-                            console.log(`Successfully encoded file: ${file.name} (${Math.round(base64.length / 1024)}KB)`);
+                            const base64 = (reader.result as string).split(
+                                ',',
+                            )[1];
+                            console.log(
+                                `Successfully encoded file: ${file.name} (${Math.round(base64.length / 1024)}KB)`,
+                            );
                             resolve(base64);
                         };
                         reader.onerror = (error) => {
-                            console.error('FileReader error for file:', file.name, error);
+                            console.error(
+                                'FileReader error for file:',
+                                file.name,
+                                error,
+                            );
                             reject(error);
                         };
                         reader.readAsDataURL(file);
                     });
-                })
+                }),
             );
 
             const payload = {
@@ -98,7 +123,7 @@ export class GumloopService {
             const response = await fetch(`${GUMLOOP_API_URL}/upload_files`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${validatedApiKey}`,
+                    Authorization: `Bearer ${validatedApiKey}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(payload),
@@ -109,9 +134,11 @@ export class GumloopService {
                 console.error('Upload API error:', {
                     status: response.status,
                     statusText: response.statusText,
-                    responseBody: errorText
+                    responseBody: errorText,
                 });
-                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                throw new Error(
+                    `Server error: ${response.status} ${response.statusText}`,
+                );
             }
 
             const uploadResult = await response.json();
@@ -119,7 +146,10 @@ export class GumloopService {
             return uploadResult.uploaded_files;
         } catch (error) {
             console.error('Upload process failed:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : 'Unknown error occurred';
             throw new Error(`Failed to upload files: ${errorMessage}`);
         }
     }
@@ -130,42 +160,49 @@ export class GumloopService {
         systemName?: string,
         objective?: string,
     ): Promise<PipelineResponse> {
-        console.log('Starting pipeline with params:', { filenames, systemName, objective, requirement });
-        
+        console.log('Starting pipeline with params:', {
+            filenames,
+            systemName,
+            objective,
+            requirement,
+        });
+
         const pipelineInputs: PipelineInput[] = [];
 
         // Convert filenames to array if it's a string
-        const filenamesArray = typeof filenames === 'string' 
-            ? filenames.split(',').map(f => f.trim())
-            : filenames;
+        const filenamesArray =
+            typeof filenames === 'string'
+                ? filenames.split(',').map((f) => f.trim())
+                : filenames;
 
         console.log('Processed filenames:', filenamesArray);
-        
+
         if (filenamesArray?.length) {
             pipelineInputs.push({
-                input_name: "Upload Regulation Document Here - PDF Format Only",
-                value: filenamesArray[0]
+                input_name: 'Upload Regulation Document Here - PDF Format Only',
+                value: filenamesArray[0],
             });
         }
 
         if (systemName) {
             pipelineInputs.push({
-                input_name: "System Name [Product/Feature/System/Subsystem/Component]",
-                value: systemName
+                input_name:
+                    'System Name [Product/Feature/System/Subsystem/Component]',
+                value: systemName,
             });
         }
 
         if (objective) {
             pipelineInputs.push({
-                input_name: "Objective:",
-                value: objective
+                input_name: 'Objective:',
+                value: objective,
             });
         }
 
         if (requirement) {
             pipelineInputs.push({
-                input_name: "Requirement: ",
-                value: requirement
+                input_name: 'Requirement: ',
+                value: requirement,
             });
         }
 
@@ -176,14 +213,14 @@ export class GumloopService {
             const response = await fetch(`${GUMLOOP_API_URL}/start_pipeline`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${validatedApiKey}`,
-                    'Content-Type': 'application/json'
+                    Authorization: `Bearer ${validatedApiKey}`,
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     user_id: validatedUserId,
                     saved_item_id: validatedSavedItemId,
-                    pipeline_inputs: pipelineInputs
-                })
+                    pipeline_inputs: pipelineInputs,
+                }),
             });
 
             if (!response.ok) {
@@ -191,9 +228,11 @@ export class GumloopService {
                 console.error('Start pipeline API error:', {
                     status: response.status,
                     statusText: response.statusText,
-                    responseBody: errorText
+                    responseBody: errorText,
                 });
-                throw new Error(`Failed to start pipeline: ${response.status} ${response.statusText}`);
+                throw new Error(
+                    `Failed to start pipeline: ${response.status} ${response.statusText}`,
+                );
             }
 
             const result = await response.json();
@@ -201,13 +240,19 @@ export class GumloopService {
             return result;
         } catch (error) {
             console.error('Start pipeline process failed:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : 'Unknown error occurred';
             throw new Error(`Failed to start pipeline: ${errorMessage}`);
         }
     }
 
     async getPipelineRun(runId: string): Promise<PipelineRunResponse> {
-        console.log('Getting pipeline run status:', { runId, userId: validatedUserId });
+        console.log('Getting pipeline run status:', {
+            runId,
+            userId: validatedUserId,
+        });
 
         try {
             console.log('Making API request to get pipeline run');
@@ -216,10 +261,10 @@ export class GumloopService {
                 {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${validatedApiKey}`,
+                        Authorization: `Bearer ${validatedApiKey}`,
                         'Content-Type': 'application/json',
                     },
-                }
+                },
             );
 
             if (!response.ok) {
@@ -227,9 +272,11 @@ export class GumloopService {
                 console.error('Get pipeline run API error:', {
                     status: response.status,
                     statusText: response.statusText,
-                    responseBody: errorText
+                    responseBody: errorText,
                 });
-                throw new Error(`Failed to get pipeline run status: ${response.status} ${response.statusText}`);
+                throw new Error(
+                    `Failed to get pipeline run status: ${response.status} ${response.statusText}`,
+                );
             }
 
             const result = await response.json();
@@ -237,8 +284,13 @@ export class GumloopService {
             return result;
         } catch (error) {
             console.error('Get pipeline run process failed:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-            throw new Error(`Failed to get pipeline run status: ${errorMessage}`);
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : 'Unknown error occurred';
+            throw new Error(
+                `Failed to get pipeline run status: ${errorMessage}`,
+            );
         }
     }
 }

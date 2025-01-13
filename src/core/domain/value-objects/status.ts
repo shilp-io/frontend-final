@@ -1,8 +1,12 @@
 // src/core/domain/value-objects/status.ts
-import { ProjectStatus, ComponentStatus, RequirementStatus } from "../models/enums";
+import {
+    ProjectStatus,
+    ComponentStatus,
+    RequirementStatus,
+} from '../models/enums';
 
 export class ProjectStatusValue {
-    constructor(public readonly value: ProjectStatus) { }
+    constructor(public readonly value: ProjectStatus) {}
 
     equals(other: ProjectStatusValue): boolean {
         return this.value === other.value;
@@ -18,7 +22,7 @@ export class ProjectStatusValue {
 }
 
 export class ComponentStatusValue {
-    constructor(public readonly value: ComponentStatus) { }
+    constructor(public readonly value: ComponentStatus) {}
 
     equals(other: ComponentStatusValue): boolean {
         return this.value === other.value;
@@ -30,7 +34,7 @@ export class ComponentStatusValue {
 }
 
 export class RequirementStatusValue {
-    constructor(public readonly value: RequirementStatus) { }
+    constructor(public readonly value: RequirementStatus) {}
 
     equals(other: RequirementStatusValue): boolean {
         return this.value === other.value;
@@ -40,5 +44,3 @@ export class RequirementStatusValue {
         return this.value === RequirementStatus.IN_PROGRESS;
     }
 }
-
-

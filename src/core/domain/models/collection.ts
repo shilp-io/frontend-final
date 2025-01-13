@@ -9,3 +9,5 @@ export interface Collection extends BaseEntity {
     tags: string[] | null;
     organization_id: UUID | null;
 }
+
+export type CollectionData = Partial<Omit<Collection, keyof BaseEntity>>;

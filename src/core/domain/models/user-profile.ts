@@ -13,3 +13,4 @@ export interface UserProfile extends BaseEntity {
     organization_id: UUID | null;
 }
 
+export type UserProfileData = Partial<Omit<UserProfile, keyof BaseEntity>>;

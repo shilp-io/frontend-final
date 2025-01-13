@@ -1,8 +1,8 @@
 //src/core/domain/models/property.ts
 
-import { BaseEntity, ISODateTime, UUID } from "./common";
-import { PropertyType } from "./enums";
-import { Json } from "./supabase";
+import { BaseEntity, ISODateTime, UUID } from './common';
+import { PropertyType } from './enums';
+import { Json } from './supabase';
 
 // Defines the schema for properties at component level
 export interface ComponentPropertySchema extends BaseEntity {
@@ -19,7 +19,7 @@ export interface ComponentPropertySchema extends BaseEntity {
 // Stores the actual property values for requirements
 export interface RequirementPropertyValue extends BaseEntity {
     requirement_id: UUID;
-    schema_id: UUID;  // References ComponentPropertySchema
+    schema_id: UUID; // References ComponentPropertySchema
     value: Json;
     is_valid: boolean;
     last_validated: ISODateTime | null;
@@ -59,5 +59,5 @@ export interface PropertyValidation {
     // Enum validation
     allowed_values?: string[];
     // Common
-    custom_validator?: string;  // Name of registered validator function
+    custom_validator?: string; // Name of registered validator function
 }

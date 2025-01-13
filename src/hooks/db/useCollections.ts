@@ -14,35 +14,38 @@ interface UseCollectionsOptions {
 // Type for our query key
 type CollectionsQueryKey = ['collections', UUID | undefined];
 
-export function useCollections(parentId?: UUID, options: UseCollectionsOptions = {}) {
+export function useCollections(
+    parentId?: UUID,
+    options: UseCollectionsOptions = {},
+) {
     const queryClient = useQueryClient();
     const { user } = useUserStore();
     const {
         selectedCollections,
         selectCollection,
         deselectCollection,
-        clearSelection
+        clearSelection,
     } = useCollectionStore();
 
     // Query for fetching collections
     const {
         data: collections = [],
         isLoading,
-        error
+        error,
     } = useQuery({
         queryKey: ['collections', parentId] as CollectionsQueryKey,
         queryFn: async () => {
             let url = '/api/db/collections';
             const params = new URLSearchParams();
-            
+
             if (parentId) {
                 params.append('parentId', parentId);
             }
-            
+
             if (params.toString()) {
                 url += `?${params.toString()}`;
             }
-            
+
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Failed to fetch collections');
@@ -51,12 +54,14 @@ export function useCollections(parentId?: UUID, options: UseCollectionsOptions =
             return mapDatabaseEntities<'collections'>(data);
         },
         enabled: !!user,
-        ...options
+        ...options,
     });
 
     // Create mutation
     const createMutation = useMutation({
-        mutationFn: async (data: Partial<Omit<Collection, 'id' | 'created_at'>>) => {
+        mutationFn: async (
+            data: Partial<Omit<Collection, 'id' | 'created_at'>>,
+        ) => {
             if (!user?.id) throw new Error('User not authenticated');
 
             const response = await fetch('/api/db/collections', {
@@ -69,7 +74,7 @@ export function useCollections(parentId?: UUID, options: UseCollectionsOptions =
                     created_by: user.id,
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
-                    version: 1
+                    version: 1,
                 }),
             });
 
@@ -81,27 +86,36 @@ export function useCollections(parentId?: UUID, options: UseCollectionsOptions =
             return mapDatabaseEntity<'collections'>(result);
         },
         onSuccess: (newCollection) => {
-            queryClient.setQueryData(['collections', parentId], (old: Collection[] = []) => {
-                return [...old, newCollection];
-            });
+            queryClient.setQueryData(
+                ['collections', parentId],
+                (old: Collection[] = []) => {
+                    return [...old, newCollection];
+                },
+            );
         },
     });
 
     // Delete mutation
     const deleteMutation = useMutation({
         mutationFn: async (collectionId: UUID) => {
-            const response = await fetch(`/api/db/collections?id=${collectionId}`, {
-                method: 'DELETE',
-            });
+            const response = await fetch(
+                `/api/db/collections?id=${collectionId}`,
+                {
+                    method: 'DELETE',
+                },
+            );
             if (!response.ok) {
                 throw new Error('Failed to delete collection');
             }
             return collectionId;
         },
         onSuccess: (deletedId) => {
-            queryClient.setQueryData(['collections', parentId], (old: Collection[] = []) => {
-                return old.filter(col => col.id !== deletedId);
-            });
+            queryClient.setQueryData(
+                ['collections', parentId],
+                (old: Collection[] = []) => {
+                    return old.filter((col) => col.id !== deletedId);
+                },
+            );
             deselectCollection(deletedId);
         },
     });
@@ -127,25 +141,39 @@ export function useCollections(parentId?: UUID, options: UseCollectionsOptions =
             return mapDatabaseEntity<'collections'>(result);
         },
         onSuccess: (updatedCollection) => {
-            queryClient.setQueryData(['collections', parentId], (old: Collection[] = []) => {
-                return old.map(col => 
-                    col.id === updatedCollection?.id ? updatedCollection : col
-                );
-            });
+            queryClient.setQueryData(
+                ['collections', parentId],
+                (old: Collection[] = []) => {
+                    return old.map((col) =>
+                        col.id === updatedCollection?.id
+                            ? updatedCollection
+                            : col,
+                    );
+                },
+            );
         },
     });
 
-    const createCollection = useCallback(async (data: Parameters<typeof createMutation.mutateAsync>[0]) => {
-        return await createMutation.mutateAsync(data);
-    }, [createMutation]);
+    const createCollection = useCallback(
+        async (data: Parameters<typeof createMutation.mutateAsync>[0]) => {
+            return await createMutation.mutateAsync(data);
+        },
+        [createMutation],
+    );
 
-    const deleteCollection = useCallback(async (collectionId: UUID) => {
-        await deleteMutation.mutateAsync(collectionId);
-    }, [deleteMutation]);
+    const deleteCollection = useCallback(
+        async (collectionId: UUID) => {
+            await deleteMutation.mutateAsync(collectionId);
+        },
+        [deleteMutation],
+    );
 
-    const updateCollection = useCallback(async (collection: Collection) => {
-        return await updateMutation.mutateAsync(collection);
-    }, [updateMutation]);
+    const updateCollection = useCallback(
+        async (collection: Collection) => {
+            return await updateMutation.mutateAsync(collection);
+        },
+        [updateMutation],
+    );
 
     return {
         collections,
@@ -157,6 +185,6 @@ export function useCollections(parentId?: UUID, options: UseCollectionsOptions =
         selectedCollections,
         selectCollection,
         deselectCollection,
-        clearSelection
+        clearSelection,
     };
 }

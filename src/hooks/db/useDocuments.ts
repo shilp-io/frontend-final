@@ -16,38 +16,45 @@ interface UseDocumentsOptions {
 // Type for our query key
 type DocumentsQueryKey = ['documents', UUID | undefined, string | undefined];
 
-export function useDocuments(collectionId?: UUID, options: UseDocumentsOptions = {}) {
+export function useDocuments(
+    collectionId?: UUID,
+    options: UseDocumentsOptions = {},
+) {
     const queryClient = useQueryClient();
     const { user } = useUserStore();
     const {
         selectedDocuments,
         selectDocument,
         deselectDocument,
-        clearSelection
+        clearSelection,
     } = useDocumentStore();
 
     // Query for fetching documents
     const {
         data: documents = [],
         isLoading,
-        error
+        error,
     } = useQuery({
-        queryKey: ['documents', collectionId, options.type] as DocumentsQueryKey,
+        queryKey: [
+            'documents',
+            collectionId,
+            options.type,
+        ] as DocumentsQueryKey,
         queryFn: async () => {
             let url = '/api/db/documents';
             const params = new URLSearchParams();
-            
+
             if (collectionId) {
                 params.append('collectionId', collectionId);
             }
             if (options.type) {
                 params.append('type', options.type);
             }
-            
+
             if (params.toString()) {
                 url += `?${params.toString()}`;
             }
-            
+
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Failed to fetch documents');
@@ -56,12 +63,14 @@ export function useDocuments(collectionId?: UUID, options: UseDocumentsOptions =
             return data as ExternalDoc[];
         },
         enabled: !!user,
-        ...options
+        ...options,
     });
 
     // Create mutation
     const createMutation = useMutation({
-        mutationFn: async (data: Partial<Omit<ExternalDoc, 'id' | 'created_at'>>) => {
+        mutationFn: async (
+            data: Partial<Omit<ExternalDoc, 'id' | 'created_at'>>,
+        ) => {
             if (!user?.id) throw new Error('User not authenticated');
 
             const response = await fetch('/api/db/documents', {
@@ -76,7 +85,8 @@ export function useDocuments(collectionId?: UUID, options: UseDocumentsOptions =
                     updated_at: new Date().toISOString(),
                     version: 1,
                     status: data.status || 'active',
-                    last_verified_date: data.last_verified_date || new Date().toISOString()
+                    last_verified_date:
+                        data.last_verified_date || new Date().toISOString(),
                 }),
             });
 
@@ -88,9 +98,12 @@ export function useDocuments(collectionId?: UUID, options: UseDocumentsOptions =
             return result as ExternalDoc;
         },
         onSuccess: (newDocument) => {
-            queryClient.setQueryData(['documents', collectionId, options.type], (old: ExternalDoc[] = []) => {
-                return [...old, newDocument];
-            });
+            queryClient.setQueryData(
+                ['documents', collectionId, options.type],
+                (old: ExternalDoc[] = []) => {
+                    return [...old, newDocument];
+                },
+            );
         },
     });
 
@@ -106,9 +119,12 @@ export function useDocuments(collectionId?: UUID, options: UseDocumentsOptions =
             return documentId;
         },
         onSuccess: (deletedId) => {
-            queryClient.setQueryData(['documents', collectionId, options.type], (old: ExternalDoc[] = []) => {
-                return old.filter(doc => doc.id !== deletedId);
-            });
+            queryClient.setQueryData(
+                ['documents', collectionId, options.type],
+                (old: ExternalDoc[] = []) => {
+                    return old.filter((doc) => doc.id !== deletedId);
+                },
+            );
             deselectDocument(deletedId);
         },
     });
@@ -134,25 +150,37 @@ export function useDocuments(collectionId?: UUID, options: UseDocumentsOptions =
             return result as ExternalDoc;
         },
         onSuccess: (updatedDocument) => {
-            queryClient.setQueryData(['documents', collectionId, options.type], (old: ExternalDoc[] = []) => {
-                return old.map(doc => 
-                    doc.id === updatedDocument?.id ? updatedDocument : doc
-                );
-            });
+            queryClient.setQueryData(
+                ['documents', collectionId, options.type],
+                (old: ExternalDoc[] = []) => {
+                    return old.map((doc) =>
+                        doc.id === updatedDocument?.id ? updatedDocument : doc,
+                    );
+                },
+            );
         },
     });
 
-    const createDocument = useCallback(async (data: Parameters<typeof createMutation.mutateAsync>[0]) => {
-        return await createMutation.mutateAsync(data);
-    }, [createMutation]);
+    const createDocument = useCallback(
+        async (data: Parameters<typeof createMutation.mutateAsync>[0]) => {
+            return await createMutation.mutateAsync(data);
+        },
+        [createMutation],
+    );
 
-    const deleteDocument = useCallback(async (documentId: UUID) => {
-        await deleteMutation.mutateAsync(documentId);
-    }, [deleteMutation]);
+    const deleteDocument = useCallback(
+        async (documentId: UUID) => {
+            await deleteMutation.mutateAsync(documentId);
+        },
+        [deleteMutation],
+    );
 
-    const updateDocument = useCallback(async (document: ExternalDoc) => {
-        return await updateMutation.mutateAsync(document);
-    }, [updateMutation]);
+    const updateDocument = useCallback(
+        async (document: ExternalDoc) => {
+            return await updateMutation.mutateAsync(document);
+        },
+        [updateMutation],
+    );
 
     return {
         documents,
@@ -164,6 +192,6 @@ export function useDocuments(collectionId?: UUID, options: UseDocumentsOptions =
         selectedDocuments,
         selectDocument,
         deselectDocument,
-        clearSelection
+        clearSelection,
     };
 }

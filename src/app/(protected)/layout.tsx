@@ -1,8 +1,12 @@
-import { SidebarProvider } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/private/sidebar/AppSidebar'
-import VerticalToolbar from '@/components/private/VerticalToolbar'
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/private/sidebar/AppSidebar';
+import VerticalToolbar from '@/components/private/VerticalToolbar';
 
-export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
+export default function ProtectedLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -11,5 +15,5 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
                 <VerticalToolbar />
             </div>
         </SidebarProvider>
-    )
+    );
 }

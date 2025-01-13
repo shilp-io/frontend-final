@@ -13,26 +13,29 @@ interface UseDocumentOptions {
 // Type for our query key
 type DocumentQueryKey = ['document', UUID | undefined];
 
-export function useDocument(documentId: UUID, options: UseDocumentOptions = {}) {
+export function useDocument(
+    documentId: UUID,
+    options: UseDocumentOptions = {},
+) {
     const queryClient = useQueryClient();
     const { user } = useUserStore();
-    const { 
+    const {
         selectedDocuments,
         selectDocument,
         deselectDocument,
-        clearSelection
+        clearSelection,
     } = useDocumentStore();
 
     // Query for fetching a single document
     const {
         data: document,
         isLoading,
-        error
+        error,
     } = useQuery({
         queryKey: ['document', documentId] as DocumentQueryKey,
         queryFn: async () => {
             if (!documentId) return null;
-            
+
             const response = await fetch(`/api/db/documents?id=${documentId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch document');
@@ -41,12 +44,14 @@ export function useDocument(documentId: UUID, options: UseDocumentOptions = {}) 
             return mapDatabaseEntity<'external_docs'>(data);
         },
         enabled: !!documentId,
-        ...options
+        ...options,
     });
 
     // Update document mutation
     const updateDocumentMutation = useMutation({
-        mutationFn: async (data: Partial<Omit<ExternalDoc, 'id' | 'created_at' | 'version'>>) => {
+        mutationFn: async (
+            data: Partial<Omit<ExternalDoc, 'id' | 'created_at' | 'version'>>,
+        ) => {
             if (!document) {
                 throw new Error('Document not found');
             }
@@ -64,7 +69,7 @@ export function useDocument(documentId: UUID, options: UseDocumentOptions = {}) 
                     ...data,
                     updated_by: user.id,
                     updated_at: new Date().toISOString(),
-                    version: document.version + 1
+                    version: document.version + 1,
                 }),
             });
 
@@ -76,7 +81,9 @@ export function useDocument(documentId: UUID, options: UseDocumentOptions = {}) 
             return mapDatabaseEntity<'external_docs'>(result);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['document', documentId] as const });
+            queryClient.invalidateQueries({
+                queryKey: ['document', documentId] as const,
+            });
             queryClient.invalidateQueries({ queryKey: ['documents'] as const });
         },
     });
@@ -104,13 +111,18 @@ export function useDocument(documentId: UUID, options: UseDocumentOptions = {}) 
     });
 
     // Helper functions with proper error handling
-    const updateDocument = useCallback(async (data: Parameters<typeof updateDocumentMutation.mutateAsync>[0]) => {
-        try {
-            return await updateDocumentMutation.mutateAsync(data);
-        } catch (error) {
-            throw error;
-        }
-    }, [updateDocumentMutation]);
+    const updateDocument = useCallback(
+        async (
+            data: Parameters<typeof updateDocumentMutation.mutateAsync>[0],
+        ) => {
+            try {
+                return await updateDocumentMutation.mutateAsync(data);
+            } catch (error) {
+                throw error;
+            }
+        },
+        [updateDocumentMutation],
+    );
 
     const deleteDocument = useCallback(async () => {
         try {

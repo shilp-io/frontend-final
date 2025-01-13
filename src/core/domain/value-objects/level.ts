@@ -1,8 +1,8 @@
 // src/core/domain/value-objects/level.ts
-import { RequirementLevel } from "../models/enums";
+import { RequirementLevel } from '../models/enums';
 
 export class RequirementLevelValue {
-    constructor(public readonly value: RequirementLevel) { }
+    constructor(public readonly value: RequirementLevel) {}
 
     equals(other: RequirementLevelValue): boolean {
         return this.value === other.value;

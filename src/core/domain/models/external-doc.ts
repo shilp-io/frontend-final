@@ -14,3 +14,5 @@ export interface ExternalDoc extends BaseEntity {
     tags: string[] | null;
     organization_id: UUID | null;
 }
+
+export type ExternalDocData = Partial<Omit<ExternalDoc, keyof BaseEntity>>;

@@ -98,4 +98,3 @@ export type PropertyType =
     | 'user_reference'
     | 'requirement_reference'
     | 'component_reference';
-

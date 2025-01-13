@@ -37,12 +37,15 @@ export const useAppStore = create<AppState>()(
                 ...initialState,
                 setTheme: (theme) => set({ theme }),
                 setViewMode: (viewMode) => set({ viewMode }),
-                toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-                toggleNotifications: () => set((state) => ({ notifications: !state.notifications })),
-                setLoading: (isLoading, text = null) => set({ isLoading, loadingText: text }),
+                toggleSidebar: () =>
+                    set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+                toggleNotifications: () =>
+                    set((state) => ({ notifications: !state.notifications })),
+                setLoading: (isLoading, text = null) =>
+                    set({ isLoading, loadingText: text }),
                 setError: (error) => set({ error }),
                 clearError: () => set({ error: null }),
-                reset: () => set(initialState)
+                reset: () => set(initialState),
             }),
             {
                 name: 'app-settings',
@@ -50,9 +53,9 @@ export const useAppStore = create<AppState>()(
                     theme: state.theme,
                     sidebarOpen: state.sidebarOpen,
                     notifications: state.notifications,
-                    viewMode: state.viewMode
-                })
-            }
-        )
-    )
-); 
+                    viewMode: state.viewMode,
+                }),
+            },
+        ),
+    ),
+);

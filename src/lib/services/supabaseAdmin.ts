@@ -7,7 +7,9 @@ export class SupabaseAdminService {
 
     private constructor() {
         if (typeof window !== 'undefined') {
-            throw new Error('SupabaseAdminService can only be instantiated on the server side');
+            throw new Error(
+                'SupabaseAdminService can only be instantiated on the server side',
+            );
         }
 
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -17,12 +19,16 @@ export class SupabaseAdminService {
             throw new Error('Missing Supabase environment variables');
         }
 
-        this.client = createClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
-            auth: {
-                autoRefreshToken: false,
-                persistSession: false
-            }
-        });
+        this.client = createClient<Database>(
+            supabaseUrl,
+            supabaseServiceRoleKey,
+            {
+                auth: {
+                    autoRefreshToken: false,
+                    persistSession: false,
+                },
+            },
+        );
     }
 
     public static getInstance(): SupabaseAdminService {
@@ -38,4 +44,4 @@ export class SupabaseAdminService {
 }
 
 // Export singleton instance
-export const supabaseAdminService = SupabaseAdminService.getInstance(); 
+export const supabaseAdminService = SupabaseAdminService.getInstance();
