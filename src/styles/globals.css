@@ -1,129 +1,153 @@
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;700;900&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+:root {
+  --background: 0 0 0;
+  --foreground: 255 255 255;
+  --accent: 128 128 128;
+  --icon-color: 155, 81, 224;
+  --grid-size: 20px;
+  --grid-color: rgba(255, 255, 255, 0.05);
 }
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    
-    /* Red accent colors */
-    --primary: 0 72% 51%;  /* Vibrant red */
-    --primary-foreground: 0 0% 98%;
-    
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 240 5.9% 10%;
-    
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    
-    --accent: 0 91% 71%;  /* Lighter red for accents */
-    --accent-foreground: 0 0% 98%;
-    
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    /* Neutral colors */
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 0 72% 51%;  /* Matching primary red */
-
-    /* Chart colors - Minimalistic palette */
-    --chart-1: 0 72% 51%;    /* Primary red */
-    --chart-2: 220 14% 96%;  /* Light gray */
-    --chart-3: 240 10% 4%;   /* Near black */
-    --chart-4: 0 0% 85%;     /* Medium gray */
-    --chart-5: 0 91% 71%;    /* Light red */
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    
-    /* Dark mode red accents */
-    --primary: 0 72% 51%;  /* Keeping the same red */
-    --primary-foreground: 0 0% 98%;
-    
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    
-    --accent: 0 91% 71%;
-    --accent-foreground: 240 5.9% 10%;
-    
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-
-    /* Dark mode neutral colors */
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 0 72% 51%;
-
-    /* Dark mode chart colors */
-    --chart-1: 0 72% 51%;    /* Primary red */
-    --chart-2: 240 3.7% 15.9%; /* Dark gray */
-    --chart-3: 0 0% 98%;     /* Near white */
-    --chart-4: 240 5% 64.9%; /* Medium gray */
-    --chart-5: 0 91% 71%;    /* Light red */    --sidebar-background: 240 5.9% 10%;    --sidebar-foreground: 240 4.8% 95.9%;    --sidebar-primary: 224.3 76.3% 48%;    --sidebar-primary-foreground: 0 0% 100%;    --sidebar-accent: 240 3.7% 15.9%;    --sidebar-accent-foreground: 240 4.8% 95.9%;    --sidebar-border: 240 3.7% 15.9%;    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
+  html {
+    font-family: "Chakra Petch", sans-serif;
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-black text-white;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-white font-black tracking-tighter uppercase;
   }
 }
 
-/* Custom utility classes */
+@layer components {
+  .btn-primary {
+    @apply bg-white text-black hover:bg-gray-200 transition-colors uppercase tracking-wider font-bold text-lg px-12 py-6;
+  }
+  .btn-secondary {
+    @apply border-2 border-white text-white hover:bg-white hover:text-black transition-colors uppercase tracking-wider font-bold text-lg px-12 py-6;
+  }
+  .section-padding {
+    @apply py-32;
+  }
+  .atoms-logo {
+    @apply text-4xl md:text-5xl font-black text-white uppercase;
+  }
+}
+
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-stroke {
+    -webkit-text-stroke: 1px white;
+    color: transparent;
+  }
+  .text-stroke-black {
+    -webkit-text-stroke: 1px black;
+    color: transparent;
   }
 }
-@layer base {
-  * {
-    @apply border-border;
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
   }
-  body {
-    @apply bg-background text-foreground;
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
-} 
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+body {
+  @apply bg-[#0f0f0f] text-[#B5B5B5];
+}
+
+.section-divider {
+  @apply relative;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: "";
+  @apply absolute left-0 w-full h-1 bg-white;
+}
+
+.section-divider::before {
+  @apply top-0;
+}
+
+.section-divider::after {
+  @apply bottom-0;
+}
+
+.abstract-background {
+  pointer-events: none;
+}
+
+.abstract-background svg {
+  animation:
+    fadeIn 2s ease-out forwards,
+    rotate 120s linear infinite;
+}
+
+.abstract-background svg > * {
+  transition: all 0.5s ease-in-out;
+}
+
+.abstract-background svg > *:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+.grid-background {
+  background-image: linear-gradient(
+      to right,
+      var(--grid-color) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --grid-size: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --grid-size: 60px;
+  }
+}
