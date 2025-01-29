@@ -1,13 +1,13 @@
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import type { UUID } from '@/types';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+import type { UUID } from "@/types";
 
 export interface Collection {
   id: UUID;
   name: string;
   description: string | null;
   parent_id: UUID | null;
-  access_level: 'private' | 'project' | 'organization' | 'public';
+  access_level: "private" | "project" | "organization" | "public";
   tags: string[] | null;
   created_at: string | null;
   updated_at: string | null;
@@ -24,7 +24,7 @@ interface CollectionFilters {
 interface CollectionState {
   filters: CollectionFilters;
   selectedCollections: UUID[];
-  
+
   // Actions
   setFilters: (filters: Partial<CollectionFilters>) => void;
   clearFilters: () => void;
@@ -47,29 +47,34 @@ export const useCollectionStore = create<CollectionState>()(
     persist(
       (set) => ({
         ...initialState,
-        setFilters: (filters) => set((state) => ({
-          filters: { ...state.filters, ...filters }
-        })),
+        setFilters: (filters) =>
+          set((state) => ({
+            filters: { ...state.filters, ...filters },
+          })),
 
         clearFilters: () => set({ filters: { access_level: [] } }),
 
-        selectCollection: (id) => set((state) => ({
-          selectedCollections: [...state.selectedCollections, id]
-        })),
+        selectCollection: (id) =>
+          set((state) => ({
+            selectedCollections: [...state.selectedCollections, id],
+          })),
 
-        deselectCollection: (id) => set((state) => ({
-          selectedCollections: state.selectedCollections.filter((collId) => collId !== id)
-        })),
+        deselectCollection: (id) =>
+          set((state) => ({
+            selectedCollections: state.selectedCollections.filter(
+              (collId) => collId !== id,
+            ),
+          })),
 
         clearSelection: () => set({ selectedCollections: [] }),
-        reset: () => set(initialState)
+        reset: () => set(initialState),
       }),
       {
-        name: 'collections-store',
+        name: "collections-store",
         partialize: (state) => ({
-          filters: state.filters
-        })
-      }
-    )
-  )
-); 
+          filters: state.filters,
+        }),
+      },
+    ),
+  ),
+);

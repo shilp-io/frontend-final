@@ -23,21 +23,25 @@ An advanced requirements engineering platform powered by AI, built with Next.js,
 ## Getting Started
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/requirements-engineering-platform.git
 ```
 
 2. Install dependencies:
+
 ```bash
 bun install
 ```
 
 3. Set up environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
 Fill in your environment variables:
+
 ```env
 # Firebase
 NEXT_PUBLIC_FIREBASE_API_KEY=
@@ -54,11 +58,13 @@ AI_SERVICE_KEY=
 ```
 
 4. Run the development server:
+
 ```bash
 bun dev
 ```
 
 5. Build for production:
+
 ```bash
 bun run build
 ```
@@ -90,11 +96,13 @@ src/
 ### Database Migrations
 
 1. Generate migrations:
+
 ```bash
 bun supabase migration new <migration_name>
 ```
 
 2. Apply migrations:
+
 ```bash
 bun supabase db reset
 ```
@@ -102,6 +110,7 @@ bun supabase db reset
 ### Adding New Features
 
 1. Create a new feature branch:
+
 ```bash
 git checkout -b feature/your-feature-name
 ```
@@ -126,11 +135,13 @@ bun test --watch
 ## Deployment
 
 1. Build the application:
+
 ```bash
 bun run build
 ```
 
 2. Deploy to Firebase:
+
 ```bash
 bun firebase deploy
 ```

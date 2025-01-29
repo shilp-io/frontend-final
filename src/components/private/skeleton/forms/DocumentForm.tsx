@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -14,51 +14,54 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Upload } from 'lucide-react'
-import { useToast } from "@/components/ui/use-toast"
+} from "@/components/ui/select";
+import { Upload } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const documentFormSchema = z.object({
-  title: z.string().min(1, 'Document title is required'),
+  title: z.string().min(1, "Document title is required"),
   description: z.string().optional(),
-  type: z.enum(['pdf', 'doc', 'docx', 'txt', 'other']),
-  status: z.enum(['draft', 'under_review', 'approved', 'archived']),
+  type: z.enum(["pdf", "doc", "docx", "txt", "other"]),
+  status: z.enum(["draft", "under_review", "approved", "archived"]),
   version: z.string().optional(),
   tags: z.array(z.string()).optional(),
-})
+});
 
-type DocumentFormValues = z.infer<typeof documentFormSchema>
+type DocumentFormValues = z.infer<typeof documentFormSchema>;
 
 const defaultValues: Partial<DocumentFormValues> = {
-  title: '',
-  description: '',
-  type: 'pdf',
-  status: 'draft',
-  version: '',
+  title: "",
+  description: "",
+  type: "pdf",
+  status: "draft",
+  version: "",
   tags: [],
-}
+};
 
 interface DocumentFormProps {
-  collectionId?: string
-  onSuccess: () => void
+  collectionId?: string;
+  onSuccess: () => void;
 }
 
-export default function DocumentForm({ collectionId, onSuccess }: DocumentFormProps) {
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
-  const { toast } = useToast()
+export default function DocumentForm({
+  collectionId,
+  onSuccess,
+}: DocumentFormProps) {
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const { toast } = useToast();
   const form = useForm<DocumentFormValues>({
     resolver: zodResolver(documentFormSchema),
     defaultValues,
-  })
+  });
 
-  const [file, setFile] = React.useState<File | null>(null)
+  const [file, setFile] = React.useState<File | null>(null);
 
   async function onSubmit(data: DocumentFormValues) {
     if (!collectionId) {
@@ -66,8 +69,8 @@ export default function DocumentForm({ collectionId, onSuccess }: DocumentFormPr
         variant: "destructive",
         title: "Error",
         description: "Collection ID is required",
-      })
-      return
+      });
+      return;
     }
 
     if (!file) {
@@ -75,45 +78,49 @@ export default function DocumentForm({ collectionId, onSuccess }: DocumentFormPr
         variant: "destructive",
         title: "Error",
         description: "File is required",
-      })
-      return
+      });
+      return;
     }
 
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
       // TODO: Implement document creation API call with file upload
-      console.log('Document data:', { ...data, collectionId, file })
+      console.log("Document data:", { ...data, collectionId, file });
       toast({
         variant: "default",
         title: "Success",
         description: "Document created successfully",
-      })
-      onSuccess()
+      });
+      onSuccess();
     } catch (error) {
-      console.error('Failed to create document:', error)
+      console.error("Failed to create document:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : 'Failed to create document',
-      })
+        description:
+          error instanceof Error ? error.message : "Failed to create document",
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files?.[0]
+    const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      setFile(selectedFile)
+      setFile(selectedFile);
       // Auto-detect document type from file extension
-      const extension = selectedFile.name.split('.').pop()?.toLowerCase()
-      if (extension && ['pdf', 'doc', 'docx', 'txt'].includes(extension)) {
-        form.setValue('type', extension as z.infer<typeof documentFormSchema>['type'])
+      const extension = selectedFile.name.split(".").pop()?.toLowerCase();
+      if (extension && ["pdf", "doc", "docx", "txt"].includes(extension)) {
+        form.setValue(
+          "type",
+          extension as z.infer<typeof documentFormSchema>["type"],
+        );
       } else {
-        form.setValue('type', 'other')
+        form.setValue("type", "other");
       }
     }
-  }
+  };
 
   return (
     <Form {...form}>
@@ -124,7 +131,7 @@ export default function DocumentForm({ collectionId, onSuccess }: DocumentFormPr
             <div className="space-y-2">
               <Button
                 variant="outline"
-                onClick={() => document.getElementById('file-upload')?.click()}
+                onClick={() => document.getElementById("file-upload")?.click()}
                 type="button"
               >
                 Choose File
@@ -137,7 +144,7 @@ export default function DocumentForm({ collectionId, onSuccess }: DocumentFormPr
                 accept=".pdf,.doc,.docx,.txt"
               />
               <p className="text-sm text-muted-foreground">
-                {file ? file.name : 'PDF, DOC, DOCX, or TXT up to 10MB'}
+                {file ? file.name : "PDF, DOC, DOCX, or TXT up to 10MB"}
               </p>
             </div>
           </div>
@@ -242,10 +249,10 @@ export default function DocumentForm({ collectionId, onSuccess }: DocumentFormPr
 
         <div className="flex justify-end">
           <Button type="submit" disabled={!file || isSubmitting}>
-            {isSubmitting ? 'Creating...' : 'Create Document'}
+            {isSubmitting ? "Creating..." : "Create Document"}
           </Button>
         </div>
       </form>
     </Form>
-  )
-} 
+  );
+}

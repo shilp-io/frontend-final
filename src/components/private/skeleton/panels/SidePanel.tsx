@@ -1,32 +1,30 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import { X, ExternalLink, MoreVertical } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { detailsVariants } from '@/lib/animations'
+import * as React from "react";
+import { X, ExternalLink, MoreVertical } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { detailsVariants } from "@/lib/animations";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-const EDIT_OPTIONS = [
-  { label: 'Delete', value: 'delete' },
-] as const
+const EDIT_OPTIONS = [{ label: "Delete", value: "delete" }] as const;
 
 export interface SidePanelProps {
-  isOpen: boolean
-  onClose: () => void
-  onNavigate?: () => void
-  onOptionSelect?: (option: typeof EDIT_OPTIONS[number]['value']) => void
-  children: React.ReactNode
-  showNavigateButton?: boolean
-  showEditButton?: boolean
-  className?: string
-  width?: string
+  isOpen: boolean;
+  onClose: () => void;
+  onNavigate?: () => void;
+  onOptionSelect?: (option: (typeof EDIT_OPTIONS)[number]["value"]) => void;
+  children: React.ReactNode;
+  showNavigateButton?: boolean;
+  showEditButton?: boolean;
+  className?: string;
+  width?: string;
 }
 
 export function SidePanel({
@@ -37,31 +35,31 @@ export function SidePanel({
   children,
   showNavigateButton = false,
   showEditButton = false,
-  className = '',
-  width = '35%'
+  className = "",
+  width = "35%",
 }: SidePanelProps) {
-  const [isAnimating, setIsAnimating] = React.useState(false)
+  const [isAnimating, setIsAnimating] = React.useState(false);
 
   const handleClose = () => {
     if (!isAnimating) {
-      setIsAnimating(true)
-      onClose()
+      setIsAnimating(true);
+      onClose();
     }
-  }
+  };
 
   const handleAnimationComplete = () => {
     setTimeout(() => {
-      setIsAnimating(false)
-    }, 100)
-  }
+      setIsAnimating(false);
+    }, 100);
+  };
 
   const customVariants = {
     ...detailsVariants,
     visible: {
       ...detailsVariants.visible,
-      width
-    }
-  }
+      width,
+    },
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -121,5 +119,5 @@ export function SidePanel({
         </motion.div>
       )}
     </AnimatePresence>
-  )
-} 
+  );
+}

@@ -1,7 +1,5 @@
 For large-scale applications, combining context providers with hooks, Zustand, and caching can create a robust state management system. Let me outline an optimized architecture.
 
-
-
 ```typescript
 // src/lib/context/ServiceContext.tsx
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -98,14 +96,14 @@ export const useRequirementStore = create<RequirementState>()(
       priority: []
     },
     setActiveProject: (projectId) => set({ activeProjectId: projectId }),
-    updateRequirement: (id, data) => 
+    updateRequirement: (id, data) =>
       set((state) => ({
         requirements: {
           ...state.requirements,
           [id]: { ...state.requirements[id], ...data }
         }
       })),
-    setFilters: (filters) => 
+    setFilters: (filters) =>
       set((state) => ({
         filters: { ...state.filters, ...filters }
       }))
@@ -119,11 +117,11 @@ import { services } from '@/lib/services';
 import { cacheService } from '@/lib/services/cache';
 
 export function useRequirements(projectId: string) {
-  const { 
+  const {
     requirements,
     activeProjectId,
     setActiveProject,
-    updateRequirement 
+    updateRequirement
   } = useRequirementStore();
 
   const loadRequirements = useCallback(async () => {
@@ -200,7 +198,7 @@ function RequirementsView({ projectId }: { projectId: string }) {
   const { requirements, refresh } = useRequirements(projectId);
   const filters = useRequirementStore(state => state.filters);
   const { theme } = useAppStore();
-  
+
   // Filter requirements based on store filters
   const filteredRequirements = requirements.filter(req => {
     if (filters.status.length && !filters.status.includes(req.status)) {
@@ -226,12 +224,14 @@ function RequirementsView({ projectId }: { projectId: string }) {
 Here's how the different parts work together:
 
 1. **Context Layer (Top Level)**
+
 - Manages service initialization
 - Provides access to singleton services
 - Handles auth state and user context
 - Use for app-wide dependencies and services
 
 2. **Zustand Stores (Domain State)**
+
 - Manages business logic and domain state
 - Handles real-time updates
 - Stores UI preferences and settings
@@ -243,6 +243,7 @@ Here's how the different parts work together:
   - UI state
 
 3. **Cache Layer**
+
 - Handles frequently accessed data
 - Reduces database queries
 - Improves performance
@@ -252,6 +253,7 @@ Here's how the different parts work together:
   - Expensive computations
 
 4. **Custom Hooks (Component Logic)**
+
 - Combines all layers
 - Handles component-specific logic
 - Manages subscriptions and cleanup
@@ -263,6 +265,7 @@ Here's how the different parts work together:
 Best Practices for Large Scale Apps:
 
 1. **State Management Decision Tree**:
+
 ```typescript
 // Use Context for:
 - Service instances
@@ -290,13 +293,11 @@ Best Practices for Large Scale Apps:
 ```
 
 2. **Performance Optimizations**:
+
 ```typescript
 // Implement selective updates
 const requirement = useRequirementStore(
-  useCallback(
-    state => state.requirements[id],
-    [id]
-  )
+  useCallback((state) => state.requirements[id], [id]),
 );
 
 // Use middleware for debugging
@@ -306,21 +307,22 @@ const useDomainStore = create<DomainState>()(
       (set) => ({
         // store implementation
       }),
-      { name: 'domain-store' }
-    )
-  )
+      { name: "domain-store" },
+    ),
+  ),
 );
 ```
 
 3. **Error Boundaries and Recovery**:
+
 ```typescript
 const ErrorBoundary = ({ children }) => {
   const refresh = useRequirementStore(state => state.refresh);
-  
+
   return (
     <Boundary
       fallback={({ error, reset }) => (
-        <ErrorView 
+        <ErrorView
           error={error}
           onRetry={() => {
             refresh();

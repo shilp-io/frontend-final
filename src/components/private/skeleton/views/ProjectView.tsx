@@ -1,8 +1,8 @@
-import { Project, Requirement } from '@/types/entities';
-import { formatDate } from '@/lib/utils/dateUtils';
-import { CreatePanel, TableManager } from '@/components/private';
-import type { Column } from '@/components/private';
-import { useState } from 'react';
+import { Project, Requirement } from "@/types/entities";
+import { formatDate } from "@/lib/utils/dateUtils";
+import { CreatePanel, TableManager } from "@/components/private";
+import type { Column } from "@/components/private";
+import { useState } from "react";
 
 interface ProjectViewProps {
   project: Project | null;
@@ -29,44 +29,49 @@ export function ProjectView({
 
   const columns: Column<Requirement>[] = [
     {
-      header: 'Title',
+      header: "Title",
       width: 38,
       accessor: (req: Requirement) => req.title,
     },
     {
-      header: 'Status',
+      header: "Status",
       width: 10,
       accessor: (req: Requirement) => req.status,
     },
     {
-      header: 'Priority',
+      header: "Priority",
       width: 10,
       accessor: (req: Requirement) => req.priority,
     },
     {
-      header: 'Updated',
+      header: "Updated",
       width: 10,
-      accessor: (req: Requirement) => formatDate(req.updated_at) || '-',
+      accessor: (req: Requirement) => formatDate(req.updated_at) || "-",
     },
   ];
 
   const renderGridItem = (requirement: Requirement) => (
     <div className="p-4 border rounded-lg">
       <h3 className="font-mono font-medium">{requirement.title}</h3>
-      <p className="font-mono text-sm text-gray-500 mt-2">{requirement.description}</p>
+      <p className="font-mono text-sm text-gray-500 mt-2">
+        {requirement.description}
+      </p>
     </div>
   );
 
   const renderDetails = (requirement: Requirement) => (
     <div className="p-4">
       <h3 className="font-mono text-lg font-medium">{requirement.title}</h3>
-      <p className="font-mono text-sm text-gray-500 mt-2">{requirement.description}</p>
+      <p className="font-mono text-sm text-gray-500 mt-2">
+        {requirement.description}
+      </p>
       <div className="mt-4 space-y-2">
         <div className="font-mono text-sm">
           <span className="text-gray-500">Status:</span> {requirement.status}
         </div>
         <div className="font-mono text-sm">
-          <span className="text-gray-500">Priority:</span> {requirement.priority}
+          <span className="text-gray-500">Priority:</span>{" "}
+          {requirement.priority}
         </div>
       </div>
     </div>
@@ -89,7 +94,7 @@ export function ProjectView({
           <div className="font-mono text-sm text-gray-500">Title</div>
           <div className="font-mono">{project.name}</div>
           <div className="font-mono text-sm text-gray-500">Description</div>
-          <div className="font-mono">{project.description || '-'}</div>
+          <div className="font-mono">{project.description || "-"}</div>
           <div className="font-mono text-sm text-gray-500">Created</div>
           <div className="font-mono">{formatDate(project.created_at)}</div>
         </div>
@@ -101,8 +106,8 @@ export function ProjectView({
           description="Manage project requirements"
           data={requirements}
           columns={columns}
-          onItemSelect={onRequirementClick || (() => { })}
-          handleGoToPage={handleGoToPage || (() => { })}
+          onItemSelect={onRequirementClick || (() => {})}
+          handleGoToPage={handleGoToPage || (() => {})}
           onItemDelete={onRequirementDelete}
           isLoading={isLoading || false}
           renderGridItem={renderGridItem}

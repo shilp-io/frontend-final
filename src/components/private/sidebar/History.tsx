@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { FileText, Book, FolderOpen, Boxes, ChevronRight, ChevronDown } from 'lucide-react';
-import { useProjectStore } from '@/lib/store/projectStore';
-import { useRequirementStore } from '@/lib/store/requirementStore';
-import { useCollectionStore } from '@/lib/store/collectionStore';
-import { useDocumentStore } from '@/lib/store/documentStore';
-import { useRecentStore } from '@/lib/store/recentStore';
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import type { UUID } from '@/types';
+import React, { useEffect, useState } from "react";
+import {
+  FileText,
+  Book,
+  FolderOpen,
+  Boxes,
+  ChevronRight,
+  ChevronDown,
+} from "lucide-react";
+import { useProjectStore } from "@/lib/store/projectStore";
+import { useRequirementStore } from "@/lib/store/requirementStore";
+import { useCollectionStore } from "@/lib/store/collectionStore";
+import { useDocumentStore } from "@/lib/store/documentStore";
+import { useRecentStore } from "@/lib/store/recentStore";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import type { UUID } from "@/types";
 
 interface RecentItemView {
   id: UUID;
@@ -22,17 +29,19 @@ const History: React.FC = () => {
   const { getRecentItemsByType } = useRecentStore();
 
   // State for expanded sections and item limits
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({
     projects: true,
     requirements: true,
     collections: true,
-    documents: true
+    documents: true,
   });
   const [showMore, setShowMore] = useState<Record<string, boolean>>({
     projects: false,
     requirements: false,
     collections: false,
-    documents: false
+    documents: false,
   });
 
   // Initialize state for recent items
@@ -45,33 +54,42 @@ const History: React.FC = () => {
     projects: [],
     requirements: [],
     collections: [],
-    documents: []
+    documents: [],
   });
 
   // Fetch recent items on client side only
   useEffect(() => {
     const updateRecentItems = () => {
       setRecentItems({
-        projects: getRecentItemsByType('project', showMore.projects ? 10 : 3),
-        requirements: getRecentItemsByType('requirement', showMore.requirements ? 10 : 3),
-        collections: getRecentItemsByType('collection', showMore.collections ? 10 : 3),
-        documents: getRecentItemsByType('document', showMore.documents ? 10 : 3)
+        projects: getRecentItemsByType("project", showMore.projects ? 10 : 3),
+        requirements: getRecentItemsByType(
+          "requirement",
+          showMore.requirements ? 10 : 3,
+        ),
+        collections: getRecentItemsByType(
+          "collection",
+          showMore.collections ? 10 : 3,
+        ),
+        documents: getRecentItemsByType(
+          "document",
+          showMore.documents ? 10 : 3,
+        ),
       });
     };
     updateRecentItems();
   }, [getRecentItemsByType, showMore]);
 
   const toggleSection = (section: string) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
 
   const toggleShowMore = (section: string) => {
-    setShowMore(prev => ({
+    setShowMore((prev) => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
 
@@ -80,7 +98,7 @@ const History: React.FC = () => {
     items: RecentItemView[],
     icon: React.ReactNode,
     onClick: (id: UUID) => void,
-    path: string
+    path: string,
   ) => {
     const sectionKey = title.toLowerCase();
     const isExpanded = expandedSections[sectionKey];
@@ -116,7 +134,7 @@ const History: React.FC = () => {
                 onClick={() => onClick(item.id)}
                 className={cn(
                   "group flex items-center w-full px-2 py-1 text-left rounded-sm transition-colors text-xs relative",
-                  "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/20"
+                  "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/20",
                 )}
               >
                 <div className="absolute -left-2 top-1/2 h-px w-2 bg-gray-200 dark:bg-gray-700/50 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -133,7 +151,7 @@ const History: React.FC = () => {
                 onClick={() => toggleShowMore(sectionKey)}
                 className="w-full px-2 py-1 text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-left"
               >
-                {isShowingMore ? '← show less' : '→ show more'}
+                {isShowingMore ? "← show less" : "→ show more"}
               </button>
             )}
           </div>
@@ -146,36 +164,36 @@ const History: React.FC = () => {
     <div className="space-y-4">
       <div className="space-y-3">
         {renderSection(
-          'Projects',
+          "Projects",
           recentItems.projects,
           <FileText className="w-3 h-3" />,
           selectProject,
-          '/projects'
+          "/projects",
         )}
         {renderSection(
-          'Requirements',
+          "Requirements",
           recentItems.requirements,
           <Book className="w-3 h-3" />,
           selectRequirement,
-          '/projects/requirements'
+          "/projects/requirements",
         )}
         {renderSection(
-          'Collections',
+          "Collections",
           recentItems.collections,
           <FolderOpen className="w-3 h-3" />,
           selectCollection,
-          '/collections'
+          "/collections",
         )}
         {renderSection(
-          'Documents',
+          "Documents",
           recentItems.documents,
           <Boxes className="w-3 h-3" />,
           selectDocument,
-          '/documents'
+          "/documents",
         )}
       </div>
     </div>
   );
 };
 
-export default History; 
+export default History;

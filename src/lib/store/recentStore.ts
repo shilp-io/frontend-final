@@ -1,12 +1,12 @@
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import type { UUID } from '@/types';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+import type { UUID } from "@/types";
 
 interface RecentItem {
   id: UUID;
   name: string;
   accessedAt: string;
-  type: 'project' | 'requirement' | 'collection' | 'document';
+  type: "project" | "requirement" | "collection" | "document";
 }
 
 interface RecentItemView {
@@ -19,9 +19,12 @@ interface RecentState {
   maxItems: number;
 
   // Actions
-  addRecentItem: (id: UUID, name: string, type: RecentItem['type']) => void;
+  addRecentItem: (id: UUID, name: string, type: RecentItem["type"]) => void;
   clearRecentItems: () => void;
-  getRecentItemsByType: (type: RecentItem['type'], limit?: number) => RecentItemView[];
+  getRecentItemsByType: (
+    type: RecentItem["type"],
+    limit?: number,
+  ) => RecentItemView[];
   reset: () => void;
 }
 
@@ -36,48 +39,49 @@ export const useRecentStore = create<RecentState>()(
     persist(
       (set, get) => ({
         ...initialState,
-        addRecentItem: (id, name, type) => set((state) => {
-          const now = new Date().toISOString();
-          const existingIndex = state.recentItems.findIndex(
-            item => item.id === id && item.type === type
-          );
+        addRecentItem: (id, name, type) =>
+          set((state) => {
+            const now = new Date().toISOString();
+            const existingIndex = state.recentItems.findIndex(
+              (item) => item.id === id && item.type === type,
+            );
 
-          let newItems = [...state.recentItems];
-          
-          // Remove existing entry if found
-          if (existingIndex !== -1) {
-            newItems.splice(existingIndex, 1);
-          }
+            let newItems = [...state.recentItems];
 
-          // Add new entry at the beginning
-          newItems.unshift({ id, name, type, accessedAt: now });
+            // Remove existing entry if found
+            if (existingIndex !== -1) {
+              newItems.splice(existingIndex, 1);
+            }
 
-          // Trim to maxItems
-          if (newItems.length > state.maxItems) {
-            newItems = newItems.slice(0, state.maxItems);
-          }
+            // Add new entry at the beginning
+            newItems.unshift({ id, name, type, accessedAt: now });
 
-          return { recentItems: newItems };
-        }),
+            // Trim to maxItems
+            if (newItems.length > state.maxItems) {
+              newItems = newItems.slice(0, state.maxItems);
+            }
+
+            return { recentItems: newItems };
+          }),
 
         clearRecentItems: () => set({ recentItems: [] }),
 
         getRecentItemsByType: (type, limit = 10) => {
-          const items = get().recentItems
-            .filter(item => item.type === type)
+          const items = get()
+            .recentItems.filter((item) => item.type === type)
             .slice(0, limit);
-          return items.map(item => ({ id: item.id, name: item.name }));
+          return items.map((item) => ({ id: item.id, name: item.name }));
         },
 
-        reset: () => set(initialState)
+        reset: () => set(initialState),
       }),
       {
-        name: 'recent-items-store',
+        name: "recent-items-store",
         partialize: (state) => ({
           recentItems: state.recentItems,
-          maxItems: state.maxItems
-        })
-      }
-    )
-  )
-); 
+          maxItems: state.maxItems,
+        }),
+      },
+    ),
+  ),
+);

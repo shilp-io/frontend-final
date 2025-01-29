@@ -6,7 +6,10 @@ interface RequirementMetadataProps {
   tags?: string[];
 }
 
-export function RequirementMetadata({ acceptanceCriteria, tags }: RequirementMetadataProps) {
+export function RequirementMetadata({
+  acceptanceCriteria,
+  tags,
+}: RequirementMetadataProps) {
   return (
     <div className="space-y-6">
       {acceptanceCriteria && acceptanceCriteria.length > 0 && (
@@ -26,11 +29,13 @@ export function RequirementMetadata({ acceptanceCriteria, tags }: RequirementMet
           </h3>
           <div className="flex flex-wrap gap-2">
             {tags.map((tag, index) => (
-              <Badge key={index} variant="secondary">{tag}</Badge>
+              <Badge key={index} variant="secondary">
+                {tag}
+              </Badge>
             ))}
           </div>
         </div>
       )}
     </div>
   );
-} 
+}

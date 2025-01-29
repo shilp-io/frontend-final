@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import type { UUID } from '@/types';
-import { useRecentStore } from './recentStore';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+import type { UUID } from "@/types";
+import { useRecentStore } from "./recentStore";
 
 interface ProjectFilters {
   status: string[];
@@ -16,7 +16,7 @@ interface ProjectFilters {
 interface ProjectState {
   filters: ProjectFilters;
   selectedProjects: UUID[];
-  
+
   // Actions
   setFilters: (filters: Partial<ProjectFilters>) => void;
   clearFilters: () => void;
@@ -39,36 +39,40 @@ export const useProjectStore = create<ProjectState>()(
     persist(
       (set) => ({
         ...initialState,
-        setFilters: (filters) => set((state) => ({
-          filters: { ...state.filters, ...filters }
-        })),
+        setFilters: (filters) =>
+          set((state) => ({
+            filters: { ...state.filters, ...filters },
+          })),
 
         clearFilters: () => set({ filters: { status: [] } }),
 
         selectProject: (id, name) => {
           // Add to recent items if name is provided
           if (name) {
-            useRecentStore.getState().addRecentItem(id, name, 'project');
+            useRecentStore.getState().addRecentItem(id, name, "project");
           }
           // Update selection
           set((state) => ({
-            selectedProjects: [...state.selectedProjects, id]
+            selectedProjects: [...state.selectedProjects, id],
           }));
         },
 
-        deselectProject: (id) => set((state) => ({
-          selectedProjects: state.selectedProjects.filter((projId) => projId !== id)
-        })),
+        deselectProject: (id) =>
+          set((state) => ({
+            selectedProjects: state.selectedProjects.filter(
+              (projId) => projId !== id,
+            ),
+          })),
 
         clearSelection: () => set({ selectedProjects: [] }),
-        reset: () => set(initialState)
+        reset: () => set(initialState),
       }),
       {
-        name: 'projects-store',
+        name: "projects-store",
         partialize: (state) => ({
-          filters: state.filters
-        })
-      }
-    )
-  )
-); 
+          filters: state.filters,
+        }),
+      },
+    ),
+  ),
+);

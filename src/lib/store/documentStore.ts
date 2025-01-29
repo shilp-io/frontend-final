@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import type { UUID } from '@/types';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+import type { UUID } from "@/types";
 
 interface DocumentFilters {
   type: string[];
@@ -18,7 +18,7 @@ interface DocumentState {
   filters: DocumentFilters;
   selectedDocuments: UUID[];
   activeCollectionId: UUID | null;
-  
+
   // Actions
   setActiveCollection: (collectionId: UUID | null) => void;
   setFilters: (filters: Partial<DocumentFilters>) => void;
@@ -44,32 +44,38 @@ export const useDocumentStore = create<DocumentState>()(
     persist(
       (set) => ({
         ...initialState,
-        setActiveCollection: (collectionId) => set({ activeCollectionId: collectionId }),
+        setActiveCollection: (collectionId) =>
+          set({ activeCollectionId: collectionId }),
 
-        setFilters: (filters) => set((state) => ({
-          filters: { ...state.filters, ...filters }
-        })),
+        setFilters: (filters) =>
+          set((state) => ({
+            filters: { ...state.filters, ...filters },
+          })),
 
         clearFilters: () => set({ filters: { type: [], status: [] } }),
 
-        selectDocument: (id) => set((state) => ({
-          selectedDocuments: [...state.selectedDocuments, id]
-        })),
+        selectDocument: (id) =>
+          set((state) => ({
+            selectedDocuments: [...state.selectedDocuments, id],
+          })),
 
-        deselectDocument: (id) => set((state) => ({
-          selectedDocuments: state.selectedDocuments.filter((docId) => docId !== id)
-        })),
+        deselectDocument: (id) =>
+          set((state) => ({
+            selectedDocuments: state.selectedDocuments.filter(
+              (docId) => docId !== id,
+            ),
+          })),
 
         clearSelection: () => set({ selectedDocuments: [] }),
-        reset: () => set(initialState)
+        reset: () => set(initialState),
       }),
       {
-        name: 'documents-store',
+        name: "documents-store",
         partialize: (state) => ({
           activeCollectionId: state.activeCollectionId,
-          filters: state.filters
-        })
-      }
-    )
-  )
+          filters: state.filters,
+        }),
+      },
+    ),
+  ),
 );

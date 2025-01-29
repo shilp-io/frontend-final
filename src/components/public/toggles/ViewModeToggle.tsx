@@ -1,20 +1,20 @@
 "use client";
 
-import { Terminal, Table, LayoutGrid } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAppStore } from '@/lib/store/appStore';
+import { Terminal, Table, LayoutGrid } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAppStore } from "@/lib/store/appStore";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from "@/components/ui/tooltip";
 
 export function ViewModeToggle() {
   const { viewMode, setViewMode } = useAppStore();
 
   const cycleViewMode = () => {
-    const modes = ['normal', 'ascii', 'compact'] as const;
+    const modes = ["normal", "ascii", "compact"] as const;
     const currentIndex = modes.indexOf(viewMode);
     const nextIndex = (currentIndex + 1) % modes.length;
     setViewMode(modes[nextIndex]);
@@ -22,23 +22,23 @@ export function ViewModeToggle() {
 
   const getIcon = () => {
     switch (viewMode) {
-      case 'normal':
+      case "normal":
         return <Table className="h-[1.2rem] w-[1.2rem]" />;
-      case 'ascii':
+      case "ascii":
         return <Terminal className="h-[1.2rem] w-[1.2rem]" />;
-      case 'compact':
+      case "compact":
         return <LayoutGrid className="h-[1.2rem] w-[1.2rem]" />;
     }
   };
 
   const getTooltipText = () => {
     switch (viewMode) {
-      case 'normal':
-        return 'Normal View';
-      case 'ascii':
-        return 'ASCII View';
-      case 'compact':
-        return 'Compact View';
+      case "normal":
+        return "Normal View";
+      case "ascii":
+        return "ASCII View";
+      case "compact":
+        return "Compact View";
     }
   };
 
@@ -62,4 +62,4 @@ export function ViewModeToggle() {
       </Tooltip>
     </TooltipProvider>
   );
-} 
+}

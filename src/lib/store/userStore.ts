@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import type { ServiceContextUser } from '@/types/auth';
-import type { UUID } from '@/types/common';
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+import type { ServiceContextUser } from "@/types/auth";
+import type { UUID } from "@/types/common";
 
 interface UserState {
   user: ServiceContextUser | null;
@@ -35,29 +35,34 @@ export const useUserStore = create<UserState>()(
     persist(
       (set) => ({
         ...initialState,
-        setUser: (user) => set({
-          user,
-          isAuthenticated: !!user
-        }),
+        setUser: (user) =>
+          set({
+            user,
+            isAuthenticated: !!user,
+          }),
         setLoading: (isLoading) => set({ isLoading }),
         setError: (error) => set({ error }),
         clearError: () => set({ error: null }),
-        selectUser: (id) => set((state) => ({
-          selectedUsers: [...state.selectedUsers, id]
-        })),
-        deselectUser: (id) => set((state) => ({
-          selectedUsers: state.selectedUsers.filter((userId) => userId !== id)
-        })),
+        selectUser: (id) =>
+          set((state) => ({
+            selectedUsers: [...state.selectedUsers, id],
+          })),
+        deselectUser: (id) =>
+          set((state) => ({
+            selectedUsers: state.selectedUsers.filter(
+              (userId) => userId !== id,
+            ),
+          })),
         clearSelection: () => set({ selectedUsers: [] }),
-        reset: () => set(initialState)
+        reset: () => set(initialState),
       }),
       {
-        name: 'user-store',
+        name: "user-store",
         partialize: (state) => ({
           user: state.user,
-          isAuthenticated: state.isAuthenticated
-        })
-      }
-    )
-  )
+          isAuthenticated: state.isAuthenticated,
+        }),
+      },
+    ),
+  ),
 );

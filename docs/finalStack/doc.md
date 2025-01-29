@@ -1,6 +1,7 @@
 # Comprehensive System Architecture Documentation
 
 ## Table of Contents
+
 1. [Introduction](#introduction)
 2. [Technology Stack](#technology-stack)
 3. [Core Architecture](#core-architecture)
@@ -23,8 +24,9 @@ This document provides a comprehensive overview of the architecture for a System
 ## Technology Stack
 
 ### Frontend
+
 - **Framework**: Next.js 14 with App Router
-- **State Management**: 
+- **State Management**:
   - Zustand for UI state
   - React Query for server state
   - Upstash Redis for real-time sync
@@ -33,6 +35,7 @@ This document provides a comprehensive overview of the architecture for a System
 - **Type Safety**: TypeScript
 
 ### Backend
+
 - **API Layer**: Next.js API Routes
 - **Database**: Supabase PostgreSQL
 - **Cache**: Upstash Redis
@@ -41,6 +44,7 @@ This document provides a comprehensive overview of the architecture for a System
 - **Payment**: Stripe
 
 ### Infrastructure
+
 - **Hosting**: Vercel (MVP), Firebase (Production)
 - **CDN**: Cloudflare
 - **Security**: WAF + DDoS Protection
@@ -51,6 +55,7 @@ This document provides a comprehensive overview of the architecture for a System
 ### Layer Separation
 
 1. **Presentation Layer**
+
 ```typescript
 // components/requirements/RequirementCard.tsx
 interface RequirementCardProps {
@@ -61,7 +66,7 @@ interface RequirementCardProps {
 export function RequirementCard({ requirement, onUpdate }: RequirementCardProps) {
   const { data: team } = useTeam(requirement.teamId);
   const permissions = usePermissions(requirement.id);
-  
+
   return (
     <Card>
       <CardHeader>
@@ -76,22 +81,23 @@ export function RequirementCard({ requirement, onUpdate }: RequirementCardProps)
 ```
 
 2. **Application Layer**
+
 ```typescript
 // lib/requirements/actions.ts
 export async function updateRequirement(
   id: string,
   data: Partial<Requirement>,
-  userId: string
+  userId: string,
 ) {
   // Validate permissions
-  const canEdit = await checkPermission(userId, id, 'edit');
-  if (!canEdit) throw new Error('Unauthorized');
+  const canEdit = await checkPermission(userId, id, "edit");
+  if (!canEdit) throw new Error("Unauthorized");
 
   // Update in database
   const { error } = await supabase
-    .from('requirements')
+    .from("requirements")
     .update(data)
-    .eq('id', id);
+    .eq("id", id);
 
   if (error) throw error;
 
@@ -99,21 +105,28 @@ export async function updateRequirement(
   await syncRequirementToRedis(id);
 
   // Notify team members
-  await notifyTeamMembers(id, 'requirement_updated', userId);
+  await notifyTeamMembers(id, "requirement_updated", userId);
 }
 ```
 
 3. **Domain Layer**
+
 ```typescript
 // domain/requirements/validation.ts
-export function validateRequirement(data: Partial<Requirement>): ValidationResult {
+export function validateRequirement(
+  data: Partial<Requirement>,
+): ValidationResult {
   const rules = {
     title: [
-      { rule: 'required', message: 'Title is required' },
-      { rule: 'minLength', value: 3, message: 'Title too short' },
+      { rule: "required", message: "Title is required" },
+      { rule: "minLength", value: 3, message: "Title too short" },
     ],
     priority: [
-      { rule: 'oneOf', value: ['low', 'medium', 'high'], message: 'Invalid priority' },
+      {
+        rule: "oneOf",
+        value: ["low", "medium", "high"],
+        message: "Invalid priority",
+      },
     ],
   };
 
@@ -122,6 +135,7 @@ export function validateRequirement(data: Partial<Requirement>): ValidationResul
 ```
 
 4. **Infrastructure Layer**
+
 ```typescript
 // infrastructure/database/requirements.ts
 export class RequirementRepository implements IRequirementRepository {
@@ -132,9 +146,9 @@ export class RequirementRepository implements IRequirementRepository {
 
     // Fall back to database
     const { data, error } = await supabase
-      .from('requirements')
-      .select('*')
-      .eq('id', id)
+      .from("requirements")
+      .select("*")
+      .eq("id", id)
       .single();
 
     if (error) throw error;
@@ -150,6 +164,7 @@ export class RequirementRepository implements IRequirementRepository {
 ## Design Patterns
 
 ### 1. Repository Pattern
+
 ```typescript
 // patterns/repository/requirement.ts
 export interface IRequirementRepository {
@@ -163,76 +178,83 @@ export interface IRequirementRepository {
 export class RequirementRepository implements IRequirementRepository {
   constructor(
     private readonly db: SupabaseClient,
-    private readonly cache: Redis
+    private readonly cache: Redis,
   ) {}
 
   async findById(id: string): Promise<Requirement> {
-    return await this.withCache(
-      `requirement:${id}`,
-      async () => {
-        const { data, error } = await this.db
-          .from('requirements')
-          .select('*')
-          .eq('id', id)
-          .single();
-        
-        if (error) throw error;
-        return data;
-      }
-    );
+    return await this.withCache(`requirement:${id}`, async () => {
+      const { data, error } = await this.db
+        .from("requirements")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    });
   }
 
   private async withCache<T>(
     key: string,
     fetchFn: () => Promise<T>,
-    ttl: number = 300
+    ttl: number = 300,
   ): Promise<T> {
     const cached = await this.cache.get(key);
     if (cached) return JSON.parse(cached);
 
     const data = await fetchFn();
     await this.cache.set(key, JSON.stringify(data), { ex: ttl });
-    
+
     return data;
   }
 }
 ```
 
 ### 2. Observer Pattern (for Real-time Updates)
+
 ```typescript
 // patterns/observer/requirement-updates.ts
 export class RequirementUpdateObserver {
   private subscribers: Map<string, Set<(data: RequirementUpdate) => void>> =
     new Map();
 
-  subscribe(requirementId: string, callback: (data: RequirementUpdate) => void) {
+  subscribe(
+    requirementId: string,
+    callback: (data: RequirementUpdate) => void,
+  ) {
     if (!this.subscribers.has(requirementId)) {
       this.subscribers.set(requirementId, new Set());
     }
     this.subscribers.get(requirementId)!.add(callback);
   }
 
-  unsubscribe(requirementId: string, callback: (data: RequirementUpdate) => void) {
+  unsubscribe(
+    requirementId: string,
+    callback: (data: RequirementUpdate) => void,
+  ) {
     this.subscribers.get(requirementId)?.delete(callback);
   }
 
   notify(requirementId: string, update: RequirementUpdate) {
-    this.subscribers.get(requirementId)?.forEach(callback => callback(update));
+    this.subscribers
+      .get(requirementId)
+      ?.forEach((callback) => callback(update));
   }
 }
 ```
 
 ### 3. Factory Pattern (for Requirement Creation)
+
 ```typescript
 // patterns/factory/requirement-factory.ts
 export class RequirementFactory {
   static create(type: RequirementType, data: RequirementDTO): Requirement {
     switch (type) {
-      case 'feature':
+      case "feature":
         return new FeatureRequirement(data);
-      case 'bug':
+      case "bug":
         return new BugRequirement(data);
-      case 'enhancement':
+      case "enhancement":
         return new EnhancementRequirement(data);
       default:
         throw new Error(`Unknown requirement type: ${type}`);
@@ -242,6 +264,7 @@ export class RequirementFactory {
 ```
 
 ### 4. Command Pattern (for Actions)
+
 ```typescript
 // patterns/command/requirement-commands.ts
 interface Command {
@@ -253,7 +276,7 @@ class UpdateRequirementCommand implements Command {
   constructor(
     private readonly id: string,
     private readonly data: Partial<Requirement>,
-    private readonly previousData: Requirement
+    private readonly previousData: Requirement,
   ) {}
 
   async execute() {
@@ -269,6 +292,7 @@ class UpdateRequirementCommand implements Command {
 ## State Management
 
 ### 1. Zustand Store Configuration
+
 ```typescript
 // store/requirements.ts
 interface RequirementState {
@@ -285,7 +309,7 @@ export const useRequirementStore = create<RequirementState>()(
     (set) => ({
       activeRequirement: null,
       filters: defaultFilters,
-      sortOrder: 'desc',
+      sortOrder: "desc",
       setActiveRequirement: (req) => set({ activeRequirement: req }),
       updateFilters: (filters) =>
         set((state) => ({
@@ -294,13 +318,14 @@ export const useRequirementStore = create<RequirementState>()(
       setSortOrder: (order) => set({ sortOrder: order }),
     }),
     {
-      name: 'requirement-store',
-    }
-  )
+      name: "requirement-store",
+    },
+  ),
 );
 ```
 
 ### 2. React Query Integration
+
 ```typescript
 // hooks/queries/requirements.ts
 export function useRequirements(projectId: string) {
@@ -308,7 +333,7 @@ export function useRequirements(projectId: string) {
   const sortOrder = useRequirementStore((state) => state.sortOrder);
 
   return useQuery({
-    queryKey: ['requirements', projectId, filters, sortOrder],
+    queryKey: ["requirements", projectId, filters, sortOrder],
     queryFn: () =>
       requirementRepository.findByProject(projectId, filters, sortOrder),
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -317,7 +342,7 @@ export function useRequirements(projectId: string) {
 
 export function useRequirement(id: string) {
   return useQuery({
-    queryKey: ['requirement', id],
+    queryKey: ["requirement", id],
     queryFn: () => requirementRepository.findById(id),
     staleTime: 1000 * 60 * 5,
   });
@@ -325,6 +350,7 @@ export function useRequirement(id: string) {
 ```
 
 ### 3. Real-time Sync with Redis
+
 ```typescript
 // lib/realtime/sync.ts
 export class RealtimeSync {
@@ -343,15 +369,18 @@ export class RealtimeSync {
 
   private handleMessage = (event: MessageEvent) => {
     const update = JSON.parse(event.data);
-    queryClient.setQueryData(['requirement', update.id], update);
+    queryClient.setQueryData(["requirement", update.id], update);
   };
 
   private handleClose = () => {
     if (this.reconnectAttempts < 5) {
-      setTimeout(() => {
-        this.setupWebSocket();
-        this.reconnectAttempts++;
-      }, 1000 * Math.pow(2, this.reconnectAttempts));
+      setTimeout(
+        () => {
+          this.setupWebSocket();
+          this.reconnectAttempts++;
+        },
+        1000 * Math.pow(2, this.reconnectAttempts),
+      );
     }
   };
 }
@@ -360,57 +389,59 @@ export class RealtimeSync {
 ## Security Architecture
 
 ### 1. Request Validation
+
 ```typescript
 // lib/security/validation.ts
 export async function validateRequest(
   req: NextApiRequest,
-  config: ValidationConfig
+  config: ValidationConfig,
 ) {
   // Rate limiting
   const rateLimitResult = await rateLimit.check(req.ip!);
   if (!rateLimitResult.success) {
-    throw new ApiError(429, 'Too Many Requests');
+    throw new ApiError(429, "Too Many Requests");
   }
 
   // Authentication
   if (config.requireAuth) {
     const user = await auth(req);
     if (!user) {
-      throw new ApiError(401, 'Unauthorized');
+      throw new ApiError(401, "Unauthorized");
     }
   }
 
   // CORS
   if (!isValidOrigin(req.headers.origin)) {
-    throw new ApiError(403, 'Invalid Origin');
+    throw new ApiError(403, "Invalid Origin");
   }
 
   // Input validation
   if (config.schema) {
     const result = config.schema.safeParse(req.body);
     if (!result.success) {
-      throw new ApiError(400, 'Invalid Input', result.error);
+      throw new ApiError(400, "Invalid Input", result.error);
     }
   }
 }
 ```
 
 ### 2. Payment Security
+
 ```typescript
 // lib/security/payments.ts
 export async function validateStripeWebhook(
   body: string,
-  signature: string
+  signature: string,
 ): Promise<boolean> {
   try {
     stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET!,
     );
     return true;
   } catch (err) {
-    console.error('Webhook signature verification failed:', err);
+    console.error("Webhook signature verification failed:", err);
     return false;
   }
 }
@@ -419,6 +450,7 @@ export async function validateStripeWebhook(
 ## Data Flow
 
 ### 1. Create Requirement Flow
+
 ```typescript
 // Example of complete data flow for requirement creation
 export async function createRequirement(data: CreateRequirementDTO) {
@@ -429,7 +461,11 @@ export async function createRequirement(data: CreateRequirementDTO) {
   }
 
   // 2. Check permissions
-  const canCreate = await checkPermission(data.userId, data.projectId, 'create');
+  const canCreate = await checkPermission(
+    data.userId,
+    data.projectId,
+    "create",
+  );
   if (!canCreate) {
     throw new UnauthorizedError();
   }
@@ -441,18 +477,18 @@ export async function createRequirement(data: CreateRequirementDTO) {
   await redis.set(
     `requirement:${requirement.id}`,
     JSON.stringify(requirement),
-    { ex: 300 }
+    { ex: 300 },
   );
 
   // 5. Notify team members
   await notifyTeam(requirement.projectId, {
-    type: 'requirement_created',
+    type: "requirement_created",
     requirementId: requirement.id,
     userId: data.userId,
   });
 
   // 6. Track usage
-  await trackUsage(data.userId, 'requirement_created');
+  await trackUsage(data.userId, "requirement_created");
 
   return requirement;
 }
@@ -461,6 +497,7 @@ export async function createRequirement(data: CreateRequirementDTO) {
 ## Implementation Examples
 
 ### 1. Real-time Collaboration Component
+
 ```typescript
 // components/collaboration/RequirementEditor.tsx
 export function RequirementEditor({ requirementId }: { requirementId: string }) {
@@ -499,6 +536,7 @@ export function RequirementEditor({ requirementId }: { requirementId: string }) 
 ```
 
 ### 2. Permission-based UI
+
 ```typescript
 // components/requirements/RequirementActions.tsx
 export function RequirementActions({ requirement }: { requirement: Requirement }) {
@@ -538,11 +576,13 @@ export function RequirementActions({ requirement }: { requirement: Requirement }
 ## Hosting and Deployment
 
 ### 1. Vercel (MVP)
+
 - **Deployment**: Automatic deployment from GitHub
 - **Environment Variables**: Managed via Vercel dashboard
 - **Preview Environments**: Automatically created for each pull request
 
 ### 2. Firebase (Production)
+
 - **Hosting**: Firebase Hosting with CDN
 - **Functions**: Firebase Functions for server-side logic
 - **Authentication**: Firebase Authentication
@@ -551,6 +591,7 @@ export function RequirementActions({ requirement }: { requirement: Requirement }
 ## Stripe Payment Integration
 
 ### 1. Checkout Flow
+
 ```typescript
 export async function GET(req: Request) {
   const user = auth(req);
@@ -581,6 +622,7 @@ export async function GET(req: Request) {
 ```
 
 ### 2. Sync Stripe Data to KV
+
 ```typescript
 export async function syncStripeDataToKV(customerId: string) {
   // Fetch latest subscription data from Stripe
@@ -625,6 +667,7 @@ export async function syncStripeDataToKV(customerId: string) {
 ```
 
 ### 3. Webhook Handling
+
 ```typescript
 export async function POST(req: Request) {
   const body = await req.text();
@@ -640,7 +683,7 @@ export async function POST(req: Request) {
     const event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET!,
     );
 
     waitUntil(processEvent(event));
@@ -659,6 +702,7 @@ export async function POST(req: Request) {
 ## AI Integration
 
 ### 1. Requirement Analysis
+
 ```typescript
 // lib/ai/requirement-analyzer.ts
 export class RequirementAnalyzer {
@@ -681,7 +725,9 @@ export class RequirementAnalyzer {
   }
 
   private async buildContext(requirement: Requirement) {
-    const project = await requirementRepository.getProject(requirement.projectId);
+    const project = await requirementRepository.getProject(
+      requirement.projectId,
+    );
     const relatedReqs = await requirementRepository.findRelated(requirement.id);
     return {
       project,
@@ -695,6 +741,7 @@ export class RequirementAnalyzer {
 ## Real-time Collaboration
 
 ### 1. Sync Manager
+
 ```typescript
 // lib/collaboration/sync-manager.ts
 export class SyncManager {
@@ -729,7 +776,7 @@ export class SyncManager {
     const changes = this.crdt.getChanges();
     if (Object.keys(changes).length > 0) {
       await fetch(`/api/requirements/${this.requirementId}/sync`, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(changes),
       });
     }
@@ -745,6 +792,7 @@ export class SyncManager {
 ## Performance Optimization
 
 ### 1. Query Optimization
+
 ```typescript
 // lib/optimization/query-optimizer.ts
 export class QueryOptimizer {
@@ -757,17 +805,14 @@ export class QueryOptimizer {
     options: {
       useCache?: boolean;
       invalidatePattern?: string;
-    } = {}
+    } = {},
   ): Promise<T> {
     const cacheKey = this.generateCacheKey(key);
 
     // Check cache
     if (options.useCache) {
       const cached = this.queryCache.get(cacheKey);
-      if (
-        cached &&
-        Date.now() - cached.timestamp < this.CACHE_TTL
-      ) {
+      if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
         return cached.data;
       }
     }
@@ -807,6 +852,7 @@ export class QueryOptimizer {
 ```
 
 ### 2. Real-time Performance Monitoring
+
 ```typescript
 // lib/monitoring/performance-monitor.ts
 export class PerformanceMonitor {
@@ -838,7 +884,7 @@ export class PerformanceMonitor {
       recentQueries.reduce((a, b) => a + b, 0) / recentQueries.length;
 
     if (avgQueryTime > 500) {
-      this.reportPerformanceIssue('query', avgQueryTime);
+      this.reportPerformanceIssue("query", avgQueryTime);
     }
   }
 
@@ -848,7 +894,7 @@ export class PerformanceMonitor {
       recentRenders.reduce((a, b) => a + b, 0) / recentRenders.length;
 
     if (avgRenderTime > 16) {
-      this.reportPerformanceIssue('render', avgRenderTime);
+      this.reportPerformanceIssue("render", avgRenderTime);
     }
   }
 
@@ -862,9 +908,10 @@ export class PerformanceMonitor {
 ## Monitoring and Analytics
 
 ### 1. Sentry Integration
+
 ```typescript
 // lib/monitoring/sentry.ts
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -878,9 +925,10 @@ export function captureError(error: Error, context?: Record<string, any>) {
 ```
 
 ### 2. Vercel Analytics
+
 ```typescript
 // lib/analytics/vercel.ts
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from "@vercel/analytics/react";
 
 export function trackEvent(event: string, properties: Record<string, any>) {
   Analytics.track(event, properties);

@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { ThemeProvider } from 'next-themes'
-import { useState, type ReactNode } from 'react'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ThemeProvider } from "next-themes";
+import { useState, type ReactNode } from "react";
 
 interface ProvidersProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export default function Providers({ children }: ProvidersProps) {
@@ -19,8 +19,8 @@ export default function Providers({ children }: ProvidersProps) {
             refetchOnWindowFocus: false,
           },
         },
-      })
-  )
+      }),
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -29,5 +29,5 @@ export default function Providers({ children }: ProvidersProps) {
         <ReactQueryDevtools initialIsOpen={false} />
       </ThemeProvider>
     </QueryClientProvider>
-  )
+  );
 }
