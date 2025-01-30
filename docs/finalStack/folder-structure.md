@@ -133,26 +133,31 @@
 ## Key Organizational Principles
 
 ### 1. Feature-First Organization
+
 - Group related components, hooks, and utilities by feature
 - Keep feature-specific code isolated and cohesive
 - Share common code through core and lib directories
 
 ### 2. Layer Separation
+
 - Clear separation between domain, application, and infrastructure layers
 - Domain logic isolated from framework and infrastructure concerns
 - Clean interfaces between layers through ports and adapters
 
 ### 3. Component Organization
+
 - Separate reusable UI components from feature-specific components
 - Group related components into directories with their tests and styles
 - Use barrel files (index.ts) for clean exports
 
 ### 4. State Management
+
 - Centralized store configuration
 - Feature-based store slices
 - Clear separation of concerns in middleware
 
 ### 5. Testing Structure
+
 - Mirror src directory structure in tests
 - Separate unit, integration, and e2e tests
 - Colocate test utilities and mocks
@@ -161,17 +166,17 @@
 
 ```typescript
 // Use absolute imports for better maintainability
-import { Button } from '@/components/ui/button';
-import { useRequirements } from '@/lib/hooks/use-requirements';
-import { RequirementService } from '@/core/application/services';
-import { Project } from '@/core/domain/models';
+import { Button } from "@/components/ui/button";
+import { useRequirements } from "@/lib/hooks/use-requirements";
+import { RequirementService } from "@/core/application/services";
+import { Project } from "@/core/domain/models";
 ```
 
 ## Environment Configuration
 
 ```typescript
 // src/lib/config/env.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -187,39 +192,45 @@ export const env = envSchema.parse(process.env);
 ## Module Boundaries
 
 ### Domain Module Exports
+
 ```typescript
 // src/core/domain/index.ts
-export * from './models';
-export * from './events';
-export * from './value-objects';
+export * from "./models";
+export * from "./events";
+export * from "./value-objects";
 ```
 
 ### Feature Module Exports
+
 ```typescript
 // src/components/features/requirements/index.ts
-export * from './requirement-form';
-export * from './requirement-table';
-export * from './requirement-detail';
+export * from "./requirement-form";
+export * from "./requirement-table";
+export * from "./requirement-detail";
 ```
 
 ## Best Practices
 
 1. **Module Structure**
+
    - Keep modules small and focused
    - Use barrel files for clean exports
    - Maintain clear module boundaries
 
 2. **File Naming**
+
    - Use kebab-case for files and folders
    - Use PascalCase for React components
    - Use camelCase for utilities and hooks
 
 3. **Code Organization**
+
    - Group related code together
    - Keep feature code isolated
    - Share common code through core and lib
 
 4. **Testing**
+
    - Colocate test files with source code
    - Use consistent test naming conventions
    - Organize test utilities and fixtures

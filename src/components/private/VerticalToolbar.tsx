@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
-import { ThemeToggle } from '@/components/public/toggles/ThemeToggle';
-import { ViewModeToggle } from '@/components/public/toggles/ViewModeToggle';
-import { useRouter, usePathname } from 'next/navigation';
-import { ChevronLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { ThemeToggle } from "@/components/public/toggles/ThemeToggle";
+import { ViewModeToggle } from "@/components/public/toggles/ViewModeToggle";
+import { useRouter, usePathname } from "next/navigation";
+import { ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const VerticalToolbar = () => {
   const router = useRouter();
@@ -16,15 +16,17 @@ const VerticalToolbar = () => {
 
   // Convert pathname to breadcrumb segments
   const segments = pathname
-    .split('/')
+    .split("/")
     .filter(Boolean)
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1));
 
   return (
-    <div className={cn(
-      "fixed left-2 top-4 z-50 flex flex-col gap-2 transition-all duration-200",
-      state === "expanded" && "left-[17rem]"
-    )}>
+    <div
+      className={cn(
+        "fixed left-2 top-4 z-50 flex flex-col gap-2 transition-all duration-200",
+        state === "expanded" && "left-[17rem]",
+      )}
+    >
       <div className="flex items-center gap-1">
         <div className="h-10 w-10 flex items-center justify-center">
           <SidebarTrigger className="h-5 w-5" />
@@ -41,7 +43,9 @@ const VerticalToolbar = () => {
           {segments.map((segment, index) => (
             <React.Fragment key={index}>
               {index > 0 && <span className="opacity-40">/</span>}
-              <span className="hover:text-foreground cursor-default transition-colors">{segment}</span>
+              <span className="hover:text-foreground cursor-default transition-colors">
+                {segment}
+              </span>
             </React.Fragment>
           ))}
         </div>

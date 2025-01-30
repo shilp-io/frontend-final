@@ -1,48 +1,59 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import Link from 'next/link'
-import { User, LayoutDashboard, LogOut, Settings, UserCircle, Atom, UserPlus } from 'lucide-react'
-import { useAuth } from '@/hooks'
-import { ThemeToggle } from '@/components/public/toggles/ThemeToggle'
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import {
+  User,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  UserCircle,
+  Atom,
+  UserPlus,
+} from "lucide-react";
+import { useAuth } from "@/hooks";
+import { ThemeToggle } from "@/components/public/toggles/ThemeToggle";
 
 const navItems = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
-  { name: 'Services', href: '/services' },
-  { name: 'Pricing', href: '/pricing' },
-  { name: 'Contact', href: '/contact' },
-]
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  { name: "Services", href: "/services" },
+  { name: "Pricing", href: "/pricing" },
+  { name: "Contact", href: "/contact" },
+];
 
 const userMenuItems = [
-  { name: 'Profile', href: '/profile', icon: UserCircle },
-  { name: 'Settings', href: '/settings', icon: Settings },
-  { name: 'Logout', href: '/logout', icon: LogOut },
-]
+  { name: "Profile", href: "/profile", icon: UserCircle },
+  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Logout", href: "/logout", icon: LogOut },
+];
 
 const userLoginItems = [
-  { name: 'Login', href: '/login', icon: User },
-  { name: 'Register', href: '/register', icon: UserPlus },
-]
+  { name: "Login", href: "/login", icon: User },
+  { name: "Register", href: "/register", icon: UserPlus },
+];
 
 export default function PublicHeader() {
-  const [activeItem, setActiveItem] = useState('Home')
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const { user } = useAuth()
+  const [activeItem, setActiveItem] = useState("Home");
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
-    setIsLoggedIn(!!user)
-  }, [user])
+    setIsLoggedIn(!!user);
+  }, [user]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center bg-background/80 backdrop-blur-sm border-b border-border">
       <div className="w-full max-w-6xl mx-auto px-4 flex items-center">
         {/* Brand Section */}
         <div className="flex items-center mr-12">
-          <Link href="/" className="flex items-center space-x-2 text-foreground">
+          <Link
+            href="/"
+            className="flex items-center space-x-2 text-foreground"
+          >
             <Atom className="w-5 h-5" />
             <span className="font-semibold text-lg">Atoms</span>
           </Link>
@@ -55,7 +66,10 @@ export default function PublicHeader() {
               key={item.name}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: navItems.indexOf(item) * 0.1 }}
+              transition={{
+                duration: 0.3,
+                delay: navItems.indexOf(item) * 0.1,
+              }}
             >
               <Link
                 href={item.href}
@@ -69,7 +83,10 @@ export default function PublicHeader() {
                   className="absolute inset-0 bg-foreground"
                   initial={{ scaleX: 0 }}
                   animate={{
-                    scaleX: hoveredItem === item.name || activeItem === item.name ? 1 : 0,
+                    scaleX:
+                      hoveredItem === item.name || activeItem === item.name
+                        ? 1
+                        : 0,
                   }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   style={{
@@ -107,36 +124,34 @@ export default function PublicHeader() {
                 transition={{ duration: 0.2 }}
                 className="absolute right-0 mt-2 w-48 bg-popover/80 backdrop-blur-sm rounded-md shadow-lg py-1 ring-1 ring-border"
               >
-                {isLoggedIn ? (
-                  userMenuItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="flex items-center px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      <item.icon className="w-4 h-4 mr-3" />
-                      {item.name}
-                    </Link>
-                  ))
-                ) : (
-                  userLoginItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="flex items-center px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      <item.icon className="w-4 h-4 mr-3" />
-                      {item.name}
-                    </Link>
-                  ))
-                )}
+                {isLoggedIn
+                  ? userMenuItems.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="flex items-center px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <item.icon className="w-4 h-4 mr-3" />
+                        {item.name}
+                      </Link>
+                    ))
+                  : userLoginItems.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="flex items-center px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <item.icon className="w-4 h-4 mr-3" />
+                        {item.name}
+                      </Link>
+                    ))}
               </motion.div>
             )}
           </div>
         </div>
       </div>
     </nav>
-  )
+  );
 }

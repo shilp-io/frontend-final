@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Home, Plus, Settings, User, LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -64,11 +64,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <Link 
-                  key={item.title} 
-                  href={item.url}
-                  className="block mb-2"
-                >
+                <Link key={item.title} href={item.url} className="block mb-2">
                   <SidebarMenuItem className="flex items-center gap-3 py-2">
                     <item.icon className="h-5 w-5" />
                     <span className="text-[15px]">{item.title}</span>
@@ -93,7 +89,7 @@ export function AppSidebar() {
                 onClose={() => setIsCreatePanelOpen(false)}
                 showTabs="show"
               />
-              
+
               <div className="mt-4 font-mono">
                 <History />
               </div>

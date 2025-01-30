@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
-import { useRequirement } from '@/hooks/db/useRequirement';
-import { RequirementView } from '@/components/private';
+import { useParams } from "next/navigation";
+import { useRequirement } from "@/hooks/db/useRequirement";
+import { RequirementView } from "@/components/private";
 
 export default function RequirementPage() {
   const params = useParams();

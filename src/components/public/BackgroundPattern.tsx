@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const BackgroundPattern: React.FC = () => {
   return (
@@ -16,7 +16,7 @@ const BackgroundPattern: React.FC = () => {
             return (
               <path
                 key={`diamond-${i}`}
-                d={`M500,${500-size} L${500+size},500 L500,${500+size} L${500-size},500 Z`}
+                d={`M500,${500 - size} L${500 + size},500 L500,${500 + size} L${500 - size},500 Z`}
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1"

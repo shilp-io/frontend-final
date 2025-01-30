@@ -19,11 +19,18 @@ interface RequirementPanelProps {
   onUpdate?: (updatedRequirement: Requirement) => void;
 }
 
-export default function RequirementPanel({ requirement, onUpdate }: RequirementPanelProps) {
+export default function RequirementPanel({
+  requirement,
+  onUpdate,
+}: RequirementPanelProps) {
   const [showCurrentReq, setShowCurrentReq] = useState(false);
   const [showHistoryReq, setShowHistoryReq] = useState(false);
-  const [tempReqText, setTempReqText] = useState(requirement.original_req || "");
-  const [tempFormat, setTempFormat] = useState(requirement.selected_format || "");
+  const [tempReqText, setTempReqText] = useState(
+    requirement.original_req || "",
+  );
+  const [tempFormat, setTempFormat] = useState(
+    requirement.selected_format || "",
+  );
   const [editRequirement, setEditRequirement] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -42,15 +49,15 @@ export default function RequirementPanel({ requirement, onUpdate }: RequirementP
     };
 
     updateWidth();
-    window.addEventListener('resize', updateWidth);
-    
+    window.addEventListener("resize", updateWidth);
+
     const observer = new ResizeObserver(updateWidth);
     if (containerRef.current) {
       observer.observe(containerRef.current);
     }
 
     return () => {
-      window.removeEventListener('resize', updateWidth);
+      window.removeEventListener("resize", updateWidth);
       observer.disconnect();
     };
   }, []);
@@ -88,14 +95,15 @@ export default function RequirementPanel({ requirement, onUpdate }: RequirementP
         />
       )}
 
-      {requirement.original_req && (requirement.rewritten_ears || requirement.rewritten_incose) && (
-        <RequirementContent
-          requirement={requirement}
-          onFormatChange={handleFormatChange}
-          onTextChange={handleTextChange}
-          onUpdate={onUpdate || (() => {})}
-        />
-      )}
+      {requirement.original_req &&
+        (requirement.rewritten_ears || requirement.rewritten_incose) && (
+          <RequirementContent
+            requirement={requirement}
+            onFormatChange={handleFormatChange}
+            onTextChange={handleTextChange}
+            onUpdate={onUpdate || (() => {})}
+          />
+        )}
 
       <RequirementAssignment
         assignedTo={requirement.assigned_to || undefined}
@@ -124,15 +132,17 @@ export default function RequirementPanel({ requirement, onUpdate }: RequirementP
                 0 2px 4px -2px rgb(0 0 0 / 0.1),
                 0 4px 8px -4px rgb(0 0 0 / 0.1)
               `,
-              borderLeft: '1px solid rgb(0 0 0 / 0.1)',
-              borderTop: '1px solid rgb(0 0 0 / 0.1)',
-              borderBottom: '1px solid rgb(0 0 0 / 0.1)',
-              left: `${containerWidth}px`
+              borderLeft: "1px solid rgb(0 0 0 / 0.1)",
+              borderTop: "1px solid rgb(0 0 0 / 0.1)",
+              borderBottom: "1px solid rgb(0 0 0 / 0.1)",
+              left: `${containerWidth}px`,
             }}
           >
             <div className="p-6 h-full overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold font-mono">Current Requirement Analysis</h2>
+                <h2 className="text-xl font-semibold font-mono">
+                  Current Requirement Analysis
+                </h2>
                 <button
                   onClick={() => setShowCurrentReq(false)}
                   className="p-2 hover:bg-accent rounded-md"
@@ -181,4 +191,4 @@ export default function RequirementPanel({ requirement, onUpdate }: RequirementP
       </Dialog>
     </div>
   );
-} 
+}

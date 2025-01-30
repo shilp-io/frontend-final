@@ -1,39 +1,46 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { AlertCircle } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { registerUser } = useAuth();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     try {
       await registerUser({ email, password, displayName: name });
-      router.push('/dashboard');
+      router.push("/dashboard");
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError('An unexpected error occurred');
+        setError("An unexpected error occurred");
       }
     }
   };
@@ -125,9 +132,9 @@ export default function RegisterPage() {
         </CardContent>
         <CardFooter>
           <p className="text-center w-full text-sm text-gray-600 dark:text-gray-300">
-            Already have an account?{' '}
-            <Link 
-              href="/login" 
+            Already have an account?{" "}
+            <Link
+              href="/login"
               className="font-medium text-red-600 hover:text-red-500 dark:text-red-500 dark:hover:text-red-400
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-red-500"
             >

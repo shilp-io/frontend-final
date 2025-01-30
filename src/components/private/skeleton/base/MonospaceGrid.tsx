@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import React from 'react';
-import { FileText } from 'lucide-react';
+import React from "react";
+import { FileText } from "lucide-react";
 import { motion, LayoutGroup } from "framer-motion";
 import { SidePanel } from "@/components/private";
 import { transitionConfig } from "@/lib/animations";
-import type { Project, Requirement, Collection, ExternalDoc } from '@/types';
+import type { Project, Requirement, Collection, ExternalDoc } from "@/types";
 
 type SupportedDataTypes = Project | Requirement | Collection | ExternalDoc;
 
@@ -15,7 +15,9 @@ interface Column<T extends SupportedDataTypes = SupportedDataTypes> {
   accessor: (item: T) => string;
 }
 
-interface MonospaceGridProps<T extends SupportedDataTypes = SupportedDataTypes> {
+interface MonospaceGridProps<
+  T extends SupportedDataTypes = SupportedDataTypes,
+> {
   data: T[];
   columns: Column<T>[];
   onRowClick?: (item: T) => void;
@@ -23,18 +25,18 @@ interface MonospaceGridProps<T extends SupportedDataTypes = SupportedDataTypes> 
   gridItemRender?: (item: T) => React.ReactNode;
   renderDetails?: (item: T) => React.ReactNode;
   onItemDelete?: (item: T) => void;
-  viewMode?: 'split' | 'full';
+  viewMode?: "split" | "full";
 }
 
-export function MonospaceGrid<T extends SupportedDataTypes>({ 
-  data, 
-  columns, 
+export function MonospaceGrid<T extends SupportedDataTypes>({
+  data,
+  columns,
   onRowClick,
   handleGoToPage,
   gridItemRender,
   renderDetails,
   onItemDelete,
-  viewMode = 'full'
+  viewMode = "full",
 }: MonospaceGridProps<T>) {
   const [selectedItem, setSelectedItem] = React.useState<T | null>(null);
 
@@ -52,23 +54,20 @@ export function MonospaceGrid<T extends SupportedDataTypes>({
 
   return (
     <LayoutGroup>
-      <motion.div 
+      <motion.div
         className={`overflow-hidden relative space-y-4 pt-4`}
         layout
         transition={transitionConfig}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
           {data.map((item, index) => (
-            <div 
-              key={index} 
-              onClick={() => handleItemClick(item)}
-            >
+            <div key={index} onClick={() => handleItemClick(item)}>
               {gridItemRender ? (
                 <div onClick={() => handleItemClick(item)}>
                   {gridItemRender(item)}
                 </div>
               ) : (
-                <div 
+                <div
                   onClick={() => handleItemClick(item)}
                   className="w-full bg-white dark:bg-dark-surface p-6 rounded-lg shadow-sm border border-gray-200 dark:border-dark-border hover:border-red-200 transition-colors text-left font-mono cursor-pointer"
                 >
@@ -97,15 +96,17 @@ export function MonospaceGrid<T extends SupportedDataTypes>({
         </div>
       </motion.div>
 
-      {renderDetails && viewMode === 'split' && (
+      {renderDetails && viewMode === "split" && (
         <SidePanel
           isOpen={!!selectedItem}
           onClose={() => setSelectedItem(null)}
-          onNavigate={selectedItem ? () => handleGoToPage?.(selectedItem) : undefined}
+          onNavigate={
+            selectedItem ? () => handleGoToPage?.(selectedItem) : undefined
+          }
           showNavigateButton={!!handleGoToPage}
           showEditButton={!!onItemDelete}
           onOptionSelect={(option) => {
-            if (option === 'delete' && selectedItem) {
+            if (option === "delete" && selectedItem) {
               onItemDelete?.(selectedItem);
               setSelectedItem(null);
             }
@@ -117,4 +118,3 @@ export function MonospaceGrid<T extends SupportedDataTypes>({
     </LayoutGroup>
   );
 }
-

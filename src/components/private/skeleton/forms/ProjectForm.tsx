@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -14,46 +14,46 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { CalendarIcon } from 'lucide-react'
-import { Calendar } from '@/components/ui/calendar'
+} from "@/components/ui/select";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
-import { format } from 'date-fns'
-import { useProjects } from '@/hooks/db/useProjects'
-import { useToast } from "@/components/ui/use-toast"
-import { useProjectStore } from '@/lib/store/projectStore'
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { useProjects } from "@/hooks/db/useProjects";
+import { useToast } from "@/components/ui/use-toast";
+import { useProjectStore } from "@/lib/store/projectStore";
 
 const projectFormSchema = z.object({
-  name: z.string().min(1, 'Project name is required'),
+  name: z.string().min(1, "Project name is required"),
   description: z.string().optional(),
-  status: z.enum(['active', 'on_hold', 'completed', 'archived']),
+  status: z.enum(["active", "on_hold", "completed", "archived"]),
   start_date: z.date().optional(),
   target_end_date: z.date().optional(),
   actual_end_date: z.date().optional(),
   tags: z.array(z.string()).optional(),
-})
+});
 
-type ProjectFormValues = z.infer<typeof projectFormSchema>
+type ProjectFormValues = z.infer<typeof projectFormSchema>;
 
 const defaultValues: Partial<ProjectFormValues> = {
-  status: 'active',
-  name: '',
-}
+  status: "active",
+  name: "",
+};
 
 interface ProjectFormProps {
-  onSuccess: () => void
+  onSuccess: () => void;
 }
 
 export default function ProjectForm({ onSuccess }: ProjectFormProps) {
@@ -64,7 +64,7 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectFormSchema),
     defaultValues,
-  })
+  });
 
   async function onSubmit(data: ProjectFormValues) {
     try {
@@ -78,9 +78,9 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
         actual_end_date: data.actual_end_date?.toISOString() || null,
         tags: data.tags || null,
         metadata: {
-          source: 'web_app',
-          template_version: '1.0'
-        }
+          source: "web_app",
+          template_version: "1.0",
+        },
       });
       toast({
         variant: "default",
@@ -93,11 +93,12 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
       }
       onSuccess();
     } catch (error) {
-      console.error('Failed to create project:', error);
+      console.error("Failed to create project:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : 'Failed to create project',
+        description:
+          error instanceof Error ? error.message : "Failed to create project",
       });
     } finally {
       setIsSubmitting(false);
@@ -176,12 +177,12 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
                       <Button
                         variant="outline"
                         className={cn(
-                          'w-full pl-3 text-left font-normal',
-                          !field.value && 'text-muted-foreground'
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground",
                         )}
                       >
                         {field.value ? (
-                          format(field.value, 'PPP')
+                          format(field.value, "PPP")
                         ) : (
                           <span>Pick a date</span>
                         )}
@@ -194,9 +195,7 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) =>
-                        date < new Date('1900-01-01')
-                      }
+                      disabled={(date) => date < new Date("1900-01-01")}
                       initialFocus
                     />
                   </PopoverContent>
@@ -218,12 +217,12 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
                       <Button
                         variant="outline"
                         className={cn(
-                          'w-full pl-3 text-left font-normal',
-                          !field.value && 'text-muted-foreground'
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground",
                         )}
                       >
                         {field.value ? (
-                          format(field.value, 'PPP')
+                          format(field.value, "PPP")
                         ) : (
                           <span>Pick a date</span>
                         )}
@@ -236,9 +235,7 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) =>
-                        date < new Date('1900-01-01')
-                      }
+                      disabled={(date) => date < new Date("1900-01-01")}
                       initialFocus
                     />
                   </PopoverContent>
@@ -251,10 +248,10 @@ export default function ProjectForm({ onSuccess }: ProjectFormProps) {
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Creating...' : 'Create Project'}
+            {isSubmitting ? "Creating..." : "Create Project"}
           </Button>
         </div>
       </form>
     </Form>
-  )
-} 
+  );
+}

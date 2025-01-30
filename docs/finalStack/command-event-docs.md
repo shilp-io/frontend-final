@@ -16,7 +16,7 @@ interface BaseCommand {
 
 // src/core/application/commands/requirement-commands.ts
 interface CreateRequirementCommand extends BaseCommand {
-  type: 'CREATE_REQUIREMENT';
+  type: "CREATE_REQUIREMENT";
   payload: {
     projectId: string;
     title: string;
@@ -28,7 +28,7 @@ interface CreateRequirementCommand extends BaseCommand {
 }
 
 interface UpdateRequirementCommand extends BaseCommand {
-  type: 'UPDATE_REQUIREMENT';
+  type: "UPDATE_REQUIREMENT";
   payload: {
     requirementId: string;
     changes: Partial<RequirementData>;
@@ -36,25 +36,25 @@ interface UpdateRequirementCommand extends BaseCommand {
 }
 
 interface LinkDocumentCommand extends BaseCommand {
-  type: 'LINK_DOCUMENT';
+  type: "LINK_DOCUMENT";
   payload: {
     requirementId: string;
     documentId: string;
-    linkType: 'SOURCE' | 'REFERENCE';
+    linkType: "SOURCE" | "REFERENCE";
   };
 }
 
 // Command validation schemas
 const createRequirementSchema = z.object({
-  type: z.literal('CREATE_REQUIREMENT'),
+  type: z.literal("CREATE_REQUIREMENT"),
   payload: z.object({
     projectId: z.string().uuid(),
     title: z.string().min(1).max(200),
     description: z.string(),
-    priority: z.enum(['LOW', 'MEDIUM', 'HIGH']),
-    type: z.enum(['FUNCTIONAL', 'NON_FUNCTIONAL', 'CONSTRAINT']),
-    sourceDocIds: z.array(z.string().uuid())
-  })
+    priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
+    type: z.enum(["FUNCTIONAL", "NON_FUNCTIONAL", "CONSTRAINT"]),
+    sourceDocIds: z.array(z.string().uuid()),
+  }),
 });
 ```
 
@@ -67,24 +67,24 @@ export class CommandBus {
 
   constructor(
     private readonly logger: Logger,
-    private readonly eventBus: EventBus
+    private readonly eventBus: EventBus,
   ) {}
 
   register<T extends BaseCommand>(
-    commandType: string, 
-    handler: CommandHandler<T>
+    commandType: string,
+    handler: CommandHandler<T>,
   ): void {
     this.handlers.set(commandType, handler);
   }
 
   async dispatch<T extends BaseCommand>(
-    command: T
+    command: T,
   ): Promise<Result<any, Error>> {
     const handler = this.handlers.get(command.type);
-    
+
     if (!handler) {
       return Result.failure(
-        new Error(`No handler for command type: ${command.type}`)
+        new Error(`No handler for command type: ${command.type}`),
       );
     }
 
@@ -93,28 +93,28 @@ export class CommandBus {
       const startTime = Date.now();
 
       // Log command receipt
-      this.logger.info('Command received', {
+      this.logger.info("Command received", {
         commandType: command.type,
         correlationId,
-        userId: command.userId
+        userId: command.userId,
       });
 
       // Execute handler
       const result = await handler.execute(command);
 
       // Log command completion
-      this.logger.info('Command completed', {
+      this.logger.info("Command completed", {
         commandType: command.type,
         correlationId,
         duration: Date.now() - startTime,
-        success: result.isSuccess()
+        success: result.isSuccess(),
       });
 
       return result;
     } catch (error) {
-      this.logger.error('Command failed', {
+      this.logger.error("Command failed", {
         commandType: command.type,
-        error
+        error,
       });
       return Result.failure(error);
     }
@@ -126,15 +126,17 @@ export class CommandBus {
 
 ```typescript
 // src/core/application/handlers/create-requirement-handler.ts
-export class CreateRequirementHandler implements CommandHandler<CreateRequirementCommand> {
+export class CreateRequirementHandler
+  implements CommandHandler<CreateRequirementCommand>
+{
   constructor(
     private readonly repository: RequirementRepository,
     private readonly eventBus: EventBus,
-    private readonly validator: RequirementValidator
+    private readonly validator: RequirementValidator,
   ) {}
 
   async execute(
-    command: CreateRequirementCommand
+    command: CreateRequirementCommand,
   ): Promise<Result<Requirement, Error>> {
     // 1. Validate command
     const validationResult = createRequirementSchema.safeParse(command);
@@ -147,8 +149,8 @@ export class CreateRequirementHandler implements CommandHandler<CreateRequiremen
       ...command.payload,
       createdBy: command.userId,
       organizationId: command.organizationId,
-      status: 'DRAFT',
-      version: 1
+      status: "DRAFT",
+      version: 1,
     });
 
     // 3. Validate domain rules
@@ -193,7 +195,7 @@ interface BaseEvent {
 
 // src/core/domain/events/requirement-events.ts
 interface RequirementCreatedEvent extends BaseEvent {
-  type: 'REQUIREMENT_CREATED';
+  type: "REQUIREMENT_CREATED";
   payload: {
     requirementId: string;
     projectId: string;
@@ -203,7 +205,7 @@ interface RequirementCreatedEvent extends BaseEvent {
 }
 
 interface RequirementUpdatedEvent extends BaseEvent {
-  type: 'REQUIREMENT_UPDATED';
+  type: "REQUIREMENT_UPDATED";
   payload: {
     requirementId: string;
     changes: Partial<RequirementData>;
@@ -212,7 +214,7 @@ interface RequirementUpdatedEvent extends BaseEvent {
 }
 
 interface DocumentLinkedEvent extends BaseEvent {
-  type: 'DOCUMENT_LINKED';
+  type: "DOCUMENT_LINKED";
   payload: {
     requirementId: string;
     documentId: string;
@@ -234,7 +236,7 @@ export class EventBus {
   subscribe(
     eventType: string,
     handler: EventHandler,
-    priority: number = 0
+    priority: number = 0,
   ): void {
     const handlers = this.handlers.get(eventType) || new Set();
     handlers.add(handler);
@@ -242,7 +244,8 @@ export class EventBus {
 
     // Add to priority queue if needed
     if (priority !== 0) {
-      const priorityQueue = this.priorityHandlers.get(eventType) || 
+      const priorityQueue =
+        this.priorityHandlers.get(eventType) ||
         new PriorityQueue<EventHandler>();
       priorityQueue.add(handler, priority);
       this.priorityHandlers.set(eventType, priorityQueue);
@@ -268,15 +271,15 @@ export class EventBus {
       }
 
       // Handle regular handlers
-      const promises = Array.from(handlers).map(handler =>
-        this.executeHandler(handler, event)
+      const promises = Array.from(handlers).map((handler) =>
+        this.executeHandler(handler, event),
       );
 
       await Promise.all(promises);
     } catch (error) {
-      this.logger.error('Event handling failed', {
+      this.logger.error("Event handling failed", {
         eventType: event.type,
-        error
+        error,
       });
       throw error;
     }
@@ -284,15 +287,15 @@ export class EventBus {
 
   private async executeHandler(
     handler: EventHandler,
-    event: BaseEvent
+    event: BaseEvent,
   ): Promise<void> {
     try {
       await handler.handle(event);
     } catch (error) {
-      this.logger.error('Event handler failed', {
+      this.logger.error("Event handler failed", {
         handler: handler.constructor.name,
         eventType: event.type,
-        error
+        error,
       });
       throw error;
     }
@@ -307,7 +310,7 @@ export class EventBus {
 export class RequirementCreatedHandler implements EventHandler {
   constructor(
     private readonly cache: CacheManager,
-    private readonly notifier: NotificationService
+    private readonly notifier: NotificationService,
   ) {}
 
   async handle(event: RequirementCreatedEvent): Promise<void> {
@@ -315,14 +318,11 @@ export class RequirementCreatedHandler implements EventHandler {
     await this.cache.invalidatePattern(`project:${event.payload.projectId}:*`);
 
     // 2. Send notifications
-    await this.notifier.notifyProjectMembers(
-      event.payload.projectId,
-      {
-        type: 'REQUIREMENT_CREATED',
-        title: `New requirement: ${event.payload.title}`,
-        requirementId: event.payload.requirementId
-      }
-    );
+    await this.notifier.notifyProjectMembers(event.payload.projectId, {
+      type: "REQUIREMENT_CREATED",
+      title: `New requirement: ${event.payload.title}`,
+      requirementId: event.payload.requirementId,
+    });
   }
 }
 
@@ -330,21 +330,21 @@ export class RequirementCreatedHandler implements EventHandler {
 export class DocumentLinkedHandler implements EventHandler {
   constructor(
     private readonly searchIndex: SearchIndexService,
-    private readonly traceability: TraceabilityService
+    private readonly traceability: TraceabilityService,
   ) {}
 
   async handle(event: DocumentLinkedEvent): Promise<void> {
     // 1. Update search index
     await this.searchIndex.updateRequirementReferences(
       event.payload.requirementId,
-      event.payload.documentId
+      event.payload.documentId,
     );
 
     // 2. Update traceability matrix
     await this.traceability.addLink({
       sourceId: event.payload.requirementId,
       targetId: event.payload.documentId,
-      type: event.payload.linkType
+      type: event.payload.linkType,
     });
   }
 }
@@ -355,15 +355,15 @@ export class DocumentLinkedHandler implements EventHandler {
 ```typescript
 // Example of command execution and event propagation
 async function processCreateRequirement(
-  command: CreateRequirementCommand
+  command: CreateRequirementCommand,
 ): Promise<void> {
   // 1. Command execution
   const result = await commandBus.dispatch(command);
-  
+
   if (result.isFailure()) {
-    logger.error('Failed to create requirement', {
+    logger.error("Failed to create requirement", {
       command,
-      error: result.error
+      error: result.error,
     });
     return;
   }
@@ -373,29 +373,29 @@ async function processCreateRequirement(
   // 2. Event creation
   const event: RequirementCreatedEvent = {
     id: uuid(),
-    type: 'REQUIREMENT_CREATED',
+    type: "REQUIREMENT_CREATED",
     timestamp: new Date(),
     correlationId: command.id,
     causationId: command.id,
     metadata: {
       userId: command.userId,
       organizationId: command.organizationId,
-      version: requirement.version
+      version: requirement.version,
     },
     payload: {
       requirementId: requirement.id,
       projectId: requirement.projectId,
       title: requirement.title,
-      createdBy: command.userId
-    }
+      createdBy: command.userId,
+    },
   };
 
   // 3. Event publication
   await eventBus.publish(event);
 
-  logger.info('Requirement created successfully', {
+  logger.info("Requirement created successfully", {
     requirementId: requirement.id,
-    correlationId: command.id
+    correlationId: command.id,
   });
 }
 ```
@@ -411,7 +411,7 @@ export async function POST(req: Request) {
 
     const command: CreateRequirementCommand = {
       id: uuid(),
-      type: 'CREATE_REQUIREMENT',
+      type: "CREATE_REQUIREMENT",
       timestamp: new Date(),
       userId: user.id,
       organizationId: user.organizationId,
@@ -421,8 +421,8 @@ export async function POST(req: Request) {
         description: data.description,
         priority: data.priority,
         type: data.type,
-        sourceDocIds: data.sourceDocIds
-      }
+        sourceDocIds: data.sourceDocIds,
+      },
     };
 
     const result = await commandBus.dispatch(command);
@@ -430,15 +430,15 @@ export async function POST(req: Request) {
     if (result.isFailure()) {
       return NextResponse.json(
         { error: result.error.message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     return NextResponse.json(result.value);
   } catch (error) {
     return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
+      { error: "Internal Server Error" },
+      { status: 500 },
     );
   }
 }
@@ -448,7 +448,7 @@ export async function POST(req: Request) {
 
 ```typescript
 // src/tests/unit/handlers/create-requirement-handler.test.ts
-describe('CreateRequirementHandler', () => {
+describe("CreateRequirementHandler", () => {
   let handler: CreateRequirementHandler;
   let repository: MockRequirementRepository;
   let eventBus: MockEventBus;
@@ -458,14 +458,10 @@ describe('CreateRequirementHandler', () => {
     repository = new MockRequirementRepository();
     eventBus = new MockEventBus();
     validator = new MockRequirementValidator();
-    handler = new CreateRequirementHandler(
-      repository,
-      eventBus,
-      validator
-    );
+    handler = new CreateRequirementHandler(repository, eventBus, validator);
   });
 
-  it('should successfully create requirement and publish event', async () => {
+  it("should successfully create requirement and publish event", async () => {
     const command = createMockCommand();
     const result = await handler.execute(command);
 

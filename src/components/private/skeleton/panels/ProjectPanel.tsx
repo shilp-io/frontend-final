@@ -13,16 +13,16 @@ interface ProjectPanelProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'completed':
-      return 'border-green-500 text-green-500';
-    case 'active':
-      return 'border-blue-500 text-blue-500';
-    case 'on_hold':
-      return 'border-yellow-500 text-yellow-500';
-    case 'archived':
-      return 'border-gray-500 text-gray-500';
+    case "completed":
+      return "border-green-500 text-green-500";
+    case "active":
+      return "border-blue-500 text-blue-500";
+    case "on_hold":
+      return "border-yellow-500 text-yellow-500";
+    case "archived":
+      return "border-gray-500 text-gray-500";
     default:
-      return 'border-muted text-muted-foreground';
+      return "border-muted text-muted-foreground";
   }
 };
 
@@ -33,24 +33,29 @@ const formatDate = (date: string | null) => {
 
 export default function ProjectPanel({ project }: ProjectPanelProps) {
   const router = useRouter();
-  const { requirements = [], isLoading, deleteRequirement, updateRequirement } = useRequirements(project.id);
+  const {
+    requirements = [],
+    isLoading,
+    deleteRequirement,
+    updateRequirement,
+  } = useRequirements(project.id);
   const { selectRequirement } = useRequirementStore();
 
   const requirementColumns: Column<Requirement>[] = [
-    { 
-      header: "Title", 
+    {
+      header: "Title",
       accessor: (row) => row.title,
-      width: 200
+      width: 200,
     },
-    { 
-      header: "Status", 
+    {
+      header: "Status",
       accessor: (row) => row.status,
-      width: 100
+      width: 100,
     },
-    { 
-      header: "Priority", 
+    {
+      header: "Priority",
       accessor: (row) => row.priority,
-      width: 100
+      width: 100,
     },
   ];
 
@@ -70,7 +75,7 @@ export default function ProjectPanel({ project }: ProjectPanelProps) {
     try {
       await updateRequirement(updatedRequirement);
     } catch (error) {
-      console.error('Error updating requirement:', error);
+      console.error("Error updating requirement:", error);
     }
   };
 
@@ -81,10 +86,7 @@ export default function ProjectPanel({ project }: ProjectPanelProps) {
           <div>
             <h2 className="text-2xl font-bold">{project.name}</h2>
           </div>
-          <Badge
-            variant="outline"
-            className={getStatusColor(project.status)}
-          >
+          <Badge variant="outline" className={getStatusColor(project.status)}>
             {project.status}
           </Badge>
           <p className="text-muted-foreground">{project.description}</p>
@@ -95,10 +97,16 @@ export default function ProjectPanel({ project }: ProjectPanelProps) {
             <h3 className="text-lg font-semibold flex items-center">
               <CalendarIcon className="mr-2 h-5 w-5" /> Project Timeline
             </h3>
-            <p className="text-muted-foreground">Start Date: {formatDate(project.start_date)}</p>
-            <p className="text-muted-foreground">Target End Date: {formatDate(project.target_end_date)}</p>
+            <p className="text-muted-foreground">
+              Start Date: {formatDate(project.start_date)}
+            </p>
+            <p className="text-muted-foreground">
+              Target End Date: {formatDate(project.target_end_date)}
+            </p>
             {project.actual_end_date && (
-              <p className="text-muted-foreground">Actual End Date: {formatDate(project.actual_end_date)}</p>
+              <p className="text-muted-foreground">
+                Actual End Date: {formatDate(project.actual_end_date)}
+              </p>
             )}
           </div>
 
@@ -109,7 +117,9 @@ export default function ProjectPanel({ project }: ProjectPanelProps) {
               </h3>
               <div className="flex flex-wrap gap-2">
                 {project.tags.map((tag: string, index: number) => (
-                  <Badge key={index} variant="secondary">{tag}</Badge>
+                  <Badge key={index} variant="secondary">
+                    {tag}
+                  </Badge>
                 ))}
               </div>
             </div>
@@ -130,12 +140,14 @@ export default function ProjectPanel({ project }: ProjectPanelProps) {
           renderGridItem={(item) => (
             <div className="p-4 border rounded-lg">
               <h3 className="font-semibold">{item.title}</h3>
-              <Badge variant="outline" className="mt-2">{item.status}</Badge>
+              <Badge variant="outline" className="mt-2">
+                {item.status}
+              </Badge>
             </div>
           )}
           renderDetails={(item) => (
-            <RequirementPanel 
-              requirement={item} 
+            <RequirementPanel
+              requirement={item}
               onUpdate={handleRequirementUpdate}
             />
           )}
@@ -145,4 +157,4 @@ export default function ProjectPanel({ project }: ProjectPanelProps) {
       </div>
     </div>
   );
-} 
+}

@@ -1,16 +1,23 @@
 // src/app/(auth)/login/page.tsx
 
-'use client';
+"use client";
 
-import { useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { AlertCircle, Github, Mail } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { AlertCircle, Github, Mail } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 export default function LoginPage() {
   return (
@@ -24,21 +31,21 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { signIn, signInWithGoogle, signInWithGithub } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await signIn(email, password);
-      const redirect = searchParams.get('redirect') || '/dashboard';
+      const redirect = searchParams.get("redirect") || "/dashboard";
       router.push(redirect);
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError('An unknown error occurred');
+        setError("An unknown error occurred");
       }
     }
   };
@@ -46,13 +53,13 @@ function LoginContent() {
   const handleGoogleSignIn = async () => {
     try {
       await signInWithGoogle();
-      const redirect = searchParams.get('redirect') || '/dashboard';
+      const redirect = searchParams.get("redirect") || "/dashboard";
       router.push(redirect);
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError('An unknown error occurred');
+        setError("An unknown error occurred");
       }
     }
   };
@@ -60,13 +67,13 @@ function LoginContent() {
   const handleGithubSignIn = async () => {
     try {
       await signInWithGithub();
-      const redirect = searchParams.get('redirect') || '/dashboard';
+      const redirect = searchParams.get("redirect") || "/dashboard";
       router.push(redirect);
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError('An unknown error occurred');
+        setError("An unknown error occurred");
       }
     }
   };
@@ -152,30 +159,30 @@ function LoginContent() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-          <Button
-  variant="outline"
-  onClick={handleGoogleSignIn}
-  className="w-full bg-black text-white border border-white hover:bg-gray-900 hover:border-gray-100 transition-colors"
->
-  <Mail className="mr-2 h-4 w-4" />
-  Google
-</Button>
+            <Button
+              variant="outline"
+              onClick={handleGoogleSignIn}
+              className="w-full bg-black text-white border border-white hover:bg-gray-900 hover:border-gray-100 transition-colors"
+            >
+              <Mail className="mr-2 h-4 w-4" />
+              Google
+            </Button>
 
-<Button
-  variant="outline"
-  onClick={handleGithubSignIn}
-  className="w-full bg-black text-white border border-white hover:bg-gray-900 hover:border-gray-100 transition-colors"
->
-  <Github className="mr-2 h-4 w-4" />
-  GitHub
-</Button>
+            <Button
+              variant="outline"
+              onClick={handleGithubSignIn}
+              className="w-full bg-black text-white border border-white hover:bg-gray-900 hover:border-gray-100 transition-colors"
+            >
+              <Github className="mr-2 h-4 w-4" />
+              GitHub
+            </Button>
           </div>
         </CardContent>
         <CardFooter>
           <p className="text-center w-full text-sm text-gray-600 dark:text-gray-300">
-            Don&apos;t have an account?{' '}
-            <Link 
-              href="/register" 
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
               className="font-medium text-red-600 hover:text-red-500 dark:text-red-500 dark:hover:text-red-400
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-red-500"
             >

@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -14,69 +14,80 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { useProjects, useRequirements } from '@/hooks'
-import { useToast } from "@/components/ui/use-toast"
+} from "@/components/ui/select";
+import { useProjects, useRequirements } from "@/hooks";
+import { useToast } from "@/components/ui/use-toast";
 
 const requirementFormSchema = z.object({
-  title: z.string().min(1, 'Requirement title is required'),
+  title: z.string().min(1, "Requirement title is required"),
   description: z.string().optional(),
-  status: z.enum(['draft', 'pending_review', 'approved', 'in_progress', 'testing', 'completed', 'rejected'] as const),
-  priority: z.enum(['low', 'medium', 'high', 'critical'] as const),
+  status: z.enum([
+    "draft",
+    "pending_review",
+    "approved",
+    "in_progress",
+    "testing",
+    "completed",
+    "rejected",
+  ] as const),
+  priority: z.enum(["low", "medium", "high", "critical"] as const),
   assigned_to: z.string().optional(),
   reviewer: z.string().optional(),
   acceptance_criteria: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
-  project_id: z.string().min(1, 'Project is required'),
-})
+  project_id: z.string().min(1, "Project is required"),
+});
 
-type RequirementFormValues = z.infer<typeof requirementFormSchema>
+type RequirementFormValues = z.infer<typeof requirementFormSchema>;
 
 const defaultValues: Partial<RequirementFormValues> = {
-  title: '',
-  description: '',
-  status: 'draft',
-  priority: 'medium',
+  title: "",
+  description: "",
+  status: "draft",
+  priority: "medium",
   acceptance_criteria: [],
   tags: [],
-  assigned_to: '',
-  reviewer: '',
-  project_id: '',
-}
+  assigned_to: "",
+  reviewer: "",
+  project_id: "",
+};
 
 interface RequirementFormProps {
-  projectId?: string
-  onSuccess: () => void
+  projectId?: string;
+  onSuccess: () => void;
 }
 
-export default function RequirementForm({ projectId, onSuccess }: RequirementFormProps) {
+export default function RequirementForm({
+  projectId,
+  onSuccess,
+}: RequirementFormProps) {
   const form = useForm<RequirementFormValues>({
     resolver: zodResolver(requirementFormSchema),
     defaultValues: {
       ...defaultValues,
-      project_id: projectId || '',
+      project_id: projectId || "",
     },
-  })
+  });
 
-  const [criteria, setCriteria] = React.useState<string>('')
-  const { projects, isLoading: isLoadingProjects } = useProjects()
-  const { createRequirement } = useRequirements(projectId)
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
-  const { toast } = useToast()
+  const [criteria, setCriteria] = React.useState<string>("");
+  const { projects, isLoading: isLoadingProjects } = useProjects();
+  const { createRequirement } = useRequirements(projectId);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const { toast } = useToast();
 
   async function onSubmit(data: RequirementFormValues) {
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
       await createRequirement({
         title: data.title,
-        description: data.description || '',
+        description: data.description || "",
         status: data.status,
         priority: data.priority,
         assigned_to: data.assigned_to || null,
@@ -91,41 +102,47 @@ export default function RequirementForm({ projectId, onSuccess }: RequirementFor
         rewritten_ears: null,
         rewritten_incose: null,
         selected_format: null,
-        metadata: {}
-      })
+        metadata: {},
+      });
       toast({
         variant: "default",
         title: "Success",
         description: "Requirement created successfully",
-      })
-      onSuccess()
+      });
+      onSuccess();
     } catch (error) {
-      console.error('Failed to create requirement:', error)
+      console.error("Failed to create requirement:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error instanceof Error ? error.message : 'Failed to create requirement',
-      })
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to create requirement",
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
   const handleAddCriteria = () => {
     if (criteria.trim()) {
-      const currentCriteria = form.getValues('acceptance_criteria') || []
-      form.setValue('acceptance_criteria', [...currentCriteria, criteria.trim()])
-      setCriteria('')
+      const currentCriteria = form.getValues("acceptance_criteria") || [];
+      form.setValue("acceptance_criteria", [
+        ...currentCriteria,
+        criteria.trim(),
+      ]);
+      setCriteria("");
     }
-  }
+  };
 
   const handleRemoveCriteria = (index: number) => {
-    const currentCriteria = form.getValues('acceptance_criteria') || []
+    const currentCriteria = form.getValues("acceptance_criteria") || [];
     form.setValue(
-      'acceptance_criteria',
-      currentCriteria.filter((_, i) => i !== index)
-    )
-  }
+      "acceptance_criteria",
+      currentCriteria.filter((_, i) => i !== index),
+    );
+  };
 
   return (
     <Form {...form}>
@@ -206,7 +223,10 @@ export default function RequirementForm({ projectId, onSuccess }: RequirementFor
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Status</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
@@ -214,7 +234,9 @@ export default function RequirementForm({ projectId, onSuccess }: RequirementFor
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="pending_review">Pending Review</SelectItem>
+                    <SelectItem value="pending_review">
+                      Pending Review
+                    </SelectItem>
                     <SelectItem value="approved">Approved</SelectItem>
                     <SelectItem value="in_progress">In Progress</SelectItem>
                     <SelectItem value="testing">Testing</SelectItem>
@@ -233,7 +255,10 @@ export default function RequirementForm({ projectId, onSuccess }: RequirementFor
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Priority</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select priority" />
@@ -290,9 +315,9 @@ export default function RequirementForm({ projectId, onSuccess }: RequirementFor
               onChange={(e) => setCriteria(e.target.value)}
               placeholder="Add acceptance criteria"
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  handleAddCriteria()
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAddCriteria();
                 }
               }}
             />
@@ -301,7 +326,7 @@ export default function RequirementForm({ projectId, onSuccess }: RequirementFor
             </Button>
           </div>
           <ul className="space-y-2">
-            {form.watch('acceptance_criteria')?.map((criterion, index) => (
+            {form.watch("acceptance_criteria")?.map((criterion, index) => (
               <li key={index} className="flex items-center gap-2">
                 <span className="flex-1">{criterion}</span>
                 <Button
@@ -319,10 +344,10 @@ export default function RequirementForm({ projectId, onSuccess }: RequirementFor
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Creating...' : 'Create Requirement'}
+            {isSubmitting ? "Creating..." : "Create Requirement"}
           </Button>
         </div>
       </form>
     </Form>
-  )
-} 
+  );
+}

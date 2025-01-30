@@ -36,9 +36,15 @@ export function RequirementAnalysisForm({
 
   // Handle pipeline completion
   useEffect(() => {
-    if (isSuccess && pipelineRun?.state === 'DONE' && pipelineRun.outputs?.output) {
+    if (
+      isSuccess &&
+      pipelineRun?.state === "DONE" &&
+      pipelineRun.outputs?.output
+    ) {
       const newCurrentReq = JSON.parse(JSON.stringify(pipelineRun.outputs));
-      const newHistoryReq = requirement.history_req ? [...requirement.history_req] : [];
+      const newHistoryReq = requirement.history_req
+        ? [...requirement.history_req]
+        : [];
       newHistoryReq.push(newCurrentReq);
 
       onUpdate({
@@ -47,13 +53,19 @@ export function RequirementAnalysisForm({
         selected_format: tempFormat,
         current_req: newCurrentReq,
         history_req: newHistoryReq,
-        rewritten_ears: tempFormat === 'ears' ? pipelineRun.outputs.output : requirement.rewritten_ears,
-        rewritten_incose: tempFormat === 'incose' ? pipelineRun.outputs.output : requirement.rewritten_incose
+        rewritten_ears:
+          tempFormat === "ears"
+            ? pipelineRun.outputs.output
+            : requirement.rewritten_ears,
+        rewritten_incose:
+          tempFormat === "incose"
+            ? pipelineRun.outputs.output
+            : requirement.rewritten_incose,
       });
 
       setIsAnalyzing(false);
       setPipelineRunId(undefined);
-    } else if (isSuccess && pipelineRun?.state === 'FAILED') {
+    } else if (isSuccess && pipelineRun?.state === "FAILED") {
       setIsAnalyzing(false);
       setPipelineRunId(undefined);
       console.error("Pipeline failed");
@@ -68,11 +80,11 @@ export function RequirementAnalysisForm({
     try {
       const response = await startPipeline({
         requirement: tempReqText,
-        objective: `Analyze and improve requirement clarity using ${tempFormat.toUpperCase()} format`
+        objective: `Analyze and improve requirement clarity using ${tempFormat.toUpperCase()} format`,
       });
 
       if (!response?.run_id) {
-        throw new Error('No run ID received from pipeline');
+        throw new Error("No run ID received from pipeline");
       }
 
       setPipelineRunId(response.run_id);
@@ -92,10 +104,7 @@ export function RequirementAnalysisForm({
         Edit Requirement
       </h3>
       <div className="space-y-4">
-        <Select
-          value={tempFormat}
-          onValueChange={onFormatChange}
-        >
+        <Select value={tempFormat} onValueChange={onFormatChange}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select format" />
           </SelectTrigger>

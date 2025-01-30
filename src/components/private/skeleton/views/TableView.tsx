@@ -1,9 +1,17 @@
-import React from 'react';
-import { useAppStore } from '@/lib/store/appStore';
-import { MonospaceTable, MonospaceGrid, AsciiTable } from '@/components/private';
-import type { Project, Requirement, Collection, ExternalDoc } from '@/types';
+import React from "react";
+import { useAppStore } from "@/lib/store/appStore";
+import {
+  MonospaceTable,
+  MonospaceGrid,
+  AsciiTable,
+} from "@/components/private";
+import type { Project, Requirement, Collection, ExternalDoc } from "@/types";
 
-export type SupportedDataTypes = Project | Requirement | Collection | ExternalDoc;
+export type SupportedDataTypes =
+  | Project
+  | Requirement
+  | Collection
+  | ExternalDoc;
 
 export interface Column<T extends SupportedDataTypes = SupportedDataTypes> {
   header: string;
@@ -13,7 +21,9 @@ export interface Column<T extends SupportedDataTypes = SupportedDataTypes> {
   isSortable?: boolean;
 }
 
-export interface TableViewProps<T extends SupportedDataTypes = SupportedDataTypes> {
+export interface TableViewProps<
+  T extends SupportedDataTypes = SupportedDataTypes,
+> {
   data: T[];
   columns: Column<T>[];
   onRowClick?: (item: T) => void;
@@ -23,7 +33,7 @@ export interface TableViewProps<T extends SupportedDataTypes = SupportedDataType
   gridItemRender?: (item: T) => React.ReactNode;
   renderDetails?: (item: T) => React.ReactNode;
   onItemDelete?: (item: T) => void;
-  viewMode?: 'split' | 'full';
+  viewMode?: "split" | "full";
 }
 
 function TableView<T extends SupportedDataTypes>({
@@ -32,22 +42,25 @@ function TableView<T extends SupportedDataTypes>({
   onRowClick,
   handleGoToPage,
   isLoading,
-  emptyMessage = 'No items found.',
+  emptyMessage = "No items found.",
   gridItemRender,
   renderDetails,
   onItemDelete,
-  viewMode = 'full'
+  viewMode = "full",
 }: TableViewProps<T>) {
   const { viewMode: appViewMode } = useAppStore();
 
-  const asciiColumns = React.useMemo(() => 
-    columns.map(col => ({
-      ...col,
-      width: col.width || 20
-    })), [columns]);
+  const asciiColumns = React.useMemo(
+    () =>
+      columns.map((col) => ({
+        ...col,
+        width: col.width || 20,
+      })),
+    [columns],
+  );
 
   if (isLoading) {
-    return appViewMode === 'ascii' ? (
+    return appViewMode === "ascii" ? (
       <AsciiTable data={[]} columns={asciiColumns} isLoading={true} />
     ) : (
       <div className="animate-pulse">Loading...</div>
@@ -55,7 +68,7 @@ function TableView<T extends SupportedDataTypes>({
   }
 
   if (data.length === 0) {
-    return appViewMode === 'ascii' ? (
+    return appViewMode === "ascii" ? (
       <AsciiTable
         data={[]}
         columns={asciiColumns}
@@ -68,7 +81,7 @@ function TableView<T extends SupportedDataTypes>({
     );
   }
 
-  if (appViewMode === 'ascii') {
+  if (appViewMode === "ascii") {
     return (
       <AsciiTable
         data={data}
@@ -81,7 +94,7 @@ function TableView<T extends SupportedDataTypes>({
     );
   }
 
-  if (appViewMode === 'compact') {
+  if (appViewMode === "compact") {
     return (
       <MonospaceGrid
         data={data}

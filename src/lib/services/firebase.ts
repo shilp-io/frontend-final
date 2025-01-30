@@ -1,7 +1,7 @@
 // src/lib/services/firebase.ts
 
-import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -18,7 +18,8 @@ export class FirebaseService {
   private auth: Auth;
 
   private constructor() {
-    this.app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    this.app =
+      getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
     this.auth = getAuth(this.app);
   }
 

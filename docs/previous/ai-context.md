@@ -16,6 +16,7 @@ I'll help create a comprehensive update to the AI context documentation based on
 ### 1.2 Key Design Patterns
 
 1. **Service Layer Pattern**
+
 ```typescript
 // Example from AIService
 interface ServiceLayer {
@@ -74,8 +75,8 @@ export function useRequirements(projectId: UUID, options: UseRequirementsOptions
   });
 ```
 
-
 3. **Provider Pattern** - Used for service and theme context:
+
 ```typescript:src/lib/context/ServiceContext.tsx
 startLine: 7
 endLine: 47
@@ -98,7 +99,6 @@ graph TD
 ### 2.1 Zustand Store Structure
 
 The application uses a modular store approach:
-
 
 ```1:46:src/lib/store/appStore.ts
 import { create } from 'zustand';
@@ -149,21 +149,23 @@ export const useAppStore = create<AppState>()(
 );
 ```
 
-
 ### 2.2 State Categories
 
 1. **UI State** (Zustand)
+
 - Theme preferences
 - Sidebar state
 - Loading states
 - Error messages
 
 2. **Domain State** (React Query)
+
 - Requirements data
 - Project information
 - User data
 
 3. **Server State** (React Query)
+
 - API responses
 - Real-time updates
 - Cache management
@@ -171,6 +173,7 @@ export const useAppStore = create<AppState>()(
 ## 3. Real-time Architecture
 
 ### 3.1 SSE Implementation
+
 ```typescript
 interface RealTimeConfig {
   endpoint: string;
@@ -209,7 +212,6 @@ interface RealTimeConfig {
     };
   }, [projectId, queryClient]);
 ```
-
 
 ## 4. AI Integration
 
@@ -261,7 +263,6 @@ interface AnalysisResult {
 }
 ```
 
-
 ### 4.3 Rate Limiting Implementation
 
 ```6:9:src/app/api/ai/route.ts
@@ -271,38 +272,37 @@ const rateLimitMiddleware = rateLimit({
 });
 ```
 
-
 ## 5. Styling Architecture
 
 ### 5.1 Theme System
-The application uses a CSS variables-based theming system:
 
+The application uses a CSS variables-based theming system:
 
 ```9:96:src/styles/globals.css
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
-    
+
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
-    
+
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    
+
     /* Red accent colors */
     --primary: 0 72% 51%;  /* Vibrant red */
     --primary-foreground: 0 0% 98%;
-    
+
     --secondary: 0 0% 96%;
     --secondary-foreground: 240 5.9% 10%;
-    
+
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
-    
+
     --accent: 0 91% 71%;  /* Lighter red for accents */
     --accent-foreground: 0 0% 98%;
-    
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
@@ -340,26 +340,26 @@ The application uses a CSS variables-based theming system:
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    
+
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
-    
+
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    
+
     /* Dark mode red accents */
     --primary: 0 72% 51%;  /* Keeping the same red */
     --primary-foreground: 0 0% 98%;
-    
+
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
-    
+
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
-    
+
     --accent: 0 91% 71%;
     --accent-foreground: 240 5.9% 10%;
-    
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
@@ -368,7 +368,6 @@ The application uses a CSS variables-based theming system:
     --input: 240 3.7% 15.9%;
     --ring: 0 72% 51%;
 ```
-
 
 ### 5.2 Color System
 
@@ -395,10 +394,10 @@ export const colors = {
 }
 ```
 
-
 ## 6. Component Architecture
 
 ### 6.1 Base Components
+
 - Utilizes shadcn/ui as the foundation
 - Implements compound component pattern
 - Uses Radix UI primitives
@@ -462,8 +461,8 @@ const CardDescription = React.forwardRef<
 CardDescription.displayName = "CardDescription"
 ```
 
-
 ### 6.2 Feature Components
+
 - Implements container/presenter pattern
 - Uses custom hooks for data fetching
 - Implements memoization for performance
@@ -507,7 +506,7 @@ function wrapText(text: string | null, width: number): string[] {
       currentLine = word;
     }
   });
-  
+
   if (currentLine) {
     lines.push(currentLine);
   }
@@ -527,7 +526,7 @@ export default function RequirementPage() {
   };
 
 
-  const renderLine = (content: string) => 
+  const renderLine = (content: string) =>
     `${box.vertical} ${truncateAndPad(content, INNER_WIDTH - 1)}${box.vertical}\n`;
 
   if (isLoading) {
@@ -591,29 +590,31 @@ export default function RequirementPage() {
       <div className={ASCII_STYLES.section}>
         {`│ Description:${' '.repeat(width - 13)} │`}
         {'\n'}
-        {descriptionLines.map((line, i) => 
+        {descriptionLines.map((line, i) =>
           `│ ${line.padEnd(width - 2)} │\n`
         )}
         {`├${borderChar.repeat(width)}┤`}
       </div>
 ```
 
-
 ## 7. Performance Optimizations
 
 ### 7.1 Caching Strategy
+
 - Implements query deduplication
 - Uses appropriate stale times
 - Implements selective cache invalidation
 - Uses optimistic updates
 
 ### 7.2 Rendering Optimizations
+
 - Uses React.memo for expensive components
 - Implements virtualization for long lists
 - Uses proper key props
 - Implements code splitting
 
 ### 7.3 Data Loading
+
 - Implements infinite loading
 - Uses suspense boundaries
 - Implements skeleton loading states

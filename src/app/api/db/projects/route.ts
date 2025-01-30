@@ -1,10 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdminService } from '@/lib/services/supabaseAdmin';
-import { rateLimit } from '@/lib/middleware/rateLimit';
-import type { Tables } from '@/types/supabase';
+import { NextRequest, NextResponse } from "next/server";
+import { supabaseAdminService } from "@/lib/services/supabaseAdmin";
+import { rateLimit } from "@/lib/middleware/rateLimit";
+import type { Tables } from "@/types/supabase";
 
-type Project = Tables<'projects'>;
-type ProjectInput = Pick<Project, 'name' | 'description' | 'status' | 'metadata' | 'created_by'>;
+type Project = Tables<"projects">;
+type ProjectInput = Pick<
+  Project,
+  "name" | "description" | "status" | "metadata" | "created_by"
+>;
 
 // GET /api/db/projects
 export async function GET(req: NextRequest) {
@@ -15,39 +18,42 @@ export async function GET(req: NextRequest) {
     }
 
     const searchParams = req.nextUrl.searchParams;
-    const id = searchParams.get('id');
-    const user_id = searchParams.get('user_id');
+    const id = searchParams.get("id");
+    const user_id = searchParams.get("user_id");
 
     const client = supabaseAdminService.getClient();
 
     if (id) {
       const { data: project, error } = await client
-        .from('projects')
-        .select('*')
-        .eq('id', id)
+        .from("projects")
+        .select("*")
+        .eq("id", id)
         .single();
-        
+
       if (error) throw error;
       return NextResponse.json(project);
     }
 
-    let query = client
-      .from('projects')
-      .select('*');
+    let query = client.from("projects").select("*");
 
     if (user_id) {
-      query = query.eq('created_by', user_id);
+      query = query.eq("created_by", user_id);
     }
 
     const { data: projects, error } = await query;
-      
+
     if (error) throw error;
     return NextResponse.json(projects);
   } catch (error) {
-    console.error('Error in GET /api/db/projects:', error);
+    console.error("Error in GET /api/db/projects:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'An unexpected error occurred' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      },
+      { status: 500 },
     );
   }
 }
@@ -60,11 +66,11 @@ export async function POST(req: NextRequest) {
       return rateLimitResponse;
     }
 
-    const body = await req.json() as ProjectInput;
+    const body = (await req.json()) as ProjectInput;
     const client = supabaseAdminService.getClient();
-    
+
     const { data: project, error } = await client
-      .from('projects')
+      .from("projects")
       .insert(body)
       .select()
       .single();
@@ -72,10 +78,15 @@ export async function POST(req: NextRequest) {
     if (error) throw error;
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
-    console.error('Error in POST /api/db/projects:', error);
+    console.error("Error in POST /api/db/projects:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'An unexpected error occurred' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      },
+      { status: 500 },
     );
   }
 }
@@ -90,29 +101,34 @@ export async function PUT(req: NextRequest) {
 
     const data = await req.json();
     const { id, ...updates } = data;
-    
+
     if (!id) {
       return NextResponse.json(
-        { error: 'Project ID is required' },
-        { status: 400 }
+        { error: "Project ID is required" },
+        { status: 400 },
       );
     }
 
     const client = supabaseAdminService.getClient();
     const { data: project, error } = await client
-      .from('projects')
+      .from("projects")
       .update(updates)
-      .eq('id', id)
+      .eq("id", id)
       .select()
       .single();
 
     if (error) throw error;
     return NextResponse.json(project);
   } catch (error) {
-    console.error('Error in PUT /api/db/projects:', error);
+    console.error("Error in PUT /api/db/projects:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'An unexpected error occurred' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      },
+      { status: 500 },
     );
   }
 }
@@ -126,12 +142,12 @@ export async function DELETE(req: NextRequest) {
     }
 
     const searchParams = req.nextUrl.searchParams;
-    const id = searchParams.get('id');
+    const id = searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
-        { error: 'Project ID is required' },
-        { status: 400 }
+        { error: "Project ID is required" },
+        { status: 400 },
       );
     }
 
@@ -139,9 +155,9 @@ export async function DELETE(req: NextRequest) {
 
     // First, delete all requirements associated with this project
     const { error: requirementsError } = await client
-      .from('requirements')
+      .from("requirements")
       .delete()
-      .eq('project_id', id);
+      .eq("project_id", id);
 
     if (requirementsError) {
       throw requirementsError;
@@ -149,17 +165,22 @@ export async function DELETE(req: NextRequest) {
 
     // Then delete the project itself
     const { error: projectError } = await client
-      .from('projects')
+      .from("projects")
       .delete()
-      .eq('id', id);
-      
+      .eq("id", id);
+
     if (projectError) throw projectError;
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error('Error in DELETE /api/db/projects:', error);
+    console.error("Error in DELETE /api/db/projects:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'An unexpected error occurred' },
-      { status: 500 }
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      },
+      { status: 500 },
     );
   }
 }

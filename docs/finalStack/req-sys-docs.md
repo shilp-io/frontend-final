@@ -87,7 +87,7 @@ interface DomainEvent {
 }
 
 interface RequirementCreatedEvent extends DomainEvent {
-  type: 'REQUIREMENT_CREATED';
+  type: "REQUIREMENT_CREATED";
   payload: {
     requirementId: string;
     projectId: string;
@@ -97,11 +97,11 @@ interface RequirementCreatedEvent extends DomainEvent {
 }
 
 interface DocumentLinkedEvent extends DomainEvent {
-  type: 'DOCUMENT_LINKED';
+  type: "DOCUMENT_LINKED";
   payload: {
     requirementId: string;
     documentId: string;
-    linkType: 'SOURCE' | 'REFERENCE';
+    linkType: "SOURCE" | "REFERENCE";
   };
 }
 ```
@@ -116,33 +116,31 @@ class RequirementService {
     private readonly supabase: SupabaseClient,
     private readonly storage: Storage,
     private readonly cache: UpstashRedis,
-    private readonly eventBus: EventBus
+    private readonly eventBus: EventBus,
   ) {}
 
   async createRequirement(
-    command: CreateRequirementCommand
+    command: CreateRequirementCommand,
   ): Promise<Result<Requirement, Error>> {
     const schema = requirementSchema.parse(command);
-    
+
     return await this.supabase.transaction(async (tx) => {
       // Create requirement
       const requirement = await tx
-        .from('requirements')
+        .from("requirements")
         .insert(schema)
         .select()
         .single();
 
       // Update cache
-      await this.cache.set(
-        `requirement:${requirement.id}`,
-        requirement,
-        { ex: 3600 }
-      );
+      await this.cache.set(`requirement:${requirement.id}`, requirement, {
+        ex: 3600,
+      });
 
       // Publish event
       await this.eventBus.publish({
-        type: 'REQUIREMENT_CREATED',
-        payload: requirement
+        type: "REQUIREMENT_CREATED",
+        payload: requirement,
       });
 
       return Result.success(requirement);
@@ -158,15 +156,15 @@ const createRequirementSchema = z.object({
   projectId: z.string().uuid(),
   title: z.string().min(1).max(200),
   description: z.string(),
-  type: z.enum(['FUNCTIONAL', 'NON_FUNCTIONAL', 'CONSTRAINT']),
-  priority: z.enum(['LOW', 'MEDIUM', 'HIGH']),
+  type: z.enum(["FUNCTIONAL", "NON_FUNCTIONAL", "CONSTRAINT"]),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
   sourceDocIds: z.array(z.string().uuid()),
-  metadata: z.record(z.unknown())
+  metadata: z.record(z.unknown()),
 });
 
 class CreateRequirementHandler {
   async handle(
-    command: z.infer<typeof createRequirementSchema>
+    command: z.infer<typeof createRequirementSchema>,
   ): Promise<Result<Requirement, Error>> {
     const validated = createRequirementSchema.parse(command);
     return await this.requirementService.createRequirement(validated);
@@ -182,7 +180,7 @@ class CreateRequirementHandler {
 class RequirementRepository {
   constructor(
     private readonly supabase: SupabaseClient,
-    private readonly cache: UpstashRedis
+    private readonly cache: UpstashRedis,
   ) {}
 
   async findById(id: string): Promise<Requirement | null> {
@@ -192,9 +190,9 @@ class RequirementRepository {
 
     // Query database
     const { data } = await this.supabase
-      .from('requirements')
+      .from("requirements")
       .select()
-      .eq('id', id)
+      .eq("id", id)
       .single();
 
     // Update cache
@@ -205,20 +203,13 @@ class RequirementRepository {
     return data;
   }
 
-  async save(
-    requirement: Requirement, 
-    events: DomainEvent[]
-  ): Promise<void> {
+  async save(requirement: Requirement, events: DomainEvent[]): Promise<void> {
     await this.supabase.transaction(async (tx) => {
       // Save requirement
-      await tx
-        .from('requirements')
-        .upsert(requirement);
+      await tx.from("requirements").upsert(requirement);
 
       // Save events
-      await tx
-        .from('domain_events')
-        .insert(events);
+      await tx.from("domain_events").insert(events);
 
       // Invalidate cache
       await this.cache.del(`requirement:${requirement.id}`);
@@ -233,7 +224,7 @@ class RequirementRepository {
 class AuthService {
   constructor(
     private readonly auth: FirebaseAdminAuth,
-    private readonly supabase: SupabaseClient
+    private readonly supabase: SupabaseClient,
   ) {}
 
   async validateToken(token: string): Promise<UserProfile> {
@@ -242,9 +233,9 @@ class AuthService {
 
     // Get user profile from Supabase
     const { data: profile } = await this.supabase
-      .from('user_profiles')
+      .from("user_profiles")
       .select()
-      .eq('firebase_uid', decodedToken.uid)
+      .eq("firebase_uid", decodedToken.uid)
       .single();
 
     if (!profile) {
@@ -264,21 +255,21 @@ class AuthService {
 // pages/api/requirements/[id].ts
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   // Validate Firebase token
-  const token = req.headers.authorization?.split('Bearer ')[1];
+  const token = req.headers.authorization?.split("Bearer ")[1];
   const user = await authService.validateToken(token);
 
   switch (req.method) {
-    case 'GET':
+    case "GET":
       const requirement = await requirementService.findById(req.query.id);
       return res.json(requirement);
 
-    case 'PUT':
+    case "PUT":
       const result = await requirementService.updateRequirement({
         ...req.body,
-        userId: user.id
+        userId: user.id,
       });
       return res.json(result);
 
@@ -299,8 +290,8 @@ interface RequirementStore {
 
   fetchRequirement: (id: string) => Promise<void>;
   updateRequirement: (
-    id: string, 
-    update: Partial<Requirement>
+    id: string,
+    update: Partial<Requirement>,
   ) => Promise<void>;
 }
 
@@ -313,33 +304,33 @@ const useRequirementStore = create<RequirementStore>((set, get) => ({
   updateRequirement: async (id, update) => {
     // Store previous state
     const previous = get().requirements.get(id);
-    
+
     // Apply optimistic update
     set((state) => ({
       pending: state.pending.set(id, {
         previous,
         updated: { ...previous, ...update },
-        timestamp: new Date()
-      })
+        timestamp: new Date(),
+      }),
     }));
 
     try {
       // Make API call
       const result = await api.updateRequirement(id, update);
-      
+
       // Confirm update
       set((state) => ({
         requirements: state.requirements.set(id, result),
-        pending: state.pending.delete(id)
+        pending: state.pending.delete(id),
       }));
     } catch (error) {
       // Rollback on failure
       set((state) => ({
         pending: state.pending.delete(id),
-        error
+        error,
       }));
     }
-  }
+  },
 }));
 ```
 
@@ -372,18 +363,21 @@ class DocumentStorageHandler implements EventHandler {
 ## 6. Performance Optimizations
 
 ### 6.1 Caching Strategy
+
 - Upstash Redis for fast access to frequently used data
 - Cache invalidation on writes
 - Selective cache updates for partial changes
 - Batch operations for bulk updates
 
 ### 6.2 Supabase Optimizations
+
 - Proper indexing strategy
 - Materialized views for complex queries
 - Connection pooling
 - Query optimization
 
 ### 6.3 Storage Optimization
+
 - Efficient document storage in Supabase Storage
 - Compression for large documents
 - Metadata extraction and indexing
