@@ -16,6 +16,8 @@ import {
   CreatePanel,
 } from "@/components/private";
 
+import LayoutView from "@/components/private/skeleton/views/LayoutView";
+
 const formatDate = (date: string | null) => {
   if (!date) return "N/A";
   return new Date(date).toLocaleDateString();
@@ -90,31 +92,33 @@ export default function ProjectsPage() {
   ];
 
   return (
-    <div className="flex min-h-screen w-full bg-background text-foreground p-4">
-      <div className="container mx-auto">
-        <TableManager
-          title="Projects"
-          description="Manage and organize your projects"
-          data={projects}
-          isLoading={isLoading}
-          columns={columns}
-          onItemSelect={handleProjectSelect}
-          handleGoToPage={handleGoToPage}
-          onNewItem={onNewProject}
-          onItemDelete={handleProjectDelete}
-          renderGridItem={(project) => <ProjectItem project={project} />}
-          renderDetails={(project) => <ProjectPanel project={project} />}
-          newItemLabel="New Project"
-          searchPlaceholder="Search projects..."
-          emptyMessage="No projects found. Create a new project to get started."
-        />
-        <CreatePanel
-          isOpen={isCreatePanelOpen}
-          onClose={() => setIsCreatePanelOpen(false)}
-          initialTab="project"
-          showTabs="project"
-        />
+    <LayoutView>
+      <div className="flex min-h-screen w-full bg-background text-foreground p-4">
+        <div className="container mx-auto">
+          <TableManager
+            title="Projects"
+            description="Manage and organize your projects"
+            data={projects}
+            isLoading={isLoading}
+            columns={columns}
+            onItemSelect={handleProjectSelect}
+            handleGoToPage={handleGoToPage}
+            onNewItem={onNewProject}
+            onItemDelete={handleProjectDelete}
+            renderGridItem={(project) => <ProjectItem project={project} />}
+            renderDetails={(project) => <ProjectPanel project={project} />}
+            newItemLabel="New Project"
+            searchPlaceholder="Search projects..."
+            emptyMessage="No projects found. Create a new project to get started."
+          />
+          <CreatePanel
+            isOpen={isCreatePanelOpen}
+            onClose={() => setIsCreatePanelOpen(false)}
+            initialTab="project"
+            showTabs="project"
+          />
+        </div>
       </div>
-    </div>
+    </LayoutView>
   );
 }
