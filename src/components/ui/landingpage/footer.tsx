@@ -17,7 +17,6 @@ export function Footer() {
             >
               About
             </Link>
-
             <Link
               href="/contact"
               className="text-xl text-white hover:text-gray-300 transition-colors uppercase"
