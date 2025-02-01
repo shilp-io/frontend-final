@@ -1,5 +1,6 @@
 "use client";
 
+import BackgroundPattern from "@/components/public/BackgroundPattern";
 import { useState } from "react";
 
 export default function ContactPage() {
@@ -26,6 +27,7 @@ export default function ContactPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
+      <BackgroundPattern />
       <h1 className="text-3xl font-bold mb-6">Contact Us</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

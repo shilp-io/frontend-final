@@ -14,6 +14,101 @@
 }
 
 @layer base {
+  :root {
+    --background: 0 0% 100%; /* White */
+    --foreground: 240 10% 3.9%; /* Near black */
+
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 240 10% 3.9%; /* Near black */
+
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 240 10% 3.9%; /* Near black */
+
+    /* Purple accent colors */
+    --primary: 270 50% 50%; /* Medium purple */
+    --primary-foreground: 0 0% 98%; /* White */
+
+    --secondary: 240 4.8% 95.9%; /* Light gray */
+    --secondary-foreground: 240 5.9% 10%; /* Near black */
+
+    --muted: 240 4.8% 95.9%; /* Light gray */
+    --muted-foreground: 240 3.8% 46.1%; /* Medium gray */
+
+    --accent: 270 50% 70%; /* Lighter purple for accents */
+    --accent-foreground: 0 0% 98%; /* White */
+
+    --destructive: 0 84.2% 60.2%; /* Red for destructive actions */
+    --destructive-foreground: 0 0% 98%; /* White */
+
+    /* Neutral colors */
+    --border: 240 5.9% 90%; /* Light gray */
+    --input: 240 5.9% 90%; /* Light gray */
+    --ring: 270 50% 50%; /* Matching primary purple */
+
+    /* Chart colors - Monochrome with purple */
+    --chart-1: 270 50% 50%; /* Primary purple */
+    --chart-2: 240 4.8% 95.9%; /* Light gray */
+    --chart-3: 240 10% 3.9%; /* Near black */
+    --chart-4: 240 5% 64.9%; /* Medium gray */
+    --chart-5: 270 50% 70%; /* Light purple */
+
+    --sidebar-background: 0 0% 98%; /* Off-white */
+    --sidebar-foreground: 240 5.3% 26.1%; /* Dark gray */
+    --sidebar-primary: 240 5.9% 10%; /* Near black */
+    --sidebar-primary-foreground: 0 0% 98%; /* White */
+    --sidebar-accent: 240 4.8% 95.9%; /* Light gray */
+    --sidebar-accent-foreground: 240 5.9% 10%; /* Near black */
+    --sidebar-border: 220 13% 91%; /* Light gray */
+    --sidebar-ring: 270 50% 50%; /* Matching primary purple */
+  }
+
+  .dark {
+    --background: 240 10% 3.9%; /* Near black */
+    --foreground: 0 0% 98%; /* White */
+
+    --card: 240 10% 3.9%; /* Near black */
+    --card-foreground: 0 0% 98%; /* White */
+
+    --popover: 240 10% 3.9%; /* Near black */
+    --popover-foreground: 0 0% 98%; /* White */
+
+    /* Dark mode purple accents */
+    --primary: 270 50% 50%; /* Medium purple */
+    --primary-foreground: 0 0% 98%; /* White */
+
+    --secondary: 240 3.7% 15.9%; /* Dark gray */
+    --secondary-foreground: 0 0% 98%; /* White */
+
+    --muted: 240 3.7% 15.9%; /* Dark gray */
+    --muted-foreground: 240 5% 64.9%; /* Medium gray */
+
+    --accent: 270 50% 70%; /* Lighter purple for accents */
+    --accent-foreground: 240 5.9% 10%; /* Near black */
+
+    --destructive: 0 62.8% 30.6%; /* Dark red for destructive actions */
+    --destructive-foreground: 0 0% 98%; /* White */
+
+    /* Dark mode neutral colors */
+    --border: 240 3.7% 15.9%; /* Dark gray */
+    --input: 240 3.7% 15.9%; /* Dark gray */
+    --ring: 270 50% 50%; /* Matching primary purple */
+
+    /* Dark mode chart colors */
+    --chart-1: 270 50% 50%; /* Primary purple */
+    --chart-2: 240 3.7% 15.9%; /* Dark gray */
+    --chart-3: 0 0% 98%; /* White */
+    --chart-4: 240 5% 64.9%; /* Medium gray */
+    --chart-5: 270 50% 70%; /* Light purple */
+
+    --sidebar-background: 240 5.9% 10%; /* Near black */
+    --sidebar-foreground: 240 4.8% 95.9%; /* Light gray */
+    --sidebar-primary: 270 50% 50%; /* Medium purple */
+    --sidebar-primary-foreground: 0 0% 100%; /* White */
+    --sidebar-accent: 240 3.7% 15.9%; /* Dark gray */
+    --sidebar-accent-foreground: 240 4.8% 95.9%; /* Light gray */
+    --sidebar-border: 240 3.7% 15.9%; /* Dark gray */
+    --sidebar-ring: 270 50% 50%; /* Matching primary purple */
+  }
   html {
     /* font-family: */
     /*   "Inter", */

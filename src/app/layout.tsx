@@ -34,7 +34,6 @@ export default function RootLayout({
       >
         <Providers>
           {children}
-          <BackgroundPattern />
           <Toaster />
         </Providers>
       </body>
