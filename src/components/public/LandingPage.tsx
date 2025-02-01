@@ -13,7 +13,6 @@ import { AbstractBackground } from "@/components/ui/landingpage/abstract-backgro
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-[#B5B5B5] relative">
-      <AbstractBackground />
       <div className="relative z-10">
         <Navbar />
         <main className="space-y-64">

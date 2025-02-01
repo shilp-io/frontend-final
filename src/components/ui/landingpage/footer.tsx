@@ -17,12 +17,7 @@ export function Footer() {
             >
               About
             </Link>
-            <Link
-              href="/pricing"
-              className="text-xl text-white hover:text-gray-300 transition-colors uppercase"
-            >
-              Pricing
-            </Link>
+
             <Link
               href="/contact"
               className="text-xl text-white hover:text-gray-300 transition-colors uppercase"

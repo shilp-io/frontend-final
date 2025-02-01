@@ -38,7 +38,10 @@ const industries = [
 
 export function Industries() {
   return (
-    <section className="py-24 md:py-32 lg:py-40 relative bg-white text-black">
+    <section
+      id="industries"
+      className="py-24 md:py-32 lg:py-40 relative bg-white text-black"
+    >
       <div className="absolute top-0 left-0 w-full h-1 bg-black" />
       <div className="container mx-auto px-4">
         <h2 className="text-[48px] sm:text-[64px] md:text-[80px] lg:text-[96px] xl:text-[112px] font-black tracking-tighter text-black leading-none mb-16 md:mb-24">

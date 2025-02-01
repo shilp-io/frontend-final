@@ -5,7 +5,6 @@ export function Hero() {
     <section className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-1 bg-white" />
       <div className="absolute bottom-0 left-0 w-full h-1 bg-white" />
-      <div className="absolute inset-0 bg-[url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-Q1T84WnKdwzUn6vhbbQ18S2e6BDpBA.png')]  bg-center  opacity-15" />
       <div className="absolute inset-0 bg-black opacity-0" />
       <div className="container mx-auto px-4 py-32 relative z-20">
         <h1 className="text-[48px] sm:text-[64px] md:text-[80px] lg:text-[96px] xl:text-[112px] font-black leading-none mb-8 text-stroke animate-glow">
