@@ -5,9 +5,6 @@ export function Testimonials() {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="relative border-2 border-white p-16">
-            <div className="absolute -left-4 top-0 w-8 h-8 bg-white text-black flex items-center justify-center font-mono text-sm">
-              01
-            </div>
             <p className="text-3xl md:text-4xl font-black mb-8 text-white tracking-tight leading-tight">
               &quot;THIS TOOL TRANSFORMED OUR REQUIREMENTS PROCESS. FINALLY, NO
               MORE WRESTLING WITH SLOW, BULKY SOFTWARE—WE JUST WRITE, TRACE, AND

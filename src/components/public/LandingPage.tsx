@@ -8,12 +8,10 @@ import { Industries } from "@/components/ui/landingpage/industries";
 import { Testimonials } from "@/components/ui/landingpage/testimonials";
 import { CTA } from "@/components/ui/landingpage/cta";
 import { Footer } from "@/components/ui/landingpage/footer";
-import { AbstractBackground } from "@/components/ui/landingpage/abstract-background";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-[#B5B5B5] relative">
-      <AbstractBackground />
       <div className="relative z-10">
         <Navbar />
         <main className="space-y-64">
