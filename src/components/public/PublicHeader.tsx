@@ -16,10 +16,8 @@ import { useAuth } from "@/hooks";
 import { ThemeToggle } from "@/components/public/toggles/ThemeToggle";
 
 const navItems = [
-  { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   { name: "Services", href: "/services" },
-  { name: "Pricing", href: "/pricing" },
   { name: "Contact", href: "/contact" },
 ];
 
@@ -126,27 +124,27 @@ export default function PublicHeader() {
               >
                 {isLoggedIn
                   ? userMenuItems.map((item) => (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className="flex items-center px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <item.icon className="w-4 h-4 mr-3" />
-                        {item.name}
-                      </Link>
-                    ))
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="flex items-center px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      <item.icon className="w-4 h-4 mr-3" />
+                      {item.name}
+                    </Link>
+                  ))
                   : userLoginItems.map((item) => (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className="flex items-center px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <item.icon className="w-4 h-4 mr-3" />
-                        {item.name}
-                      </Link>
-                    ))}
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="flex items-center px-4 py-2 text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      <item.icon className="w-4 h-4 mr-3" />
+                      {item.name}
+                    </Link>
+                  ))}
               </motion.div>
             )}
           </div>
