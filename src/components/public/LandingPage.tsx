@@ -8,8 +8,6 @@ import { Industries } from "@/components/ui/landingpage/industries";
 import { Testimonials } from "@/components/ui/landingpage/testimonials";
 import { CTA } from "@/components/ui/landingpage/cta";
 import { Footer } from "@/components/ui/landingpage/footer";
-import PublicHeader from "./PublicHeader";
-import { AbstractBackground } from "../ui/landingpage/abstract-background";
 
 export default function Home() {
   return (
