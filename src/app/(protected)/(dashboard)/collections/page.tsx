@@ -10,6 +10,7 @@ import { useCollections } from "@/hooks/db/useCollections";
 import type { Collection } from "@/types";
 import type { Column } from "@/components/private";
 import { CreatePanel } from "@/components/private";
+import LayoutView from "@/components/private/skeleton/views/LayoutView";
 
 const formatDate = (date: string | null) => {
   if (!date) return "N/A";
@@ -167,6 +168,7 @@ export default function CollectionsPage() {
   );
 
   return (
+    <LayoutView>
     <div className="flex min-h-screen w-full bg-background text-foreground p-4">
       <div className="container mx-auto">
         <TableManager
@@ -194,5 +196,6 @@ export default function CollectionsPage() {
         />
       </div>
     </div>
+    </LayoutView>
   );
 }
