@@ -16,10 +16,8 @@ import { useAuth } from "@/hooks";
 import { ThemeToggle } from "@/components/public/toggles/ThemeToggle";
 
 const navItems = [
-  { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   { name: "Services", href: "/services" },
-  { name: "Pricing", href: "/pricing" },
   { name: "Contact", href: "/contact" },
 ];
 
