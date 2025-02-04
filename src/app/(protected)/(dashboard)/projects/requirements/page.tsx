@@ -16,6 +16,8 @@ import {
   TableManager,
 } from "@/components/private";
 
+import { Button } from "@/components/ui/button";
+
 const getStatusColor = (status: string) => {
   switch (status) {
     case "completed":
@@ -126,6 +128,7 @@ export default function RequirementsPage() {
           newItemLabel="New Requirement"
           searchPlaceholder="Search requirements..."
           emptyMessage="No requirements found. Create a new requirement to get started."
+          isEditable={false} // Pass edit mode state to TableManager
         />
         <CreatePanel
           isOpen={isCreatePanelOpen}

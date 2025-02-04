@@ -6,6 +6,7 @@ import {
   AsciiTable,
 } from "@/components/private";
 import type { Project, Requirement, Collection, ExternalDoc } from "@/types";
+// import { TestTable } from "../base/TestTable"; replace MonospaceTable with TestTable
 
 export type SupportedDataTypes =
   | Project
