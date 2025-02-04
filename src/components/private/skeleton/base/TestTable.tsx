@@ -20,6 +20,8 @@ import { SidePanel } from "@/components/private/skeleton/panels/SidePanel";
 import type { Project, Requirement, Collection, ExternalDoc } from "@/types";
 import { transitionConfig } from "@/lib/animations";
 import { cn } from "@/lib/utils";
+import { RequirementStatusArray } from "@/types/enums"; // Import RequirementStatusArray
+import { RequirementPriorityArray } from "@/types/enums"; // Import RequirementStatusArray
 
 export type SupportedDataTypes =
   | Project
@@ -70,8 +72,6 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const priorities = ["critical", "high", "medium", "low"]; // Define priorities
-
 export function TestTable<T extends SupportedDataTypes>({
   data,
   columns,
@@ -92,6 +92,8 @@ export function TestTable<T extends SupportedDataTypes>({
   const [editingValue, setEditingValue] = React.useState<string>("");
   const [editingPriorityId, setEditingPriorityId] = React.useState<string | null>(null);
   const [editingPriorityValue, setEditingPriorityValue] = React.useState<string>("");
+  const [editingStatusId, setEditingStatusId] = React.useState<string | null>(null);
+  const [editingStatusValue, setEditingStatusValue] = React.useState<string>("");
   const isEditable = useAppStore((state) => state.isEditable); // Get isEditable from app store
 
   const sortedData = React.useMemo(() => {
@@ -129,12 +131,15 @@ export function TestTable<T extends SupportedDataTypes>({
 
   const handleDoubleClick = (item: T, colIndex: number) => {
     if (!isEditable) return;
-    if (colIndex === 0) {
+    if (columns[colIndex].header.toLowerCase() === "title") {
       setEditingItemId(item.id);
       setEditingValue(columns[0].accessor(item)); // Assuming the title is in the first column
     } else if (columns[colIndex].header.toLowerCase() === "priority") {
       setEditingPriorityId(item.id);
       setEditingPriorityValue(columns[colIndex].accessor(item));
+    } else if (columns[colIndex].header.toLowerCase() === "status") {
+      setEditingStatusId(item.id);
+      setEditingStatusValue(columns[colIndex].accessor(item));
     }
   };
 
@@ -144,6 +149,10 @@ export function TestTable<T extends SupportedDataTypes>({
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setEditingPriorityValue(e.target.value);
+  };
+
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setEditingStatusValue(e.target.value);
   };
 
   const handleInputBlur = () => {
@@ -156,6 +165,12 @@ export function TestTable<T extends SupportedDataTypes>({
     // Save the new priority here
     console.log("Current Priority: ", editingPriorityValue);
     setEditingPriorityId(null);
+  };
+
+  const handleStatusBlur = () => {
+    // Save the new status here
+    console.log("Current Status: ", editingStatusValue);
+    setEditingStatusId(null);
   };
 
   if (isLoading) {
@@ -230,7 +245,7 @@ export function TestTable<T extends SupportedDataTypes>({
                 {sortedData.map((item, index) => (
                   <TableRow
                     key={index}
-                    className={`font-mono ${onRowClick || renderDetails ? "cursor-pointer hover:bg-accent" : ""}`}
+                    className={`font-mono ${onRowClick || renderDetails ? "cursor-pointer hover:gray" : ""}`}
                     onClick={() => handleRowClick(item)}
                   >
                     {columns.map((column, colIndex) => (
@@ -253,11 +268,25 @@ export function TestTable<T extends SupportedDataTypes>({
                             onChange={handleSelectChange}
                             onBlur={handleSelectBlur}
                             autoFocus
-                            className="w-full bg-transparent border-b border-dashed border-gray-400 focus:outline-none"
+                            className="w-full bg-black border-b border-dashed border-gray-400 focus:outline-none"
                           >
-                            {priorities.map((priority) => (
+                            {RequirementPriorityArray.map((priority) => (
                               <option key={priority} value={priority}>
                                 {priority}
+                              </option>
+                            ))}
+                          </select>
+                        ) : editingStatusId === item.id && column.header.toLowerCase() === "status" ? (
+                          <select
+                            value={editingStatusValue}
+                            onChange={handleStatusChange}
+                            onBlur={handleStatusBlur}
+                            autoFocus
+                            className="w-full bg-black border-b border-dashed border-gray-400 focus:outline-none"
+                          >
+                            {RequirementStatusArray.map((status) => (
+                              <option key={status} value={status}>
+                                {status}
                               </option>
                             ))}
                           </select>
