@@ -20,8 +20,8 @@ import { SidePanel } from "@/components/private/skeleton/panels/SidePanel";
 import type { Project, Requirement, Collection, ExternalDoc } from "@/types";
 import { transitionConfig } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { RequirementStatusArray } from "@/types/enums"; // Import RequirementStatusArray
-import { RequirementPriorityArray } from "@/types/enums"; // Import RequirementStatusArray
+import { RequirementStatusArray } from "@/types/enums";
+import { RequirementPriorityArray } from "@/types/enums";
 
 export type SupportedDataTypes =
   | Project
@@ -56,7 +56,9 @@ const getStatusColor = (status: string) => {
     case "completed":
       return "border-green-500 text-green-500";
     case "active":
+      return "border-blue-500 text-blue-500";
     case "approved":
+      return "border-emerald-500 text-emerald-500";
     case "in_progress":
       return "border-blue-500 text-blue-500";
     case "on_hold":
@@ -72,6 +74,25 @@ const getStatusColor = (status: string) => {
   }
 };
 
+const getPriorityColor = (priority: string) => {
+  switch (priority) {
+    case "critical":
+      return "border-red-500/10 text-red-500";
+    case "high":
+      return "border-orange-500/10 text-orange-500";
+    case "medium":
+      return "border-yellow-500/10 text-yellow-500";
+    case "low":
+      return "border-green-500/10 text-green-500";
+    default:
+      return "border-muted text-muted-foreground";
+  }
+};
+
+const getDescriptionRows = (description: string) => {
+  return description.split("\n").length;
+};
+
 export function TestTable<T extends SupportedDataTypes>({
   data,
   columns,
@@ -85,21 +106,26 @@ export function TestTable<T extends SupportedDataTypes>({
   showFilter = true,
   filterComponent,
 }: MonospaceTableProps<T>) {
+  const [mockData, setMockData] = React.useState<T[]>(data);
   const [sortKey, setSortKey] = React.useState<number>(0);
   const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("asc");
   const [selectedItem, setSelectedItem] = React.useState<T | null>(null);
   const [editingItemId, setEditingItemId] = React.useState<string | null>(null);
-  const [editingValue, setEditingValue] = React.useState<string>("");
+  const [editingTitleValue, setEditingValue] = React.useState<string>("");
   const [editingPriorityId, setEditingPriorityId] = React.useState<string | null>(null);
   const [editingPriorityValue, setEditingPriorityValue] = React.useState<string>("");
   const [editingStatusId, setEditingStatusId] = React.useState<string | null>(null);
   const [editingStatusValue, setEditingStatusValue] = React.useState<string>("");
-  const isEditable = useAppStore((state) => state.isEditable); // Get isEditable from app store
+  const [editingDescriptionId, setEditingDescriptionId] = React.useState<string | null>(null);
+  const [editingDescriptionValue, setEditingDescriptionValue] = React.useState<string>("");
+  const [editingAssignedToId, setEditingAssignedToId] = React.useState<string | null>(null);
+  const [editingAssignedToValue, setEditingAssignedToValue] = React.useState<string>("");
+  const isEditable = useAppStore((state) => state.isEditable);
 
   const sortedData = React.useMemo(() => {
     if (isLoading) return [];
 
-    return [...data].sort((a, b) => {
+    return [...mockData].sort((a, b) => {
       if (!columns[sortKey].isSortable) return 0;
       const aValue = columns[sortKey].accessor(a);
       const bValue = columns[sortKey].accessor(b);
@@ -107,7 +133,7 @@ export function TestTable<T extends SupportedDataTypes>({
       if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
       return 0;
     });
-  }, [data, sortKey, sortOrder, columns, isLoading]);
+  }, [mockData, sortKey, sortOrder, columns, isLoading]);
 
   const toggleSort = (index: number) => {
     if (!columns[index].isSortable) return;
@@ -119,8 +145,9 @@ export function TestTable<T extends SupportedDataTypes>({
     }
   };
 
+  // Row click for Requirement Side Panel
   const handleRowClick = (item: T) => {
-    if (isEditable) return; // Do nothing if in edit mode
+    if (isEditable) return;
     if (onRowClick) {
       onRowClick(item);
     }
@@ -129,19 +156,28 @@ export function TestTable<T extends SupportedDataTypes>({
     }
   };
 
+  // Double click handlers
   const handleDoubleClick = (item: T, colIndex: number) => {
     if (!isEditable) return;
     if (columns[colIndex].header.toLowerCase() === "title") {
       setEditingItemId(item.id);
-      setEditingValue(columns[0].accessor(item)); // Assuming the title is in the first column
+      setEditingValue(columns[colIndex].accessor(item));
     } else if (columns[colIndex].header.toLowerCase() === "priority") {
       setEditingPriorityId(item.id);
       setEditingPriorityValue(columns[colIndex].accessor(item));
     } else if (columns[colIndex].header.toLowerCase() === "status") {
       setEditingStatusId(item.id);
       setEditingStatusValue(columns[colIndex].accessor(item));
+    } else if (columns[colIndex].header.toLowerCase() === "description") {
+      setEditingDescriptionId(item.id);
+      setEditingDescriptionValue(columns[colIndex].accessor(item));
+    } else if (columns[colIndex].header.toLowerCase() === "assigned to") {
+      setEditingAssignedToId(item.id);
+      setEditingAssignedToValue(columns[colIndex].accessor(item));
     }
   };
+
+  // Input change handlers
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditingValue(e.target.value);
@@ -155,22 +191,60 @@ export function TestTable<T extends SupportedDataTypes>({
     setEditingStatusValue(e.target.value);
   };
 
-  const handleInputBlur = () => {
-    // Save the new title here
-    console.log("Current Title: ", editingValue);
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEditingDescriptionValue(e.target.value);
+  };
+
+  const handleAssignedToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditingAssignedToValue(e.target.value);
+  };
+
+  // Input blur handlers ** UPDATE THESE TO EDIT DATABASE **
+
+  const handleTitleBlur = () => {
+    setMockData((prevData) =>
+      prevData.map((item) =>
+        item.id === editingItemId ? { ...item, title: editingTitleValue } : item
+      )
+    );
     setEditingItemId(null);
   };
 
-  const handleSelectBlur = () => {
-    // Save the new priority here
-    console.log("Current Priority: ", editingPriorityValue);
+  const handlePriorityBlur = () => {
+    setMockData((prevData) =>
+      prevData.map((item) =>
+        item.id === editingPriorityId ? { ...item, priority: editingPriorityValue } : item
+      )
+    );
     setEditingPriorityId(null);
   };
 
   const handleStatusBlur = () => {
-    // Save the new status here
-    console.log("Current Status: ", editingStatusValue);
+    setMockData((prevData) =>
+      prevData.map((item) =>
+        item.id === editingStatusId ? { ...item, status: editingStatusValue } : item
+      )
+    );
     setEditingStatusId(null);
+  };
+
+  const handleDescriptionBlur = () => {
+    setMockData((prevData) =>
+      prevData.map((item) =>
+        item.id === editingDescriptionId ? { ...item, description: editingDescriptionValue } : item
+      )
+    );
+    setEditingDescriptionId(null);
+  };
+
+  const handleAssignedToBlur = () => {
+    console.log(editingAssignedToValue);
+    setMockData((prevData) =>
+      prevData.map((item) =>
+        item.id === editingAssignedToId ? { ...item, assigned_to: editingAssignedToValue } : item
+      )
+    );
+    setEditingAssignedToId(null);
   };
 
   if (isLoading) {
@@ -256,9 +330,9 @@ export function TestTable<T extends SupportedDataTypes>({
                         {editingItemId === item.id && colIndex === 0 ? (
                           <input
                             type="text"
-                            value={editingValue}
+                            value={editingTitleValue}
                             onChange={handleInputChange}
-                            onBlur={handleInputBlur}
+                            onBlur={handleTitleBlur}
                             autoFocus
                             className="w-full bg-transparent border-b border-dashed border-gray-400 focus:outline-none"
                           />
@@ -266,12 +340,12 @@ export function TestTable<T extends SupportedDataTypes>({
                           <select
                             value={editingPriorityValue}
                             onChange={handleSelectChange}
-                            onBlur={handleSelectBlur}
+                            onBlur={handlePriorityBlur}
                             autoFocus
-                            className="w-full bg-black border-b border-dashed border-gray-400 focus:outline-none"
+                            className={`w-full bg-black border-b border-dashed border-gray-400 focus:outline-none ${getPriorityColor(editingPriorityValue)}`}
                           >
                             {RequirementPriorityArray.map((priority) => (
-                              <option key={priority} value={priority}>
+                              <option key={priority} value={priority} className={getPriorityColor(priority)}>
                                 {priority}
                               </option>
                             ))}
@@ -282,14 +356,32 @@ export function TestTable<T extends SupportedDataTypes>({
                             onChange={handleStatusChange}
                             onBlur={handleStatusBlur}
                             autoFocus
-                            className="w-full bg-black border-b border-dashed border-gray-400 focus:outline-none"
+                            className={`w-full bg-black border-b border-dashed border-gray-400 focus:outline-none ${getStatusColor(editingStatusValue)}`}
                           >
                             {RequirementStatusArray.map((status) => (
-                              <option key={status} value={status}>
+                              <option key={status} value={status} className={getStatusColor(status)}>
                                 {status}
                               </option>
                             ))}
                           </select>
+                        ) : editingDescriptionId === item.id && column.header.toLowerCase() === "description" ? (
+                          <textarea
+                            value={editingDescriptionValue}
+                            onChange={handleDescriptionChange}
+                            onBlur={handleDescriptionBlur}
+                            autoFocus
+                            className="w-full bg-transparent border-b border-dashed border-gray-400 focus:outline-none resize-none overflow-hidden"
+                            rows={getDescriptionRows(editingDescriptionValue)}
+                          />
+                        ) : editingAssignedToId === item.id && column.header.toLowerCase() === "assigned to" ? (
+                          <input
+                            type="text"
+                            value={editingAssignedToValue}
+                            onChange={handleAssignedToChange}
+                            onBlur={handleAssignedToBlur}
+                            autoFocus
+                            className="w-full bg-transparent border-b border-dashed border-gray-400 focus:outline-none"
+                          />
                         ) : column.renderCell ? (
                           column.renderCell(item)
                         ) : column.header.toLowerCase().includes("status") ? (

@@ -16,8 +16,6 @@ import {
   TableManager,
 } from "@/components/private";
 
-import { Button } from "@/components/ui/button";
-
 const getStatusColor = (status: string) => {
   switch (status) {
     case "completed":
@@ -74,6 +72,12 @@ export default function RequirementsPage() {
       header: "Title",
       accessor: (requirement: Requirement) => requirement.title,
       width: 30,
+      isSortable: true,
+    },
+    {
+      header: "Description",
+      accessor: (requirement: Requirement) => requirement.description || "",
+      width: 40,
       isSortable: true,
     },
     {
