@@ -12,19 +12,17 @@ function LayoutView({ children }: LayoutViewProps) {
     const { layoutViewMode } = useAppStore();
 
     return (
-        <div className="flex bg-background justify-center min-h-screen">
+        
             <motion.div
                 initial={false}
                 animate={layoutViewMode} // Animation changes based on mode
                 variants={{
                     standard: {
                         justifyContent: "center",
-                        padding: "2rem",
                         width: "50%", // Adjust width for standard mode
                     },
                     wide: {
-                        justifyContent: "flex-start",
-                        padding: "2rem",
+                        justifyContent: "center",
                         width: "100%", // Adjust width for wide mode
                     },
                 }}
@@ -32,12 +30,10 @@ function LayoutView({ children }: LayoutViewProps) {
                     duration: 0.5,
                     ease: "linear",
                 }}
-                className="flex flex-col w-full bg-background text-foreground"
+                className="flex flex-col w-full h-full bg-background text-foreground mx-auto"
             >
                 {children}
             </motion.div>
-        </div>
-        //</div>
     );
 }
 

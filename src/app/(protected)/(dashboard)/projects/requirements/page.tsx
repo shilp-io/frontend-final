@@ -15,6 +15,7 @@ import {
   RequirementPanel,
   TableManager,
 } from "@/components/private";
+import LayoutView from "@/components/private/skeleton/views/LayoutView";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -112,34 +113,37 @@ export default function RequirementsPage() {
   ];
 
   return (
-    <div className="flex min-h-screen w-full bg-background text-foreground p-4">
-      <div className="container mx-auto">
-        <TableManager
-          title="Requirements"
-          description="Manage and organize your project requirements"
-          data={requirements}
-          isLoading={isLoading}
-          columns={columns}
-          onItemSelect={handleRequirementSelect}
-          handleGoToPage={handleGoToPage}
-          onNewItem={() => setIsCreatePanelOpen(true)}
-          renderGridItem={(requirement) => (
-            <RequirementItem requirement={requirement} />
-          )}
-          renderDetails={(requirement) => (
-            <RequirementPanel requirement={requirement} />
-          )}
-          newItemLabel="New Requirement"
-          searchPlaceholder="Search requirements..."
-          emptyMessage="No requirements found. Create a new requirement to get started."
-        />
-        <CreatePanel
-          isOpen={isCreatePanelOpen}
-          onClose={() => setIsCreatePanelOpen(false)}
-          initialTab="requirement"
-          showTabs="requirement"
-        />
+    
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="container mx-auto">
+        <LayoutView>
+          <TableManager
+            title="Requirements"
+            description="Manage and organize your project requirements"
+            data={requirements}
+            isLoading={isLoading}
+            columns={columns}
+            onItemSelect={handleRequirementSelect}
+            handleGoToPage={handleGoToPage}
+            onNewItem={() => setIsCreatePanelOpen(true)}
+            renderGridItem={(requirement) => (
+              <RequirementItem requirement={requirement} />
+            )}
+            renderDetails={(requirement) => (
+              <RequirementPanel requirement={requirement} />
+            )}
+            newItemLabel="New Requirement"
+            searchPlaceholder="Search requirements..."
+            emptyMessage="No requirements found. Create a new requirement to get started."
+          />
+          <CreatePanel
+            isOpen={isCreatePanelOpen}
+            onClose={() => setIsCreatePanelOpen(false)}
+            initialTab="requirement"
+            showTabs="requirement"
+          />
+          </LayoutView>
+        </div>
       </div>
-    </div>
   );
 }
