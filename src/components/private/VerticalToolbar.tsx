@@ -8,6 +8,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { LayoutViewToggle } from "../public/toggles/PageViewToggle";
 
 const VerticalToolbar = () => {
   const router = useRouter();
@@ -55,6 +56,9 @@ const VerticalToolbar = () => {
       </div>
       <div className="h-10 w-10 flex items-center justify-center">
         <ViewModeToggle />
+      </div>
+      <div className="h-10 w-10 flex items-center justify-center">
+        <LayoutViewToggle />
       </div>
     </div>
   );

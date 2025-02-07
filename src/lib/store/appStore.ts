@@ -4,6 +4,7 @@ import { devtools, persist } from "zustand/middleware";
 interface AppState {
   theme: "light" | "dark";
   viewMode: "normal" | "ascii" | "compact";
+  layoutViewMode: "standard" | "wide";
   sidebarOpen: boolean;
   notifications: boolean;
   isLoading: boolean;
@@ -12,6 +13,7 @@ interface AppState {
   isEditable: boolean; // Add isEditable
   setTheme: (theme: "light" | "dark") => void;
   setViewMode: (mode: "normal" | "ascii" | "compact") => void;
+  setLayoutViewMode: (mode: "standard" | "wide") => void;
   toggleSidebar: () => void;
   toggleNotifications: () => void;
   setLoading: (isLoading: boolean, text?: string | null) => void;
@@ -25,6 +27,7 @@ interface AppState {
 const initialState = {
   theme: "light",
   viewMode: "normal",
+  layoutViewMode: "standard",
   sidebarOpen: true,
   notifications: true,
   isLoading: false,
@@ -40,6 +43,7 @@ export const useAppStore = create<AppState>()(
         ...initialState,
         setTheme: (theme) => set({ theme }),
         setViewMode: (viewMode) => set({ viewMode }),
+        setLayoutViewMode: (layoutViewMode) => set({ layoutViewMode }),
         toggleSidebar: () =>
           set((state) => ({ sidebarOpen: !state.sidebarOpen })),
         toggleNotifications: () =>
@@ -60,6 +64,7 @@ export const useAppStore = create<AppState>()(
           notifications: state.notifications,
           viewMode: state.viewMode,
           isEditable: state.isEditable, // Persist isEditable
+          layoutViewMode: state.layoutViewMode,
         }),
       },
     ),
