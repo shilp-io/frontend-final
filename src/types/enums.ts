@@ -19,6 +19,8 @@ export const RequirementStatus = {
 export type RequirementStatus =
   (typeof RequirementStatus)[keyof typeof RequirementStatus];
 
+export const RequirementStatusArray = Object.values(RequirementStatus);
+
 export const RequirementPriority = {
   CRITICAL: "critical",
   HIGH: "high",
@@ -27,6 +29,8 @@ export const RequirementPriority = {
 } as const;
 export type RequirementPriority =
   (typeof RequirementPriority)[keyof typeof RequirementPriority];
+
+export const RequirementPriorityArray = Object.values(RequirementPriority);
 
 export const AccessLevel = {
   PRIVATE: "private",

@@ -6,6 +6,7 @@ import {
   AsciiTable,
 } from "@/components/private";
 import type { Project, Requirement, Collection, ExternalDoc } from "@/types";
+import { TestTable } from "../base/TestTable";
 
 export type SupportedDataTypes =
   | Project
@@ -111,7 +112,7 @@ function TableView<T extends SupportedDataTypes>({
 
   // Normal view (default)
   return (
-    <MonospaceTable
+    <TestTable
       data={data}
       columns={columns}
       onRowClick={onRowClick}

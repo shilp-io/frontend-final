@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Plus, Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TableView } from "@/components/private";
+import { useAppStore } from "@/lib/store/appStore"; // Import useAppStore
 import type { Column, SupportedDataTypes } from "./views/TableView";
 
 interface TableManagerProps<T extends SupportedDataTypes> {
@@ -40,6 +41,8 @@ const TableManager = <T extends SupportedDataTypes>({
   emptyMessage = "No items found.",
 }: TableManagerProps<T>) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const isEditable = useAppStore((state) => state.isEditable); // Get isEditable from app store
+  const toggleEditable = useAppStore((state) => state.toggleEditable); // Get toggleEditable from app store
 
   // Filter items based on search query
   const filteredItems = React.useMemo(() => {
@@ -92,6 +95,9 @@ const TableManager = <T extends SupportedDataTypes>({
             </div>
             <Button variant="outline" size="icon">
               <Filter className="h-4 w-4" />
+            </Button>
+            <Button onClick={toggleEditable}>
+              {isEditable ? "Disable Edit Mode" : "Enable Edit Mode"}
             </Button>
           </div>
         </div>

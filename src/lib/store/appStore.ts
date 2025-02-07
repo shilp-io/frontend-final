@@ -10,6 +10,7 @@ interface AppState {
   isLoading: boolean;
   loadingText: string | null;
   error: string | null;
+  isEditable: boolean; // Add isEditable
   setTheme: (theme: "light" | "dark") => void;
   setViewMode: (mode: "normal" | "ascii" | "compact") => void;
   setLayoutViewMode: (mode: "standard" | "wide") => void;
@@ -18,6 +19,7 @@ interface AppState {
   setLoading: (isLoading: boolean, text?: string | null) => void;
   setError: (error: string | null) => void;
   clearError: () => void;
+  toggleEditable: () => void; // Add toggleEditable
   reset: () => void;
 }
 
@@ -31,6 +33,7 @@ const initialState = {
   isLoading: false,
   loadingText: null,
   error: null,
+  isEditable: false, // Default to false
 } as const;
 
 export const useAppStore = create<AppState>()(
@@ -49,6 +52,8 @@ export const useAppStore = create<AppState>()(
           set({ isLoading, loadingText: text }),
         setError: (error) => set({ error }),
         clearError: () => set({ error: null }),
+        toggleEditable: () =>
+          set((state) => ({ isEditable: !state.isEditable })), // Add toggleEditable
         reset: () => set(initialState),
       }),
       {
@@ -58,6 +63,7 @@ export const useAppStore = create<AppState>()(
           sidebarOpen: state.sidebarOpen,
           notifications: state.notifications,
           viewMode: state.viewMode,
+          isEditable: state.isEditable, // Persist isEditable
           layoutViewMode: state.layoutViewMode,
         }),
       },

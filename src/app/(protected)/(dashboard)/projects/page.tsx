@@ -92,9 +92,9 @@ export default function ProjectsPage() {
   ];
 
   return (
-    <LayoutView>
       <div className="flex min-h-screen w-full bg-background text-foreground p-4">
         <div className="container mx-auto">
+        <LayoutView>
           <TableManager
             title="Projects"
             description="Manage and organize your projects"
@@ -117,8 +117,8 @@ export default function ProjectsPage() {
             initialTab="project"
             showTabs="project"
           />
+          </LayoutView>
         </div>
       </div>
-    </LayoutView>
   );
 }
