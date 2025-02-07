@@ -32,7 +32,7 @@ export function TimeSavingEdge() {
     <section className="section-padding relative bg-black">
       <div className="absolute top-0 left-0 w-full h-1 bg-white" />
       <div className="container mx-auto px-4">
-        <h2 className="text-[60px] md:text-[90px] lg:text-[120px] xl:text-[140px] font-black tracking-tighter text-white leading-none mb-24 whitespace-nowrap overflow-hidden">
+        <h2 className="text-[38px] sm:text-[64px] md:text-[80px] lg:text-[96px] xl:text-[112px] font-black tracking-tighter text-white leading-none mb-24 whitespace-nowrap overflow-hidden">
           WHY THIS MATTERS
         </h2>
         <div className="grid md:grid-cols-2 gap-16">
