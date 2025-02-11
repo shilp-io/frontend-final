@@ -113,9 +113,8 @@ export default function RequirementsPage() {
   ];
 
   return (
-    
-      <div className="min-h-screen bg-background text-foreground">
-        <div className="container mx-auto">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="container mx-auto">
         <LayoutView>
           <TableManager
             title="Requirements"
@@ -142,8 +141,8 @@ export default function RequirementsPage() {
             initialTab="requirement"
             showTabs="requirement"
           />
-          </LayoutView>
-        </div>
+        </LayoutView>
       </div>
+    </div>
   );
 }

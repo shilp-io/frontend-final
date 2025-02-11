@@ -17,7 +17,7 @@ export function Navbar() {
               alt="Atoms logo"
               width={24}
               height={24}
-              className="object-contain dark:invert mx-2"
+              className="object-contain invert mx-2"
             />
             <span className="font-semibold text-lg">ATOMS.TECH</span>
           </Link>
@@ -41,7 +41,7 @@ export function Navbar() {
               Industries
             </Link>
             <Link
-              href="/contact"
+              href="#contact"
               className="text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
             >
               Contact
@@ -49,7 +49,7 @@ export function Navbar() {
           </nav>
           <Button
             variant="outline"
-            className="btn-secondary hover:text-black"
+            className="btn-secondary bg-black hover:bg-white hover:text-black"
             onClick={() => redirect("/login")}
           >
             SIGN IN

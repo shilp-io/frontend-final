@@ -44,7 +44,7 @@ export default function PublicHeader() {
   }, [user]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center bg-background/80 backdrop-blur-sm border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 h-12 flex items-center bg-background backdrop-blur-sm border-b border-border">
       <div className="w-full max-w-6xl mx-auto px-4 flex items-center">
         {/* Brand Section */}
         <div className="flex items-center mr-12">

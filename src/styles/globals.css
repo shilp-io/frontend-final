@@ -35,8 +35,8 @@
     --muted: 240 4.8% 95.9%; /* Light gray */
     --muted-foreground: 240 3.8% 46.1%; /* Medium gray */
 
-    --accent: 270 50% 70%; /* Lighter purple for accents */
-    --accent-foreground: 0 0% 98%; /* White */
+    --accent: 0 0% 99%; /* Lighter purple for accents */
+    --accent-foreground: 0 0% 0%; /* White */
 
     --destructive: 0 84.2% 60.2%; /* Red for destructive actions */
     --destructive-foreground: 0 0% 98%; /* White */
@@ -85,8 +85,8 @@
     --muted: 240 3.7% 15.9%; /* Dark gray */
     --muted-foreground: 240 5% 64.9%; /* Medium gray */
 
-    --accent: 270 50% 70%; /* Lighter purple for accents */
-    --accent-foreground: 240 5.9% 10%; /* Near black */
+    --accent: 0 0% 99%; /* Lighter purple for accents */
+    --accent-foreground: 0 0% 0%; /* White */
 
     --destructive: 0 62.8% 30.6%; /* Dark red for destructive actions */
     --destructive-foreground: 0 0% 98%; /* White */
@@ -112,17 +112,9 @@
     --sidebar-border: 240 3.7% 15.9%; /* Dark gray */
     --sidebar-ring: 270 50% 50%; /* Matching primary purple */
   }
-  html {
-    /* font-family: */
-    /*   "Inter", */
-    /*   -apple-system, */
-    /*   BlinkMacSystemFont, */
-    /*   "Segoe UI", */
-    /*   Roboto, */
-    /*   sans-serif; */
-  }
   body {
-    @apply bg-black text-white;
+    /* @apply bg-black text-white; */
+    @apply bg-[#0f0f0f] text-[#B5B5B5];
     font-family: "Geist", sans-serif;
   }
   h1,
@@ -140,7 +132,7 @@
     @apply bg-white text-black hover:bg-gray-200 transition-colors uppercase tracking-wider font-bold text-lg px-12 py-6;
   }
   .btn-secondary {
-    @apply border-2 border-white text-white hover:bg-white hover:text-black transition-colors uppercase tracking-wider font-bold text-lg px-12 py-6;
+    @apply border-2 border-white text-white bg-black  transition-colors uppercase tracking-wider font-bold text-lg px-12 py-6;
   }
   .section-padding {
     @apply py-32;
@@ -192,10 +184,6 @@
 
 .slide-in {
   animation: slideIn 0.5s ease-out forwards;
-}
-
-body {
-  @apply bg-[#0f0f0f] text-[#B5B5B5];
 }
 
 .section-divider {
