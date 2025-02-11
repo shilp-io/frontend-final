@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { motion, LayoutGroup } from "framer-motion";
 import { Filter } from "lucide-react";
