@@ -79,10 +79,10 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12">
-      <Card className="w-full max-w-md bg-white dark:bg-gray-800 shadow-sm dark:shadow-lg border-gray-200 dark:border-gray-700">
+    <div className="min-h-screen flex items-center justify-center bg-[#0F0F0F] dark:bg-[#0F0F0F] px-4 py-12">
+      <Card className="w-full max-w-md bg-white dark:bg-black shadow-sm dark:shadow-lg border-gray-200 dark:border-gray-700">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-gray-900 dark:text-gray-100">
+          <CardTitle className="text-2xl font-bold text-center text-black dark:text-gray-100">
             Welcome back
           </CardTitle>
           <CardDescription className="text-center text-gray-500 dark:text-gray-400">
@@ -91,7 +91,7 @@ function LoginContent() {
         </CardHeader>
         <CardContent>
           {error && (
-            <div className="flex items-center gap-2 p-3 mb-6 text-sm text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800">
+            <div className="flex items-center gap-2 p-3 mb-6 text-sm text-primary dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-100 dark:border-red-800">
               <AlertCircle className="h-4 w-4" />
               <span>{error}</span>
             </div>
@@ -107,8 +107,8 @@ function LoginContent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="rounded-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 
-                    focus:border-red-500 dark:focus:border-red-500 focus:ring-red-500 dark:focus:ring-red-500
+                  className="rounded-lg bg-gray-200 dark:bg-black border-gray-200 dark:border-gray-700 
+                    focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary
                     text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                 />
               </div>
@@ -120,8 +120,8 @@ function LoginContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="rounded-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 
-                    focus:border-red-500 dark:focus:border-red-500 focus:ring-red-500 dark:focus:ring-red-500
+                  className="rounded-lg bg-gray-200 dark:bg-black border-gray-200 dark:border-gray-700 
+                    focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary
                     text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                 />
               </div>
@@ -130,8 +130,8 @@ function LoginContent() {
             <div className="flex items-center justify-end">
               <Link
                 href="/reset-password"
-                className="text-sm font-medium text-red-600 hover:text-red-500 dark:text-red-500 dark:hover:text-red-400
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-red-500"
+                className="text-sm font-medium text-primary hover:text-primary dark:text-primary dark:hover:text-accent
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-primary"
               >
                 Forgot your password?
               </Link>
@@ -139,9 +139,9 @@ function LoginContent() {
 
             <Button
               type="submit"
-              className="w-full bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600
+              className="w-full bg-primary hover:bg-accent dark:bg-primary dark:hover:primary
                 text-white font-medium py-2 rounded-lg transition-colors
-                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-red-500"
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-primary"
             >
               Sign in
             </Button>
@@ -149,10 +149,10 @@ function LoginContent() {
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full bg-gray-200 dark:bg-gray-700" />
+              <Separator className="w-full bg-black dark:bg-black" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+              <span className="px-2 bg-white dark:bg-black text-gray-500 dark:text-gray-400">
                 Or continue with
               </span>
             </div>
@@ -162,7 +162,7 @@ function LoginContent() {
             <Button
               variant="outline"
               onClick={handleGoogleSignIn}
-              className="w-full bg-black text-white border border-white hover:bg-gray-900 hover:border-gray-100 transition-colors"
+              className="w-full bg-black text-white border border-white hover:bg-white hover:text-black hover:border-gray-100 transition-colors"
             >
               <Mail className="mr-2 h-4 w-4" />
               Google
@@ -171,7 +171,7 @@ function LoginContent() {
             <Button
               variant="outline"
               onClick={handleGithubSignIn}
-              className="w-full bg-black text-white border border-white hover:bg-gray-900 hover:border-gray-100 transition-colors"
+              className="w-full bg-black text-white border border-white hover:bg-white hover:text-black hover:border-gray-100 transition-colors"
             >
               <Github className="mr-2 h-4 w-4" />
               GitHub
@@ -183,8 +183,8 @@ function LoginContent() {
             Don&apos;t have an account?{" "}
             <Link
               href="/register"
-              className="font-medium text-red-600 hover:text-red-500 dark:text-red-500 dark:hover:text-red-400
-                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-red-500"
+              className="font-medium text-primary hover:text-primary dark:text-primary dark:hover:text-primary
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-primary"
             >
               Sign up
             </Link>

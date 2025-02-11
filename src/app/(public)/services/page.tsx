@@ -25,21 +25,21 @@ export default function ServicesPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-16">
+    <div className="max-w-7xl mx-auto px-9 pt-16">
       <h1 className="text-4xl font-bold text-center mb-12">Our Services</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {services.map((service, index) => (
           <div
             key={index}
-            className="p-6 border rounded-lg shadow-sm hover:shadow-md transition-shadow"
+            className="p-6 bg-background border shadow-sm hover:shadow-md transition-shadow"
           >
             <h2 className="text-2xl font-semibold mb-4">{service.title}</h2>
-            <p className="text-gray-600">{service.description}</p>
+            <p className="text-muted-foreground">{service.description}</p>
           </div>
         ))}
       </div>
       <div className="mt-16 text-center">
-        <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Our AI-powered platform helps system engineers streamline their
           requirements analysis process, saving time and improving accuracy in
           system development.

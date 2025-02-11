@@ -8,6 +8,7 @@ import { Industries } from "@/components/ui/landingpage/industries";
 import { Testimonials } from "@/components/ui/landingpage/testimonials";
 import { CTA } from "@/components/ui/landingpage/cta";
 import { Footer } from "@/components/ui/landingpage/footer";
+import { Contact } from "../ui/landingpage/contact";
 
 export default function Home() {
   return (
@@ -27,6 +28,9 @@ export default function Home() {
           <Testimonials />
           <div className="section-divider">
             <CTA />
+          </div>
+          <div className="section-divider">
+            <Contact />
           </div>
         </main>
         <Footer />

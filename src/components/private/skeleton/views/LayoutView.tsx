@@ -5,11 +5,12 @@ import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
 interface LayoutViewProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 function LayoutView({ children }: LayoutViewProps) {
-    const { layoutViewMode } = useAppStore();
+  const { layoutViewMode } = useAppStore();
+
 
     return (
         

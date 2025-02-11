@@ -1,10 +1,6 @@
 import React from "react";
 import { useAppStore } from "@/lib/store/appStore";
-import {
-  MonospaceTable,
-  MonospaceGrid,
-  AsciiTable,
-} from "@/components/private";
+import { MonospaceGrid, AsciiTable } from "@/components/private";
 import type { Project, Requirement, Collection, ExternalDoc } from "@/types";
 import { TestTable } from "../base/TestTable";
 

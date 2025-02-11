@@ -169,33 +169,33 @@ export default function CollectionsPage() {
 
   return (
     <LayoutView>
-    <div className="flex min-h-screen w-full bg-background text-foreground p-4">
-      <div className="container mx-auto">
-        <TableManager
-          title="Collections"
-          description="Manage and organize your collections"
-          data={collections}
-          isLoading={isLoading}
-          columns={columns}
-          onItemSelect={handleCollectionSelect}
-          onNewItem={handleNewCollection}
-          renderGridItem={renderGridItem}
-          renderDetails={renderDetails}
-          newItemLabel="New Collection"
-          searchPlaceholder="Search collections..."
-          emptyMessage="No collections found. Create a new collection to get started."
-          handleGoToPage={(collection: Collection) =>
-            `/collections/${collection.id}`
-          }
-        />
-        <CreatePanel
-          isOpen={isCreatePanelOpen}
-          onClose={() => setIsCreatePanelOpen(false)}
-          initialTab="collection"
-          showTabs="collection"
-        />
+      <div className="flex min-h-screen w-full bg-background text-foreground p-4">
+        <div className="container mx-auto">
+          <TableManager
+            title="Collections"
+            description="Manage and organize your collections"
+            data={collections}
+            isLoading={isLoading}
+            columns={columns}
+            onItemSelect={handleCollectionSelect}
+            onNewItem={handleNewCollection}
+            renderGridItem={renderGridItem}
+            renderDetails={renderDetails}
+            newItemLabel="New Collection"
+            searchPlaceholder="Search collections..."
+            emptyMessage="No collections found. Create a new collection to get started."
+            handleGoToPage={(collection: Collection) =>
+              `/collections/${collection.id}`
+            }
+          />
+          <CreatePanel
+            isOpen={isCreatePanelOpen}
+            onClose={() => setIsCreatePanelOpen(false)}
+            initialTab="collection"
+            showTabs="collection"
+          />
+        </div>
       </div>
-    </div>
     </LayoutView>
   );
 }
