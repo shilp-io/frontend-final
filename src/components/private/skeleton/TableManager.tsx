@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { TableView } from "@/components/private";
 import { useAppStore } from "@/lib/store/appStore"; // Import useAppStore
 import type { Column, SupportedDataTypes } from "./views/TableView";
-import { useRequirements } from "@/hooks/db/useRequirements";
 
 interface TableManagerProps<T extends SupportedDataTypes> {
   title: string;
@@ -42,10 +41,9 @@ const TableManager = <T extends SupportedDataTypes>({
   emptyMessage = "No items found.",
 }: TableManagerProps<T>) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [tableData, setTableData] = useState(data); // Local state to manage table data
+  const [tableData] = useState(data); // Local state to manage table data
   const isEditable = useAppStore((state) => state.isEditable); // Get isEditable from app store
   const toggleEditable = useAppStore((state) => state.toggleEditable); // Get toggleEditable from app store
-
 
   // Function to handle adding a new requirement
   // TODO: Implement this function to add a new requirement
