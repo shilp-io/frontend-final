@@ -247,6 +247,8 @@ export function TestTable<T extends SupportedDataTypes>({
     setEditingAssignedToId(null);
   };
 
+  // Input blur handlers ** UPDATE THESE TO EDIT DATABASE **
+
   if (isLoading) {
     return (
       <div className="space-y-4 animate-pulse">

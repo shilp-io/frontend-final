@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { TableView } from "@/components/private";
 import { useAppStore } from "@/lib/store/appStore"; // Import useAppStore
 import type { Column, SupportedDataTypes } from "./views/TableView";
+import { useRequirements } from "@/hooks/db/useRequirements";
 
 interface TableManagerProps<T extends SupportedDataTypes> {
   title: string;
@@ -41,23 +42,31 @@ const TableManager = <T extends SupportedDataTypes>({
   emptyMessage = "No items found.",
 }: TableManagerProps<T>) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [tableData, setTableData] = useState(data); // Local state to manage table data
   const isEditable = useAppStore((state) => state.isEditable); // Get isEditable from app store
   const toggleEditable = useAppStore((state) => state.toggleEditable); // Get toggleEditable from app store
 
+
+  // Function to handle adding a new requirement
+  // TODO: Implement this function to add a new requirement
+  const handleAddNewRequirement = async () => {
+    //const { createRequirement } = useRequirements(projectId);
+  };
+
   // Filter items based on search query
   const filteredItems = React.useMemo(() => {
-    if (!searchQuery) return data;
+    if (!searchQuery) return tableData;
     const query = searchQuery.toLowerCase();
-    return data.filter((item) => {
+    return tableData.filter((item) => {
       const searchableFields = columns.map((col) => col.accessor(item));
       return searchableFields.some((field) =>
         field?.toLowerCase().includes(query),
       );
     });
-  }, [data, searchQuery, columns]);
+  }, [tableData, searchQuery, columns]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="w-full flex flex-col">
       {/* Fixed Header Section */}
       <div className="flex-none border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="px-6 py-4">
@@ -99,6 +108,15 @@ const TableManager = <T extends SupportedDataTypes>({
             <Button onClick={toggleEditable}>
               {isEditable ? "Disable Edit Mode" : "Enable Edit Mode"}
             </Button>
+            {isEditable && (
+              <Button
+                onClick={handleAddNewRequirement}
+                variant="outline"
+                size="icon"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       </div>

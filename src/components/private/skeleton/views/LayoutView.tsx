@@ -18,11 +18,9 @@ function LayoutView({ children }: LayoutViewProps) {
                 animate={layoutViewMode} // Animation changes based on mode
                 variants={{
                     standard: {
-                        justifyContent: "center",
                         width: "50%", // Adjust width for standard mode
                     },
                     wide: {
-                        justifyContent: "center",
                         width: "100%", // Adjust width for wide mode
                     },
                 }}
@@ -30,7 +28,7 @@ function LayoutView({ children }: LayoutViewProps) {
                     duration: 0.5,
                     ease: "linear",
                 }}
-                className="flex flex-col w-full h-full bg-background text-foreground mx-auto"
+                className="bg-background text-foreground mx-auto"
             >
                 {children}
             </motion.div>
