@@ -7,15 +7,13 @@ export function Contact() {
       <div className="absolute top-0 left-0 w-full h-1 bg-white" />
       <div className="absolute bottom-0 left-0 w-full h-1 bg-white" />
       <div className="absolute inset-0 bg-black opacity-0" />
-      <div className="container mx-auto px-4 py-16 relative z-20i text-center">
-        <h2 className="text-[48px] sm:text-[64px] md:text-[80px] lg:text-[96px] xl:text-[112px] font-black leading-none mb-8 text-white">
+      <div className="text-center mx-auto px-4 py-16 relative z-20 flex items-center">
+        <h2 className="text-[48px] sm:text-[64px] md:text-[80px] lg:text-[96px] xl:text-[112px] font-black leading-none text-white">
           CONTACT
         </h2>
-        <div className="space-y-4 ">
-          <p className="text-2xl md:text-3xl font-bold text-primary">
-            hello@atoms.tech
-          </p>
-        </div>
+        <p className="text-2xl md:text-3xl font-bold text-primary ml-16">
+          hello@atoms.tech
+        </p>
       </div>
     </section>
   );

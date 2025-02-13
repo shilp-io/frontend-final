@@ -139,7 +139,7 @@ function LoginContent() {
 
             <Button
               type="submit"
-              className="w-full bg-primary hover:bg-accent dark:bg-primary dark:hover:primary
+              className="w-full bg-primary border border-primary hover:bg-accent hover:text-primary dark:bg-primary dark:hover:primary
                 text-white font-medium py-2 rounded-lg transition-colors
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-primary"
             >
@@ -162,7 +162,7 @@ function LoginContent() {
             <Button
               variant="outline"
               onClick={handleGoogleSignIn}
-              className="w-full bg-black text-white border border-white hover:bg-white hover:text-black hover:border-gray-100 transition-colors"
+              className="w-full bg-black text-white border border-white hover:bg-white hover:text-black hover:border-black transition-colors"
             >
               <Mail className="mr-2 h-4 w-4" />
               Google
@@ -171,7 +171,7 @@ function LoginContent() {
             <Button
               variant="outline"
               onClick={handleGithubSignIn}
-              className="w-full bg-black text-white border border-white hover:bg-white hover:text-black hover:border-gray-100 transition-colors"
+              className="w-full bg-black text-white border border-white hover:bg-white hover:text-black hover:border-black transition-colors"
             >
               <Github className="mr-2 h-4 w-4" />
               GitHub

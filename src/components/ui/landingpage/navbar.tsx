@@ -8,8 +8,8 @@ import { AbstractBackground } from "./abstract-background";
 
 export function Navbar() {
   return (
-    <header className="py-8 px-6 bg-black text-white border-b border-white">
-      <div className="max-h-8">
+    <header className="min-h-16 px-6 py-3 bg-black text-white border-b border-white ">
+      <div className="">
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="atoms-logo  hidden md:flex">
             <Image

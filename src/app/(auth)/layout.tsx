@@ -1,5 +1,6 @@
 import PublicHeader from "@/components/public/PublicHeader";
 import { AbstractBackground } from "@/components/ui/landingpage/abstract-background";
+import { Navbar } from "@/components/ui/landingpage/navbar";
 
 export default function AuthLayout({
   children,
@@ -9,7 +10,7 @@ export default function AuthLayout({
   return (
     <div>
       <AbstractBackground />
-      <PublicHeader />
+      <Navbar />
       {children}
     </div>
   );
