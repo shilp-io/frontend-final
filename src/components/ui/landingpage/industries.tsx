@@ -45,9 +45,7 @@ export function Industries() {
       <div className="absolute top-0 left-0 w-full h-1 bg-black" />
       <div className="container mx-auto px-4">
         <h2 className="text-[48px] sm:text-[64px] md:text-[80px] lg:text-[96px] xl:text-[112px] font-black tracking-tighter text-black leading-none mb-16 md:mb-24">
-          BUILT FOR
-          <br />
-          COMPLEX SAFETY CRITICAL SYSTEMS
+          BUILT FOR COMPLEX SAFETY CRITICAL SYSTEMS
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-16 lg:gap-24">
           {industries.map((industry, index) => (
