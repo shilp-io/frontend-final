@@ -1,4 +1,3 @@
-import PublicHeader from "@/components/public/PublicHeader";
 import { AbstractBackground } from "@/components/ui/landingpage/abstract-background";
 import { Navbar } from "@/components/ui/landingpage/navbar";
 
