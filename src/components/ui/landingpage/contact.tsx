@@ -12,7 +12,7 @@ export function Contact() {
           <h2 className="text-[48px] sm:text-[64px] md:text-[80px] lg:text-[96px] xl:text-[112px] font-black leading-none text-white">
             CONTACT
           </h2>
-          <p className="text-2xl md:text-3xl font-bold text-primary">
+          <p className="text-2xl md:text-3xl font-bold text-primary lg:absolute lg:left-1/2 lg:transform lg:-translate-x-1/2">
             hello@atoms.tech
           </p>
         </div>
