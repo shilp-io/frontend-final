@@ -2,12 +2,10 @@ import { Button } from "@/components/ui/button";
 
 export function Hero() {
   return (
-    <section className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-white" />
+    <section className="bg-[url('/../../../nodesbackground.jpg')] bg-opacity-20 bg-cover bg-center min-h-screen flex items-center justify-center  text-white relative overflow-hidden">
       <div className="absolute bottom-0 left-0 w-full h-1 bg-white" />
-      <div className="absolute inset-0 bg-black opacity-0" />
+      <div className="absolute inset-0 bg-black opacity-80" />
       <div className="container mx-auto px-4 py-32 relative z-20">
-        <h1 className="text-[48px] sm:text-[64px] md:text-[80px] lg:text-[96px] xl:text-[112px] font-black leading-none mb-8 text-stroke animate-glow"></h1>
         <h2 className="text-[36px] sm:text-[48px] md:text-[64px] lg:text-[80px] xl:text-[96px] font-black leading-none mb-16 text-white">
           REQUIREMENT TOOLS SUCK OURS DOESN&apos;T
         </h2>
