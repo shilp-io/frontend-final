@@ -8,8 +8,8 @@ import { AbstractBackground } from "./abstract-background";
 
 export function Navbar() {
   return (
-    <header className="py-8 px-6 bg-black text-white border-b border-white">
-      <div className="max-h-8">
+    <header className="min-h-16 px-6 py-3 bg-black text-white border-b border-1px border-white ">
+      <div className="">
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="atoms-logo  hidden md:flex">
             <Image
@@ -24,27 +24,31 @@ export function Navbar() {
           <nav className="hidden md:flex space-x-16">
             <Link
               href="#features"
-              className="text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
+              className="relative group text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
             >
               Features
+              <div className="absolute w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
             </Link>
             <Link
               href="#how-it-works"
-              className="text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
+              className="relative group text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
             >
               How It Works
+              <div className="absolute w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
             </Link>
             <Link
               href="#industries"
-              className="text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
+              className="relative group text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
             >
               Industries
+              <div className="absolute w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
             </Link>
             <Link
               href="#contact"
-              className="text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
+              className="relative group text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
             >
               Contact
+              <div className="absolute w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
             </Link>
           </nav>
           <Button
