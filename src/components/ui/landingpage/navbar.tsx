@@ -8,7 +8,7 @@ import { AbstractBackground } from "./abstract-background";
 
 export function Navbar() {
   return (
-    <header className="min-h-16 px-6 py-3 bg-black text-white border-b border-1px border-white ">
+    <header className="min-h-16 px-6 py-3 bg-black text-white border-b border-1px border-white z-10">
       <div className="">
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="atoms-logo  hidden md:flex">
@@ -23,28 +23,28 @@ export function Navbar() {
           </Link>
           <nav className="hidden md:flex space-x-16">
             <Link
-              href="#features"
+              href="/#features"
               className="relative group text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
             >
               Features
               <div className="absolute w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
             </Link>
             <Link
-              href="#how-it-works"
+              href="/#how-it-works"
               className="relative group text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
             >
               How It Works
               <div className="absolute w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
             </Link>
             <Link
-              href="#industries"
+              href="/#industries"
               className="relative group text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
             >
               Industries
               <div className="absolute w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
             </Link>
             <Link
-              href="#contact"
+              href="/#contact"
               className="relative group text-lg text-white hover:text-gray-300 transition-colors uppercase font-bold"
             >
               Contact
