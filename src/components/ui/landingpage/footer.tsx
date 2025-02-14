@@ -12,12 +12,6 @@ export function Footer() {
           </div>
           <nav className="flex space-x-24">
             <Link
-              href="/about"
-              className="text-xl text-white hover:text-gray-300 transition-colors uppercase"
-            >
-              About
-            </Link>
-            <Link
               href="#contact"
               className="text-xl text-white hover:text-gray-300 transition-colors uppercase"
             >

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 export function Hero() {
   return (
-    <section className="bg-[url('/../../../nodesbackground.jpg')] bg-opacity-20 bg-cover bg-center min-h-screen flex items-center justify-center  text-white relative overflow-hidden">
+    <section className="bg-[url('/../../../nodesbackground.jpg')] bg-cover bg-center min-h-screen flex items-center justify-center  text-white relative overflow-hidden">
       <div className="absolute bottom-0 left-0 w-full h-1 bg-white" />
       <div className="absolute inset-0 bg-black opacity-80" />
       <div className="container mx-auto px-4 py-32 relative z-20">
